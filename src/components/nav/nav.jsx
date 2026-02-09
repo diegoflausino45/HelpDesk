@@ -10,27 +10,23 @@ import {
 function Nav() {
   return (
     <nav className={styles.nav}>
-      <NavLink to="/" className={styles.link}>
-        <FaChartBar /> Dashboard
-      </NavLink>
-
-      <NavLink to="/chamados" className={styles.link}>
-        <FaTicketAlt /> Chamados
-      </NavLink>
-
-      <NavLink to="/relatorios" className={styles.link}>
-        <FaChartBar /> Relatórios
-      </NavLink>
-
-      <NavLink to="/usuarios" className={styles.link}>
-        <FaUsers /> Usuários
-      </NavLink>
-
-      <NavLink to="/configuracoes" className={styles.link}>
-        <FaCog /> Configurações
-      </NavLink>
+      <NavItem to={"/"} icon={<FaChartBar />} label={"Dashboard"}/>
+      <NavItem to={"/chamados"} icon={<FaTicketAlt />} label={"Chamados"}/>
+      <NavItem to={"/relatorios"} icon={<FaChartBar />} label={"Relatórios"}/>
+      <NavItem to={"/usuarios"} icon={<FaUsers />} label={"Usuários"}/>
+      <NavItem to={"/configuracoes"} icon={<FaCog />} label={"Configurações"}/>
     </nav>
   );
+}
+
+function NavItem({to, icon, label}){
+    return(
+        <NavLink to={to} className={({isActive}) =>
+                `${styles.link} ${isActive ? styles.active : ""}`
+            }>
+            {icon}{label}
+        </NavLink>
+    )
 }
 
 export default Nav;

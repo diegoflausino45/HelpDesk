@@ -11,7 +11,7 @@ function Header() {
           <FaPlus />
           Novo chamado
         </button>
-        
+
         <div className={styles.logo}>HelpDesk</div>
 
         <div className={styles.user}>
@@ -19,8 +19,7 @@ function Header() {
           <span>João Freire</span>
         </div>
       </div>
-
-      <Nav />
+        <Nav />
     </header>
   );
 }
