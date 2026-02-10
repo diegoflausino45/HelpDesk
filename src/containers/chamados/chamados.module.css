@@ -156,33 +156,104 @@
   color: #c62828;
 }
 
-.cards {
+.cardsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
 }
 
+
 .card {
-  background: #fff;
-  padding: 1.2rem;
-  border-radius: 10px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.2rem 1.4rem;
+  border: 1px solid #eee;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  transition: transform 0.2s;
+  gap: 0.8rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
 .card:hover {
   transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
-.card header {
+
+.cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.card h3 {
-  font-size: 1rem;
+.ticketId {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #777;
+}
+
+
+.cardTitle {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #222;
+  line-height: 1.4;
+}
+.cardInfo {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cardInfo div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.cardInfo strong {
+  font-size: 0.75rem;
+  color: #888;
+}
+.priority {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.alta {
+  color: #d32f2f;
+}
+
+.média {
+  color: #ef6c00;
+}
+
+.baixa {
+  color: #1565c0;
+}
+.cardFooter {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.update {
+  font-size: 0.75rem;
+  color: #999;
+}
+.viewBtn {
+  background: #c62828;
+  color: white;
+  border: none;
+  padding: 0.4em 0.8em;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.viewBtn:hover {
+  background: #b71c1c;
 }

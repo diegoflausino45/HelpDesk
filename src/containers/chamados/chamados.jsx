@@ -382,35 +382,61 @@ const totalItems = chamadosFiltrados.length
                       <div key={setor} className={styles.setor}>
                           <h2>{setor}</h2>
 
-                          <div className={styles.cards}>
-                              {lista.map((chamado) => (
-                                  <div key={chamado.id} className={styles.card}>
-                                      <header>
-                                          <strong>#{chamado.id}</strong>
-                                          <span
-                                              className={`${styles.badge} ${styles[chamado.status.replace(" ", "").toLowerCase()]}`}
-                                          >
-                                              {chamado.status}
-                                          </span>
-                                      </header>
+                          <div className={styles.cardsGrid}>
+                                {chamadosPaginados.map((chamado) => (
+                                    <div
+                                    key={chamado.id}
+                                    className={styles.card}
+                                    onClick={() => {
+                                        setSelectedChamado(chamado)
+                                        setOpenDetails(true)
+                                    }}
+                                    >
+                                    {/* Header */}
+                                    <div className={styles.cardHeader}>
+                                        <span className={styles.ticketId}>#{chamado.id}</span>
 
-                                      <h3>{chamado.titulo}</h3>
+                                        <span
+                                        className={`${styles.badge} ${styles[chamado.status
+                                            .replace(" ", "")
+                                            .toLowerCase()]}`}
+                                        >
+                                        {chamado.status}
+                                        </span>
+                                    </div>
 
-                                      <p><strong>Prioridade:</strong> {chamado.prioridade}</p>
-                                      <p><strong>Responsável:</strong> {chamado.responsavel}</p>
+                                    {/* Título */}
+                                    <h3 className={styles.cardTitle}>{chamado.titulo}</h3>
 
-                                      <button
-                                          className={styles.viewBtn}
-                                          onClick={() => {
-                                              setSelectedChamado(chamado)
-                                              setOpenDetails(true)
-                                          }}
-                                      >
-                                          Ver detalhes
-                                      </button>
-                                  </div>
-                              ))}
-                          </div>
+                                    {/* Infos */}
+                                    <div className={styles.cardInfo}>
+                                        <div>
+                                        <strong>Prioridade</strong>
+                                        <span
+                                            className={`${styles.priority} ${styles[chamado.prioridade.toLowerCase()]}`}
+                                        >
+                                            {chamado.prioridade}
+                                        </span>
+                                        </div>
+
+                                        <div>
+                                        <strong>Responsável</strong>
+                                        <span>{chamado.responsavel}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Footer */}
+                                    <div className={styles.cardFooter}>
+                                        <span className={styles.update}>
+                                        Atualizado: {chamado.atualizado}
+                                        </span>
+
+                                        <button className={styles.viewBtn}>Ver detalhes</button>
+                                    </div>
+                                    </div>
+                                ))}
+                                </div>
+
                       </div>
                   ))}
               </section>
