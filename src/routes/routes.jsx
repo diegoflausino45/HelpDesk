@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import DashBoard from "../containers/dashboard/dashboard"
 import Chamados from "../containers/chamados/chamados"
 import Relatorios from "../containers/relatorios/relatorios"
+import Usuarios from "../containers/usuarios/usuarios"
 import NotFound from "../containers/notFound/notFound"
 //Importações de Componentes
 import Header from "../components/header/header"
@@ -22,6 +23,7 @@ function RouterApp(){
                         <Route path="/" element={<DashBoard/>} />
                         <Route path="/chamados" element={<Chamados/>}/>
                         <Route path="/relatorios" element={<Relatorios/>}/>
+                        <Route path="/usuarios" element={<Usuarios/>}/>
                         <Route path="*" element={<NotFound/>}/>
                     </Routes>
                 </div>

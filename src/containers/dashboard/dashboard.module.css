@@ -1,6 +1,8 @@
 .dashboard {
-  padding: 2em 3em;
+  padding:  3em;
   min-height: 100vh;
+    background: #f6f7fb;
+  border-radius:  1em;
 }
 
 .kpis {

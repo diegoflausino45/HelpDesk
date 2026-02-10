@@ -1,0 +1,116 @@
+.container {
+  padding:  3rem;
+  background: #f6f7fb;
+  min-height: 100vh;
+  border-radius:  1em;
+
+}
+
+/* Header */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.pageHeader h1 {
+  font-size: 1.8rem;
+}
+
+.newUser {
+  background: #c62828;
+  color: white;
+  padding: 0.6em 1.2em;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* Filtros */
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filters input,
+.filters select {
+  padding: 0.5em 0.8em;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+/* Tabela */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.table th {
+  padding: 1em;
+  background: #f5f5f5;
+  text-align: left;
+  font-weight: 600;
+}
+
+.table td {
+  padding: 1em;
+  border-bottom: 1px solid #eee;
+}
+
+.table tr:hover {
+  background: #fafafa;
+}
+
+/* Badges */
+.badge {
+  padding: 0.3em 0.7em;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Perfil */
+.admin {
+  background: #fbe9e7;
+  color: #c62828;
+}
+
+.técnico {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.usuário {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+/* Status */
+.ativo {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.inativo {
+  background: #fdecea;
+  color: #c62828;
+}
+
+/* Ações */
+.actions button {
+  margin-right: 0.4rem;
+  padding: 0.4em 0.7em;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: none;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  background: #c62828;
+  color: white;
+  border-color: #c62828;
+}

@@ -1,5 +1,7 @@
 .container {
-  padding: 2rem 3rem;
+  padding:  3rem;
+  background: #f6f7fb;  
+  border-radius:  1em;
 }
 
 .pageHeader {
