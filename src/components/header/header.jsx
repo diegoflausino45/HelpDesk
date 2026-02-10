@@ -1,26 +1,59 @@
 import styles from "./header.module.css";
 import Nav from "../nav/nav";
-import { FaPlus, FaUserCircle } from "react-icons/fa"
+import { FaPlus, FaUserCircle, FaHeadset } from "react-icons/fa"
+import { useState, useEffect } from "react";
 
 function Header() {
+
+  const [showHeader, setShowHeader] = useState(true)
+  const [lastScrollY, setLastScrollY] = useState(0)
+
+  useEffect(() => {
+    function handleScroll() {
+      const currentScrollY = window.scrollY
+
+      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+        // rolando pra baixo
+        setShowHeader(false)
+      } else {
+        // rolando pra cima
+        setShowHeader(true)
+      }
+
+      setLastScrollY(currentScrollY)
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [lastScrollY])
+
+
   return (
-    <header className={styles.header}>
-      <div className={styles.containerHeader}>
+    <>
+    
+      <header className={`${styles.header} ${
+            showHeader ? styles.show : styles.hide
+          }`}>
+        <div className={styles.containerHeader}>
 
-        <button className={styles.novoChamado}>
-          <FaPlus />
-          Novo chamado
-        </button>
+          <button className={styles.novoChamado}>
+            <FaPlus />
+            Novo chamado
+          </button>
 
-        <div className={styles.logo}>HelpDesk</div>
+          <div className={styles.logo}>
+            <FaHeadset className={styles.logoIcon} />
+            <span>HelpDesk</span>
+          </div>
 
-        <div className={styles.user}>
-          <FaUserCircle size={22} />
-          <span>João Freire</span>
+          <div className={styles.user}>
+            <FaUserCircle size={22} />
+            <span>João Freire</span>
+          </div>
         </div>
-      </div>
-        <Nav />
-    </header>
+      </header>
+      <Nav />
+    </>
   );
 }
 

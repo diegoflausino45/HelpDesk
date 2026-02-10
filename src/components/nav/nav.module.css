@@ -1,11 +1,13 @@
 .nav {
+  position: sticky;
+  top: 0;
+  margin-top: 4em;
   background-color: #fff;
-  padding: 0.8em 3em;
+  padding: 1em 3em;
   display: flex;
   gap: 1.5em;
-  border-bottom: 1px solid #eaeaea;
-  justify-content: center;
-
+  z-index: 900;
+  border-bottom: 1px solid #eee;
 }
 
 .link {

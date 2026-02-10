@@ -3,7 +3,7 @@ import styles from "./routes.module.css"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 //Importações de Páginas
-import Home from "../containers/home/home"
+import DashBoard from "../containers/dashboard/dashboard"
 import NotFound from "../containers/notFound/notFound"
 //Importações de Componentes
 import Header from "../components/header/header"
@@ -17,7 +17,7 @@ function RouterApp(){
             <Header/>
                 <div className={styles.content}>
                     <Routes>
-                        <Route path="/" element={<Home/>} />
+                        <Route path="/" element={<DashBoard/>} />
                         <Route path="*" element={<NotFound/>}/>
                     </Routes>
                 </div>

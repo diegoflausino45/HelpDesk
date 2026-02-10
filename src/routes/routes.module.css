@@ -1,3 +1,7 @@
 .content{
-    padding: 2em 3em;
+    padding: 1.5em 3em;
+    /*overflow-y: auto;
+    max-height: 83vh;*/
+    scrollbar-width: thin;
+    scrollbar-color: #c62828 #f1f1f1;
 }

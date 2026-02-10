@@ -1,0 +1,79 @@
+.dashboard {
+  padding: 2em 3em;
+  min-height: 100vh;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5em;
+  margin-bottom: 2em;
+}
+
+.card {
+  background: #fff;
+  padding: 1.5em;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  box-shadow: 0 4px 10px rgba(0,0,0,.08);
+}
+
+.card span {
+  font-size: 0.85em;
+  color: #666;
+}
+
+.card strong {
+  font-size: 1.6em;
+  color: #c62828; /* vermelho do header */
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5em;
+  margin-bottom: 2em;
+}
+
+.box {
+  background: #fff;
+  padding: 1.5em;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.08);
+}
+
+.chartPlaceholder {
+  height: 200px;
+  background: #eee;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+}
+
+.table {
+  background: #fff;
+  padding: 1.5em;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.08);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
+}
+
+th, td {
+  padding: 0.75em;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+th {
+  font-weight: 600;
+  color: #333;
+}
