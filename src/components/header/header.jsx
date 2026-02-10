@@ -2,6 +2,7 @@ import styles from "./header.module.css";
 import Nav from "../nav/nav";
 import { FaPlus, FaUserCircle, FaHeadset } from "react-icons/fa"
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 function Header() {
 
@@ -36,10 +37,10 @@ function Header() {
           }`}>
         <div className={styles.containerHeader}>
 
-          <button className={styles.novoChamado}>
+          <Link to={"/chamados/criar"} className={styles.novoChamado}>
             <FaPlus />
             Novo chamado
-          </button>
+          </Link>
 
           <div className={styles.logo}>
             <FaHeadset className={styles.logoIcon} />

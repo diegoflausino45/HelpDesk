@@ -51,6 +51,9 @@
   gap: 0.5em;
   cursor: pointer;
   transition: background 0.2s ease;
+  text-decoration: none;
+    font-size: 1em;
+
 }
 
 .novoChamado:hover {

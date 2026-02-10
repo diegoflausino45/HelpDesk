@@ -1,0 +1,52 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #fff;
+  width: 100%;
+  max-width: 700px;
+  border-radius: 10px;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
+}
+
+.header {
+  background: #c62828;
+  color: white;
+  padding: 1em 1.2em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.content {
+  padding: 1.5rem;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+@keyframes fadeIn {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
