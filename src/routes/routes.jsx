@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 //Importações de Páginas
 import DashBoard from "../containers/dashboard/dashboard"
 import Chamados from "../containers/chamados/chamados"
+import Relatorios from "../containers/relatorios/relatorios"
 import NotFound from "../containers/notFound/notFound"
 //Importações de Componentes
 import Header from "../components/header/header"
@@ -20,6 +21,7 @@ function RouterApp(){
                     <Routes>
                         <Route path="/" element={<DashBoard/>} />
                         <Route path="/chamados" element={<Chamados/>}/>
+                        <Route path="/relatorios" element={<Relatorios/>}/>
                         <Route path="*" element={<NotFound/>}/>
                     </Routes>
                 </div>
