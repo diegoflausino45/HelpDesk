@@ -1,9 +1,10 @@
 .container {
   padding:  3rem;
   padding-bottom: 6em;
-  background: #f6f7fb;
+ /*background: #f6f7fb;*/
   min-height: 100%;
   border-radius:  1em;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.100);
 
 }
 

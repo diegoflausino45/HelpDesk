@@ -1,108 +1,163 @@
 .container {
-  padding:  3rem;
-  background: #f6f7fb;  
-  border-radius:  1em;}
-
-.container h1 {
-  margin-bottom: 2rem;
-  font-size: 1.8rem;
+  padding: 2rem 3rem;
+ /*background: #f6f7fb;*/
+  min-height: 100vh;
 }
 
-.layout {
+.wrapper {
   display: flex;
   gap: 2rem;
 }
 
-/* Sidebar */
+/* SIDEBAR */
 .sidebar {
-  min-width: 220px;
-  background: #fff;
-  padding: 1rem;
-  border-radius: 12px;
+  width: 280px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.5rem;
+  border: 1px solid #eaeaea;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.100);
+
+}
+
+.sidebarHeader {
+  margin-bottom: 1.5rem;
+}
+
+.sidebarHeader h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.sidebarHeader span {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.menu {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  height: fit-content;
 }
 
-.sidebar button {
+.menuItem {
   display: flex;
+  gap: 1rem;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.7em 1em;
+  padding: 0.8rem;
+  border-radius: 10px;
   border: none;
   background: transparent;
-  border-radius: 8px;
   cursor: pointer;
-  font-weight: 500;
   transition: 0.2s;
+  text-align: left;
 }
 
-.sidebar button:hover {
-  background-color: #f5f5f5;
+.menuItem:hover {
+  background-color: #f4f6f8;
+}
+
+.menuItem strong {
+  font-size: 0.95rem;
+}
+
+.menuItem small {
+  font-size: 0.75rem;
+  color: #777;
+}
+
+.icon {
+  font-size: 1.1rem;
+  color: #c62828;
 }
 
 .active {
-  background-color: #c62828;
-  color: white;
+  background-color: #fdeaea;
 }
 
-/* Conteúdo */
+.textItem{
+  display: flex;
+  flex-direction: column;
+}
+
+/* CONTENT */
 .content {
   flex: 1;
+  border: 1px solid #eaeaea;
+  border-radius: 14px;
+  padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.100);
+
 }
 
+.contentHeader {
+  margin-bottom: 1.5rem;
+}
+
+.contentHeader h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.contentHeader p {
+  margin-top: 0.3rem;
+  color: #777;
+  font-size: 0.9rem;
+}
+
+/* CARD */
 .card {
   background: #fff;
   padding: 2rem;
   border-radius: 14px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid #eaeaea;
   margin-bottom: 1.5rem;
 }
 
-.card h2 {
-  margin-bottom: 1.5rem;
-  font-size: 1.2rem;
-}
-
-/* Campos */
-.field {
+/* FORM */
+.formRow {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
 }
 
-.field input,
-.field select {
+.formRow label {
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+  color: #555;
+}
+
+.formRow input,
+.formRow select {
   padding: 0.7em;
   border-radius: 8px;
   border: 1px solid #ddd;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   transition: 0.2s;
 }
 
-.field input:focus,
-.field select:focus {
-  outline: none;
+.formRow input:focus,
+.formRow select:focus {
   border-color: #c62828;
+  outline: none;
 }
 
-/* Toggles simples */
+/* TOGGLE */
 .toggleRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  font-size: 0.9rem;
 }
 
 .toggleRow input {
+  accent-color: #c62828;
   width: 18px;
   height: 18px;
-  accent-color: #c62828;
 }
 
-/* Botões */
+/* ACTIONS */
 .actions {
   display: flex;
   justify-content: flex-end;
@@ -110,8 +165,8 @@
 }
 
 .cancel {
-  background: transparent;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
+  background: white;
   padding: 0.6em 1.2em;
   border-radius: 8px;
   cursor: pointer;
@@ -123,8 +178,8 @@
   border: none;
   padding: 0.6em 1.5em;
   border-radius: 8px;
-  cursor: pointer;
   font-weight: 600;
+  cursor: pointer;
 }
 
 .save:hover {

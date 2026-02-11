@@ -1,7 +1,9 @@
 .container {
   padding:  3rem;
-  background: #f6f7fb;  
+ /*background: #f6f7fb;*/
   border-radius:  1em;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.100);
+
 }
 
 .pageHeader {
@@ -176,6 +178,8 @@
   gap: 0.8rem;
   cursor: pointer;
   transition: all 0.25s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
 }
 
 .card:hover {

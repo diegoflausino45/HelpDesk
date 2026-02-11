@@ -1,120 +1,130 @@
 import { useState } from "react"
 import styles from "./configuracoes.module.css"
-import { FaCogs, FaUsers, FaBell, FaShieldAlt } from "react-icons/fa"
+import { 
+  FaCogs, 
+  FaUsers, 
+  FaBell, 
+  FaShieldAlt 
+} from "react-icons/fa"
 
 function Configuracoes() {
   const [abaAtiva, setAbaAtiva] = useState("geral")
 
+  const menu = [
+    { id: "geral", label: "Geral", desc: "Preferências do sistema", icon: <FaCogs /> },
+    { id: "usuarios", label: "Usuários & Permissões", desc: "Perfis e acessos", icon: <FaUsers /> },
+    { id: "notificacoes", label: "Notificações", desc: "Emails e alertas", icon: <FaBell /> },
+    { id: "seguranca", label: "Segurança", desc: "Políticas e autenticação", icon: <FaShieldAlt /> },
+  ]
+
   return (
     <main className={styles.container}>
-      <h1>Configurações</h1>
-
-      <div className={styles.layout}>
+      <div className={styles.wrapper}>
         
-        {/* Sidebar */}
+        {/* Sidebar Enterprise */}
         <aside className={styles.sidebar}>
-          <button
-            className={abaAtiva === "geral" ? styles.active : ""}
-            onClick={() => setAbaAtiva("geral")}
-          >
-            <FaCogs /> Geral
-          </button>
+          <div className={styles.sidebarHeader}>
+            <h3>Configurações</h3>
+            <span>Painel administrativo</span>
+          </div>
 
-          <button
-            className={abaAtiva === "usuarios" ? styles.active : ""}
-            onClick={() => setAbaAtiva("usuarios")}
-          >
-            <FaUsers /> Usuários
-          </button>
-
-          <button
-            className={abaAtiva === "notificacoes" ? styles.active : ""}
-            onClick={() => setAbaAtiva("notificacoes")}
-          >
-            <FaBell /> Notificações
-          </button>
-
-          <button
-            className={abaAtiva === "seguranca" ? styles.active : ""}
-            onClick={() => setAbaAtiva("seguranca")}
-          >
-            <FaShieldAlt /> Segurança
-          </button>
+          <nav className={styles.menu}>
+            {menu.map(item => (
+              <button
+                key={item.id}
+                onClick={() => setAbaAtiva(item.id)}
+                className={`${styles.menuItem} ${
+                  abaAtiva === item.id ? styles.active : ""
+                }`}
+              >
+                <div className={styles.icon}>{item.icon}</div>
+                <div className={styles.textItem}>
+                  <strong>{item.label}</strong>
+                  <small>{item.desc}</small>
+                </div>
+              </button>
+            ))}
+          </nav>
         </aside>
 
         {/* Conteúdo */}
         <section className={styles.content}>
 
-          {abaAtiva === "geral" && (
-            <div className={styles.card}>
-              <h2>Configurações Gerais</h2>
+          <header className={styles.contentHeader}>
+            <h2>
+              {menu.find(m => m.id === abaAtiva)?.label}
+            </h2>
+            <p>
+              {menu.find(m => m.id === abaAtiva)?.desc}
+            </p>
+          </header>
 
-              <div className={styles.field}>
-                <label>Nome do sistema</label>
-                <input type="text" defaultValue="HelpDesk Pro" />
-              </div>
+          <div className={styles.card}>
 
-              <div className={styles.field}>
-                <label>Idioma padrão</label>
-                <select>
-                  <option>Português</option>
-                  <option>Inglês</option>
-                </select>
-              </div>
-            </div>
-          )}
+            {abaAtiva === "geral" && (
+              <>
+                <div className={styles.formRow}>
+                  <label>Nome da organização</label>
+                  <input type="text" defaultValue="HelpDesk Enterprise" />
+                </div>
 
-          {abaAtiva === "usuarios" && (
-            <div className={styles.card}>
-              <h2>Permissões de Usuários</h2>
+                <div className={styles.formRow}>
+                  <label>Idioma padrão</label>
+                  <select>
+                    <option>Português</option>
+                    <option>Inglês</option>
+                  </select>
+                </div>
+              </>
+            )}
 
-              <div className={styles.toggleRow}>
-                <span>Técnicos podem editar usuários</span>
-                <input type="checkbox" />
-              </div>
+            {abaAtiva === "usuarios" && (
+              <>
+                <div className={styles.toggleRow}>
+                  <span>Técnicos podem gerenciar usuários</span>
+                  <input type="checkbox" />
+                </div>
 
-              <div className={styles.toggleRow}>
-                <span>Usuários podem encerrar chamados</span>
-                <input type="checkbox" />
-              </div>
-            </div>
-          )}
+                <div className={styles.toggleRow}>
+                  <span>Usuários podem encerrar chamados</span>
+                  <input type="checkbox" />
+                </div>
+              </>
+            )}
 
-          {abaAtiva === "notificacoes" && (
-            <div className={styles.card}>
-              <h2>Notificações</h2>
+            {abaAtiva === "notificacoes" && (
+              <>
+                <div className={styles.toggleRow}>
+                  <span>Notificar por email ao criar chamado</span>
+                  <input type="checkbox" defaultChecked />
+                </div>
 
-              <div className={styles.toggleRow}>
-                <span>Enviar email ao criar chamado</span>
-                <input type="checkbox" defaultChecked />
-              </div>
+                <div className={styles.toggleRow}>
+                  <span>Notificar técnico ao atribuir chamado</span>
+                  <input type="checkbox" />
+                </div>
+              </>
+            )}
 
-              <div className={styles.toggleRow}>
-                <span>Notificar técnico ao atribuir chamado</span>
-                <input type="checkbox" />
-              </div>
-            </div>
-          )}
+            {abaAtiva === "seguranca" && (
+              <>
+                <div className={styles.formRow}>
+                  <label>Tentativas máximas de login</label>
+                  <input type="number" defaultValue={5} />
+                </div>
 
-          {abaAtiva === "seguranca" && (
-            <div className={styles.card}>
-              <h2>Segurança</h2>
+                <div className={styles.formRow}>
+                  <label>Validade da senha (dias)</label>
+                  <input type="number" defaultValue={90} />
+                </div>
+              </>
+            )}
 
-              <div className={styles.field}>
-                <label>Bloquear conta após (tentativas)</label>
-                <input type="number" defaultValue={5} />
-              </div>
-
-              <div className={styles.field}>
-                <label>Validade de senha (dias)</label>
-                <input type="number" defaultValue={90} />
-              </div>
-            </div>
-          )}
+          </div>
 
           <div className={styles.actions}>
             <button className={styles.cancel}>Cancelar</button>
-            <button className={styles.save}>Salvar Alterações</button>
+            <button className={styles.save}>Salvar alterações</button>
           </div>
 
         </section>
