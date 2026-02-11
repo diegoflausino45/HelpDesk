@@ -47,10 +47,10 @@ function Header() {
             <span>HelpDesk</span>
           </div>
 
-          <div className={styles.user}>
+          <Link to={"/perfil"} className={styles.user}>
             <FaUserCircle size={22} />
             <span>João Freire</span>
-          </div>
+          </Link>
         </div>
       </header>
       <Nav />

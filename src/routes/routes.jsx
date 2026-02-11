@@ -8,6 +8,7 @@ import Chamados from "../containers/chamados/chamados"
 import Relatorios from "../containers/relatorios/relatorios"
 import Usuarios from "../containers/usuarios/usuarios"
 import Configuracoes from "../containers/configuracoes/configuracoes"
+import Perfil from "../containers/perfil/perfil"
 import NotFound from "../containers/notFound/notFound"
 //Importações de Componentes
 import Header from "../components/header/header"
@@ -26,6 +27,7 @@ function RouterApp(){
                         <Route path="/relatorios" element={<Relatorios/>}/>
                         <Route path="/usuarios" element={<Usuarios/>}/>
                         <Route path="/configuracoes" element={<Configuracoes/>}/>
+                        <Route path="/perfil" element={<Perfil/>}/>
                         <Route path="*" element={<NotFound/>}/>
                     </Routes>
                 </div>
