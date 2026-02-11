@@ -1,5 +1,5 @@
 .container {
-  padding: 3em;
+  padding: 1em 3em;
   min-height: 100vh;
   font-family: "Inter", sans-serif;
 }
@@ -43,6 +43,9 @@
   justify-content: center;
   font-weight: 600;
   font-size: 22px;
+}
+.avatar img{
+  border-radius: 2em;
 }
 
 .status {
@@ -88,7 +91,6 @@
 .tabs {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
 }
 
 .tabs button {

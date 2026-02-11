@@ -4,8 +4,7 @@
   min-height: 100vh;  
   border-radius:  1em;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.100);
-
-
+    margin-top: 1em;
 }
 
 .header {

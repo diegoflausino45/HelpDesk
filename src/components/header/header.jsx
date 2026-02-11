@@ -1,8 +1,9 @@
 import styles from "./header.module.css";
 import Nav from "../nav/nav";
-import { FaPlus, FaUserCircle, FaHeadset } from "react-icons/fa"
+import { FaPlus, FaHeadset } from "react-icons/fa"
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import UserMenu from "./components/userMenu";
 
 function Header() {
 
@@ -47,10 +48,7 @@ function Header() {
             <span>HelpDesk</span>
           </div>
 
-          <Link to={"/perfil"} className={styles.user}>
-            <FaUserCircle size={22} />
-            <span>João Freire</span>
-          </Link>
+          <UserMenu />
         </div>
       </header>
       <Nav />

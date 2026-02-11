@@ -21,7 +21,7 @@ export default function Perfil() {
         <div className={styles.left}>
             <div className={styles.avauser}>
                 <div className={styles.avatar}>
-            DF
+                  <img src="https://avatars.githubusercontent.com/u/70244105?v=4" width="100%" alt="" />
             <span className={styles.status}></span>
           </div>
 
