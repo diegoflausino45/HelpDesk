@@ -2,6 +2,8 @@ import styles from "./usuarios.module.css"
 import { useState } from "react"
 import { FaEye, FaEdit } from "react-icons/fa"
 import Modal from "../../components/Modal/modal"
+import CreateUser from "./components/criarUsuarioModal"
+import EditUser from "./components/editarUsuarioModal"
 
 function Usuarios() {
   const [busca, setBusca] = useState("")
@@ -62,6 +64,7 @@ function Usuarios() {
       {/* Header */}
       <section className={styles.pageHeader}>
         <h1>Usuários</h1>
+
         {usuarioLogado.perfil === "Admin" && (
           <button
             className={styles.newUser}
@@ -119,7 +122,6 @@ function Usuarios() {
               <td>{user.status}</td>
               <td>{user.ultimoAcesso}</td>
               <td className={styles.actions}>
-                <button><FaEye /></button>
 
                 {(usuarioLogado.perfil === "Admin" ||
                   (usuarioLogado.perfil === "Técnico" &&
@@ -140,23 +142,26 @@ function Usuarios() {
       </table>
 
       {/* Modal Criar */}
-      {openCreate && (
-        <Modal
-          title="Criar Usuário"
-          onClose={() => setOpenCreate(false)}
-          usuarioLogado={usuarioLogado}
-        />
-      )}
+      <Modal
+        isOpen={openCreate}
+        onClose={() => setOpenCreate(false)}
+        title="Criar Usuário"
+      >
+        <CreateUser onClose={() => setOpenCreate(false)} />
+      </Modal>
 
       {/* Modal Editar */}
-      {openEdit && (
-        <Modal
-          title="Editar Usuário"
+      <Modal
+        isOpen={openEdit}
+        onClose={() => setOpenEdit(false)}
+        title="Editar Usuário"
+      >
+        <EditUser
           usuario={usuarioSelecionado}
-          onClose={() => setOpenEdit(false)}
           usuarioLogado={usuarioLogado}
+          onClose={() => setOpenEdit(false)}
         />
-      )}
+      </Modal>
     </main>
   )
 }

@@ -37,7 +37,7 @@ function Header() {
           }`}>
         <div className={styles.containerHeader}>
 
-          <Link to={"/chamados/criar"} className={styles.novoChamado}>
+          <Link to={"/chamados"} className={styles.novoChamado}>
             <FaPlus />
             Novo chamado
           </Link>

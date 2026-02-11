@@ -1,51 +1,49 @@
+import { useState } from "react"
 import styles from "./usuarioModal.module.css"
 
-function CriarUsuarioModal({ isOpen, onClose, onSave }) {
-  if (!isOpen) return null
+function CreateUser({ onClose }) {
+  const [form, setForm] = useState({
+    nome: "",
+    email: "",
+    perfil: "Usuário",
+    setor: "",
+    status: "Ativo",
+  })
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
 
   function handleSubmit(e) {
     e.preventDefault()
-
-    const form = e.target
-    const novoUsuario = {
-      nome: form.nome.value,
-      email: form.email.value,
-      perfil: form.perfil.value,
-      setor: form.setor.value,
-      status: "Ativo",
-      ultimoAcesso: "Nunca",
-    }
-
-    onSave(novoUsuario)
+    console.log("Criar usuário:", form)
     onClose()
   }
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.modal}>
-        <h2>Novo Usuário</h2>
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <input name="nome" placeholder="Nome" onChange={handleChange} required />
+      <input name="email" placeholder="Email" onChange={handleChange} required />
 
-        <form onSubmit={handleSubmit}>
-          <input name="nome" placeholder="Nome completo" required />
-          <input name="email" type="email" placeholder="Email" required />
+      <select name="perfil" onChange={handleChange}>
+        <option>Admin</option>
+        <option>Técnico</option>
+        <option>Usuário</option>
+      </select>
 
-          <select name="perfil" required>
-            <option value="">Perfil</option>
-            <option>Admin</option>
-            <option>Técnico</option>
-            <option>Usuário</option>
-          </select>
+      <input name="setor" placeholder="Setor" onChange={handleChange} />
 
-          <input name="setor" placeholder="Setor" required />
+      <select name="status" onChange={handleChange}>
+        <option>Ativo</option>
+        <option>Inativo</option>
+      </select>
 
-          <div className={styles.actions}>
-            <button type="button" onClick={onClose}>Cancelar</button>
-            <button type="submit">Salvar</button>
-          </div>
-        </form>
-      </div>
-    </div>
+      <footer className={styles.actions}>
+        <button type="button" onClick={onClose}>Cancelar</button>
+        <button type="submit">Salvar</button>
+      </footer>
+    </form>
   )
 }
 
-export default CriarUsuarioModal
+export default CreateUser

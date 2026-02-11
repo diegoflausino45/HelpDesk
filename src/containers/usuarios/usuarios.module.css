@@ -1,7 +1,8 @@
 .container {
   padding:  3rem;
+  padding-bottom: 6em;
   background: #f6f7fb;
-  min-height: 100vh;
+  min-height: 100%;
   border-radius:  1em;
 
 }
@@ -24,7 +25,12 @@
   padding: 0.6em 1.2em;
   border-radius: 6px;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+.newUser:hover{
+  background-color: #b71c1c;
 }
 
 /* Filtros */
