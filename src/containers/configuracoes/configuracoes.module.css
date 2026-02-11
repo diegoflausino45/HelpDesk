@@ -1,26 +1,112 @@
 .container {
   padding:  3rem;
   background: #f6f7fb;  
-  border-radius:  1em; 
-}
+  border-radius:  1em;}
 
 .container h1 {
+  margin-bottom: 2rem;
   font-size: 1.8rem;
+}
+
+.layout {
+  display: flex;
+  gap: 2rem;
+}
+
+/* Sidebar */
+.sidebar {
+  min-width: 220px;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  height: fit-content;
+}
+
+.sidebar button {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7em 1em;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.sidebar button:hover {
+  background-color: #f5f5f5;
+}
+
+.active {
+  background-color: #c62828;
+  color: white;
+}
+
+/* Conteúdo */
+.content {
+  flex: 1;
+}
+
+.card {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   margin-bottom: 1.5rem;
 }
 
-.secoes{
-    display: grid;
-    grid-template-columns: 1fr 1fr;    
-    gap: 0em 2em;
+.card h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
 }
 
+/* Campos */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.2rem;
+}
 
+.field input,
+.field select {
+  padding: 0.7em;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+  transition: 0.2s;
+}
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: #c62828;
+}
+
+/* Toggles simples */
+.toggleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.toggleRow input {
+  width: 18px;
+  height: 18px;
+  accent-color: #c62828;
+}
+
+/* Botões */
 .actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 2rem;
 }
 
 .cancel {
@@ -39,4 +125,8 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+}
+
+.save:hover {
+  background-color: #b71c1c;
 }

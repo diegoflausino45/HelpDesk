@@ -1,61 +1,123 @@
+import { useState } from "react"
 import styles from "./configuracoes.module.css"
-import Secao from "./components/secao"
-import Toggle from "./components/toggle"
+import { FaCogs, FaUsers, FaBell, FaShieldAlt } from "react-icons/fa"
 
 function Configuracoes() {
+  const [abaAtiva, setAbaAtiva] = useState("geral")
+
   return (
     <main className={styles.container}>
       <h1>Configurações</h1>
 
-     <div className={styles.secoes}>
-      {/* Geral */}
-      <Secao title="Geral">
-        <label>
-          Nome do sistema
-          <input type="text" defaultValue="HelpDesk" />
-        </label>
+      <div className={styles.layout}>
+        
+        {/* Sidebar */}
+        <aside className={styles.sidebar}>
+          <button
+            className={abaAtiva === "geral" ? styles.active : ""}
+            onClick={() => setAbaAtiva("geral")}
+          >
+            <FaCogs /> Geral
+          </button>
 
-        <label>
-          Idioma
-          <select>
-            <option>Português</option>
-            <option>Inglês</option>
-          </select>
-        </label>
-      </Secao>
+          <button
+            className={abaAtiva === "usuarios" ? styles.active : ""}
+            onClick={() => setAbaAtiva("usuarios")}
+          >
+            <FaUsers /> Usuários
+          </button>
 
-      {/* Chamados */}
-      <Secao title="Chamados">
-        <label>
-          SLA padrão (horas)
-          <input type="number" defaultValue={24} />
-        </label>
+          <button
+            className={abaAtiva === "notificacoes" ? styles.active : ""}
+            onClick={() => setAbaAtiva("notificacoes")}
+          >
+            <FaBell /> Notificações
+          </button>
 
-        <Toggle label="Permitir reabertura de chamados" />
-        <Toggle label="Exigir prioridade ao criar chamado" />
-      </Secao>
+          <button
+            className={abaAtiva === "seguranca" ? styles.active : ""}
+            onClick={() => setAbaAtiva("seguranca")}
+          >
+            <FaShieldAlt /> Segurança
+          </button>
+        </aside>
 
-      {/* Usuários */}
-      <Secao title="Usuários & Permissões">
-        <Toggle label="Técnicos podem editar usuários" />
-        <Toggle label="Usuários comuns podem encerrar chamados" />
-      </Secao>
+        {/* Conteúdo */}
+        <section className={styles.content}>
 
-      {/* Notificações */}
-      <Secao title="Notificações">
-        <Toggle label="Enviar email ao criar chamado" />
-        <Toggle label="Notificar técnico ao atribuir chamado" />
-      </Secao>
+          {abaAtiva === "geral" && (
+            <div className={styles.card}>
+              <h2>Configurações Gerais</h2>
 
-      {/* Segurança */}
-      <Secao title="Segurança">
-        <Toggle label="Exigir troca de senha a cada 90 dias" />
-        <Toggle label="Bloquear conta após 5 tentativas" />
-      </Secao>
-</div>
-      <div className={styles.actions}>
-        <button className={styles.cancel}>Cancelar</button>
-        <button className={styles.save}>Salvar alterações</button>
+              <div className={styles.field}>
+                <label>Nome do sistema</label>
+                <input type="text" defaultValue="HelpDesk Pro" />
+              </div>
+
+              <div className={styles.field}>
+                <label>Idioma padrão</label>
+                <select>
+                  <option>Português</option>
+                  <option>Inglês</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          {abaAtiva === "usuarios" && (
+            <div className={styles.card}>
+              <h2>Permissões de Usuários</h2>
+
+              <div className={styles.toggleRow}>
+                <span>Técnicos podem editar usuários</span>
+                <input type="checkbox" />
+              </div>
+
+              <div className={styles.toggleRow}>
+                <span>Usuários podem encerrar chamados</span>
+                <input type="checkbox" />
+              </div>
+            </div>
+          )}
+
+          {abaAtiva === "notificacoes" && (
+            <div className={styles.card}>
+              <h2>Notificações</h2>
+
+              <div className={styles.toggleRow}>
+                <span>Enviar email ao criar chamado</span>
+                <input type="checkbox" defaultChecked />
+              </div>
+
+              <div className={styles.toggleRow}>
+                <span>Notificar técnico ao atribuir chamado</span>
+                <input type="checkbox" />
+              </div>
+            </div>
+          )}
+
+          {abaAtiva === "seguranca" && (
+            <div className={styles.card}>
+              <h2>Segurança</h2>
+
+              <div className={styles.field}>
+                <label>Bloquear conta após (tentativas)</label>
+                <input type="number" defaultValue={5} />
+              </div>
+
+              <div className={styles.field}>
+                <label>Validade de senha (dias)</label>
+                <input type="number" defaultValue={90} />
+              </div>
+            </div>
+          )}
+
+          <div className={styles.actions}>
+            <button className={styles.cancel}>Cancelar</button>
+            <button className={styles.save}>Salvar Alterações</button>
+          </div>
+
+        </section>
       </div>
     </main>
   )
