@@ -4,136 +4,139 @@ import styles from "./perfil.module.css"
 export default function Perfil() {
   const [activeTab, setActiveTab] = useState("dados")
 
-  const [user, setUser] = useState({
+  const user = {
     nome: "Diego Flausino",
     email: "diego@email.com",
     cargo: "Administrador",
+    setor: "Tecnologia da Informação",
     telefone: "(14) 99999-9999",
-    setor: "TI",
-  })
-
-  const handleChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value })
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log("Salvar perfil:", user)
+    ultimoAcesso: "09/02/2026 - 22:14",
+    status: "Ativo"
   }
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <div className={styles.avatarSection}>
-          <div className={styles.avatar}>DF</div>
+      {/* HEADER */}
+      <div className={styles.profileHeader}>
+        <div className={styles.left}>
+            <div className={styles.avauser}>
+                <div className={styles.avatar}>
+            DF
+            <span className={styles.status}></span>
+          </div>
+
           <div>
             <h2>{user.nome}</h2>
             <p>{user.cargo} • {user.setor}</p>
+            <span className={styles.email}>{user.email}</span>
           </div>
+            </div>
+          
+          <div className={styles.actions}>
+          <button className={styles.outlineBtn}>Editar Perfil</button>
+          <button className={styles.primaryBtn}>Salvar</button>
+        </div>
         </div>
 
-
+        
+      {/* TABS */}
       <div className={styles.tabs}>
         <button
           className={activeTab === "dados" ? styles.activeTab : ""}
           onClick={() => setActiveTab("dados")}
         >
-          Dados Pessoais
+          Informações
         </button>
+
         <button
-          className={activeTab === "senha" ? styles.activeTab : ""}
-          onClick={() => setActiveTab("senha")}
+          className={activeTab === "seguranca" ? styles.activeTab : ""}
+          onClick={() => setActiveTab("seguranca")}
         >
-          Alterar Senha
+          Segurança
         </button>
+
         <button
-          className={activeTab === "preferencias" ? styles.activeTab : ""}
-          onClick={() => setActiveTab("preferencias")}
+          className={activeTab === "atividade" ? styles.activeTab : ""}
+          onClick={() => setActiveTab("atividade")}
         >
-          Preferências
+          Atividades
         </button>
       </div>
       </div>
 
 
-      <div className={styles.content}>
+      {/* CONTEÚDO */}
+      <div className={styles.card}>
         {activeTab === "dados" && (
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <div className={styles.inputGroup}>
-              <label>Nome</label>
-              <input
-                type="text"
-                name="nome"
-                value={user.nome}
-                onChange={handleChange}
-              />
+          <div className={styles.grid}>
+            <div className={styles.field}>
+              <label>Nome Completo</label>
+              <input defaultValue={user.nome} />
             </div>
 
-            <div className={styles.inputGroup}>
+            <div className={styles.field}>
               <label>Email</label>
-              <input
-                type="email"
-                name="email"
-                value={user.email}
-                onChange={handleChange}
-              />
+              <input defaultValue={user.email} />
             </div>
 
-            <div className={styles.inputGroup}>
+            <div className={styles.field}>
               <label>Telefone</label>
-              <input
-                type="text"
-                name="telefone"
-                value={user.telefone}
-                onChange={handleChange}
-              />
+              <input defaultValue={user.telefone} />
             </div>
 
-            <button className={styles.primaryBtn}>
-              Salvar Alterações
-            </button>
-          </form>
+            <div className={styles.field}>
+              <label>Cargo</label>
+              <input defaultValue={user.cargo} disabled />
+            </div>
+
+            <div className={styles.field}>
+              <label>Setor</label>
+              <input defaultValue={user.setor} disabled />
+            </div>
+
+            <div className={styles.field}>
+              <label>Status</label>
+              <input defaultValue={user.status} disabled />
+            </div>
+          </div>
         )}
 
-        {activeTab === "senha" && (
-          <form className={styles.form}>
-            <div className={styles.inputGroup}>
-              <label>Senha Atual</label>
-              <input type="password" />
+        {activeTab === "seguranca" && (
+          <div className={styles.securitySection}>
+            <div className={styles.securityCard}>
+              <h4>Alterar Senha</h4>
+              <input type="password" placeholder="Senha Atual" />
+              <input type="password" placeholder="Nova Senha" />
+              <input type="password" placeholder="Confirmar Nova Senha" />
+              <button className={styles.primaryBtn}>
+                Atualizar Senha
+              </button>
             </div>
 
-            <div className={styles.inputGroup}>
-              <label>Nova Senha</label>
-              <input type="password" />
+            <div className={styles.securityCard}>
+              <h4>Informações de Acesso</h4>
+              <p><strong>Último acesso:</strong> {user.ultimoAcesso}</p>
+              <p><strong>Dispositivo:</strong> Windows • Chrome</p>
+              <p><strong>IP:</strong> 192.168.0.15</p>
             </div>
-
-            <div className={styles.inputGroup}>
-              <label>Confirmar Nova Senha</label>
-              <input type="password" />
-            </div>
-
-            <button className={styles.primaryBtn}>
-              Atualizar Senha
-            </button>
-          </form>
+          </div>
         )}
 
-        {activeTab === "preferencias" && (
-          <div className={styles.preferences}>
-            <div className={styles.preferenceItem}>
-              <div>
-                <h4>Notificações por Email</h4>
-                <p>Receber avisos de novos chamados e atualizações</p>
-              </div>
-              <input type="checkbox" defaultChecked />
+        {activeTab === "atividade" && (
+          <div className={styles.activity}>
+            <div className={styles.activityItem}>
+              <span>✔ Atualizou perfil</span>
+              <small>09/02/2026 - 21:55</small>
             </div>
 
-            <div className={styles.preferenceItem}>
-              <div>
-                <h4>Modo Escuro</h4>
-                <p>Ativar tema escuro do sistema</p>
-              </div>
-              <input type="checkbox" />
+            <div className={styles.activityItem}>
+              <span>✔ Criou chamado #2045</span>
+              <small>08/02/2026 - 18:22</small>
+            </div>
+
+            <div className={styles.activityItem}>
+              <span>✔ Alterou senha</span>
+              <small>05/02/2026 - 10:11</small>
             </div>
           </div>
         )}
