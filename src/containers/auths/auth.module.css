@@ -1,0 +1,148 @@
+.container {
+  display: flex;
+  min-height: 100vh;
+  font-family: "Inter", sans-serif;
+}
+
+/* LADO ESQUERDO */
+
+.left {
+  flex: 1;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+
+.brandContent {
+  max-width: 400px;
+}
+
+.brandContent h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.brandContent p {
+  font-size: 1rem;
+  opacity: 0.8;
+  line-height: 1.6;
+}
+
+/* LADO DIREITO */
+
+.right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  padding: 40px;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+  animation: fadeIn 0.4s ease;
+}
+
+.card h2 {
+  margin-bottom: 30px;
+  font-size: 1.5rem;
+}
+
+/* FORM */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inputGroup label {
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.inputGroup input {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+  transition: 0.3s;
+}
+
+.inputGroup input:focus {
+  outline: none;
+  border-color: #1e293b;
+  box-shadow: 0 0 0 3px rgba(30,41,59,0.1);
+}
+
+/* OPTIONS */
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.link {
+  color: #1e293b;
+  cursor: pointer;
+}
+
+/* BUTTON */
+
+.primaryBtn {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #1e293b;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.primaryBtn:hover {
+  background: #0f172a;
+}
+
+/* SWITCH */
+
+.switch {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.switch span {
+  font-weight: 600;
+  cursor: pointer;
+  color: #1e293b;
+}
+
+/* ANIMAÇÃO */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
