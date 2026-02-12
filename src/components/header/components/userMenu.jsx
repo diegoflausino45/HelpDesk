@@ -6,7 +6,7 @@ import styles from "../header.module.css"
 function UserMenu() {
   const [open, setOpen] = useState(false)
 function handleToggle() {
-    setOpen(prev => !prev)
+    setOpen(isOpen => !isOpen)
   }
   return (
     <div className={styles.userWrapper}>

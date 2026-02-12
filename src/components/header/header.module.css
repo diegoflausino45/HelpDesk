@@ -74,7 +74,7 @@
   color: white;
 
   /* Estado fechado */
-  width: 45px;
+  width: 56px;
   overflow: hidden;
   padding: 0.4em;
   border-radius: 50px;
@@ -91,8 +91,8 @@
 
 /* Avatar */
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
