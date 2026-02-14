@@ -1,11 +1,40 @@
+@import './theme.css';
+@import './components.css';
+
+/**
+ * Estilos Globais
+ * Reset e configurações base do projeto
+ */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) transparent;
 }
 
-html, #root {
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.4);
+  border-radius: var(--radius-full);
+  transition: background var(--transition-base);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.6);
+}
+
+html,
+#root {
   height: 100%;
   width: 100%;
   margin: 0;
@@ -13,7 +42,111 @@ html, #root {
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 1em;
-  background-color: #fff;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Aplicar tema ao documento completo */
+html {
+  font-size: 16px;
+}
+
+/* Links padrão */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: all var(--transition-base);
+}
+
+a:hover {
+  color: var(--color-primary);
+  opacity: 0.8;
+}
+
+/* Títulos */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: var(--space-lg) 0 var(--space-md);
+  line-height: var(--line-height-tight);
+}
+
+h1 {
+  font-size: var(--font-size-3xl);
+}
+
+h2 {
+  font-size: var(--font-size-2xl);
+}
+
+h3 {
+  font-size: var(--font-size-xl);
+}
+
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-lg);
+}
+
+/* Parágrafos */
+p {
+  margin-bottom: var(--space-md);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+/* Listas */
+ul,
+ol {
+  padding-left: var(--space-xl);
+  margin-bottom: var(--space-md);
+}
+
+li {
+  margin-bottom: var(--space-sm);
+}
+
+/* Código */
+code {
+  background-color: rgba(102, 126, 234, 0.1);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+  color: var(--color-primary);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+pre {
+  background-color: rgba(102, 126, 234, 0.05);
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+  margin-bottom: var(--space-lg);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+pre code {
+  background-color: transparent;
+  padding: 0;
+  color: var(--color-text-primary);
+  border: none;
+}
+
+/* HR */
+hr {
+  border: none;
+  border-top: 1px solid rgba(102, 126, 234, 0.1);
+  margin: var(--space-xl) 0;
 }

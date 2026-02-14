@@ -1,0 +1,101 @@
+@import './theme.css';
+@import './components.css';
+
+/**
+ * Estilos Globais
+ * Reset e configurações base do projeto
+ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: background var(--transition-base);
+  opacity: 0.4;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  opacity: 0.6;
+}
+
+html,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Aplicar tema ao documento completo */
+html {
+  font-size: 16px;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+/* Links padrão */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* Botões padrão */
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Inputs padrão */
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Focus acessível */
+:focus-visible {
+  outline: var(--outline-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Animações suaves */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

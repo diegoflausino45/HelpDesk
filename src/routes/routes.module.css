@@ -1,7 +1,5 @@
 .content{
-    padding: 2em;
-    /*overflow-y: auto;
-    max-height: 83vh;*/
+    padding: var(--space-lg);
     scrollbar-width: thin;
-    scrollbar-color: #c62828 #f1f1f1;
+    scrollbar-color: var(--color-primary) transparent;
 }

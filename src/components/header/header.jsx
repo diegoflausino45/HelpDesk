@@ -4,6 +4,7 @@ import { FaPlus, FaHeadset } from "react-icons/fa"
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import UserMenu from "./components/userMenu";
+import ThemeToggle from "../themeToggle/themeToggle";
 import CriarChamadoModal from "../../containers/chamados/components/criarChamado/criarChamadoModal";
 
 function Header() {
@@ -50,7 +51,10 @@ function Header() {
             <span>HelpDesk</span>
           </div>
 
-          <UserMenu/>
+          <div className={styles.headerActions}>
+            <ThemeToggle />
+            <UserMenu />
+          </div>
         </div>
       </header>
       <Nav />

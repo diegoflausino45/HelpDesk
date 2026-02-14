@@ -3,11 +3,14 @@
   top: 0;
   left: 0;
   width: 100%;
-  background-color: #c62828;
-  color: white;
-  z-index: 1000;
-  transition: transform 0.3s ease-out;
+  background: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-border);
+  z-index: var(--z-fixed);
+  transition: box-shadow var(--transition-base);
+}
 
+.header:hover {
+  box-shadow: var(--shadow-xs);
 }
 
 .show {
@@ -19,46 +22,47 @@
 }
 
 .containerHeader {
-  background-color: #c1121f; /* vermelho profissional */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75em 3em;
-  color: #fff;
+  padding: var(--space-lg) var(--space-3xl);
+  color: var(--color-text-primary);
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.4em;
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  gap: var(--space-lg);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  text-decoration: none;
 }
 
 .logoIcon {
-  font-size: 1.9rem;
+  font-size: var(--font-size-3xl);
 }
 
 .novoChamado {
-  background-color: #fff;
-  color: #c1121f;
+  background: var(--color-primary);
+  color: var(--color-text-white);
   border: none;
-  padding: 0.5em 1em;
-  border-radius: 6px;
-  font-weight: 600;
+  padding: var(--space-md) var(--space-xl);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
   display: flex;
   align-items: center;
-  gap: 0.5em;
+  gap: var(--space-md);
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all var(--transition-base);
   text-decoration: none;
-    font-size: 1em;
-
+  font-size: var(--font-size-sm);
 }
 
 .novoChamado:hover {
-  background-color: #f5f5f5;
+  background: var(--color-primary-dark);
+  box-shadow: var(--shadow-red);
+  transform: translateY(-1px);
 }
 
 .userWrapper {
@@ -68,111 +72,108 @@
 .user {
   display: flex;
   align-items: center;
-  gap: 0.8em;
+  gap: var(--space-lg);
   cursor: pointer;
   text-decoration: none;
-  color: white;
-
-  /* Estado fechado */
-  width: 56px;
+  color: var(--color-text-secondary);
+  width: 44px;
+  height: 44px;
   overflow: hidden;
-  padding: 0.4em;
-  border-radius: 50px;
-  transition: all 0.35s cubic-bezier(.4,0,.2,1);
+  padding: var(--space-sm);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-base);
+  background: var(--color-bg-secondary);
 }
 
-
-/* Hover expande */
 .user:hover {
-  width: 220px;
-  background: rgba(255, 255, 255, 0.12);
-  padding: 0.4em 0.8em;
+  width: 200px;
+  background: var(--color-bg-secondary);
+  padding: var(--space-sm) var(--space-lg);
+  color: var(--color-text-primary);
 }
 
-/* Avatar */
 .avatar {
-  width: 48px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
-  border: 2px solid rgba(255,255,255,0.4);
+  border: 2px solid var(--color-border);
 }
 
-/* Informações */
 .userInfo {
   display: flex;
   flex-direction: column;
   opacity: 0;
-  transform: translateX(-10px);
-  transition: all 0.3s ease;
+  transform: translateX(-8px);
+  transition: all var(--transition-base);
   white-space: nowrap;
+  pointer-events: none;
 }
 
-/* Chevron */
 .chevron {
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   opacity: 0;
-  transform: translateX(-10px);
-  transition: all 0.3s ease;
+  transform: translateX(-8px);
+  transition: all var(--transition-base);
 }
 
-/* Ao passar o mouse */
 .user:hover .userInfo,
 .user:hover .chevron {
   opacity: 1;
   transform: translateX(0);
 }
 
-/* Nome */
 .userName {
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
 }
 
-
-
-/* Cargo */
 .userRole {
-  font-size: 0.75rem;
-  opacity: 0.8;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
 }
-
 
 .rotate {
-  transform: rotate(180deg);
+  transition: transform var(--transition-base);
 }
-
-/* Dropdown */
 
 .dropdown {
   position: absolute;
   right: 0;
-  top: 55px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  top: calc(100% + var(--space-sm));
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
   min-width: 180px;
-  padding: 0.5em 0;
-  display: flex;
-  flex-direction: column;
+  overflow: hidden;
   z-index: 100;
 }
 
 .dropdown a,
 .dropdown button {
-  padding: 0.7em 1em;
+  display: block;
+  width: 100%;
+  padding: var(--space-md) var(--space-lg);
   text-align: left;
-  background: none;
+  background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  transition: all var(--transition-base);
   text-decoration: none;
-  color: #333;
-  transition: background 0.2s ease;
 }
 
 .dropdown a:hover,
 .dropdown button:hover {
-  background: #f5f5f5;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
 }
