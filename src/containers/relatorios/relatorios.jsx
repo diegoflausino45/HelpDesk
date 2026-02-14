@@ -108,7 +108,7 @@ function Relatorios() {
 
         <div>
           <label>Setor</label>
-          <select value={setor} onChange={e => setSetor(e.target.value)}>
+          <select className={styles.filterSelect} value={setor} onChange={e => setSetor(e.target.value)}>
             <option value="">Todos</option>
             <option>TI</option>
             <option>RH</option>
@@ -118,7 +118,7 @@ function Relatorios() {
 
         <div>
           <label>Responsável</label>
-          <select value={responsavel} onChange={e => setResponsavel(e.target.value)}>
+          <select className={styles.filterSelect} value={responsavel} onChange={e => setResponsavel(e.target.value)}>
             <option value="">Todos</option>
             <option>João</option>
             <option>Maria</option>

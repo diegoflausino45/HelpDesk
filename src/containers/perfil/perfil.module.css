@@ -1,7 +1,9 @@
 .container {
-  padding: var(--space-lg) var(--space-3xl);
-  min-height: 100vh;
-  font-family: var(--font-family);
+  padding: var(--space-3xl);
+  min-height: 100vh;  
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  margin-top: var(--space-lg);
   background: linear-gradient(135deg, var(--color-bg-light) 0%, rgba(102, 126, 234, 0.03) 100%);
 }
 

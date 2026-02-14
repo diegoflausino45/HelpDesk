@@ -272,7 +272,7 @@ const totalItems = chamadosFiltrados.length
       {/* Filtros */}
       <section className={styles.filters}>
               <div className={styles.filters}>
-                  <select onChange={(e) => setStatusFilter(e.target.value)}>
+                  <select className={styles.filterSelect} onChange={(e) => setStatusFilter(e.target.value)}>
                     <option value="">Status</option>
                     <option value="Aberto">Aberto</option>
                     <option value="Em atendimento">Em atendimento</option>
@@ -280,7 +280,7 @@ const totalItems = chamadosFiltrados.length
                   </select>
 
 
-                  <select onChange={(e) => setPriorityFilter(e.target.value)}>
+                  <select className={styles.filterSelect} onChange={(e) => setPriorityFilter(e.target.value)}>
                     <option value="">Prioridade</option>
                     <option value="Alta">Alta</option>
                     <option value="Média">Média</option>

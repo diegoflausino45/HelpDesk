@@ -1,6 +1,9 @@
 .container {
-  padding: var(--space-lg) var(--space-3xl);
-  min-height: 100vh;
+  padding: var(--space-3xl);
+  min-height: 100vh;  
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  margin-top: var(--space-lg);
   background: linear-gradient(135deg, var(--color-bg-light) 0%, rgba(102, 126, 234, 0.03) 100%);
 }
 
@@ -29,7 +32,10 @@
 .sidebarHeader h3 {
   margin: 0;
   font-size: var(--font-size-lg);
-  color: var(--color-text-primary);
+    background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-weight: var(--font-weight-bold);
 }
 
@@ -107,8 +113,10 @@
 .contentHeader h2 {
   margin: 0;
   font-size: var(--font-size-2xl);
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-bold);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;  font-weight: var(--font-weight-bold);
 }
 
 .contentHeader p {

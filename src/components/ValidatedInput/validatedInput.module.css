@@ -29,6 +29,20 @@
   transition: all var(--transition-base);
 }
 
+/* Estilização específica do SELECT */
+.select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23212121' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.5rem;
+}
+
+html.dark .select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23f5f6f7' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+}
+
 .input::placeholder,
 .textarea::placeholder {
   color: var(--color-text-tertiary);
@@ -40,6 +54,13 @@
   outline: none;
   border-color: var(--color-primary);
   box-shadow: var(--outline-focus);
+  background-color: var(--color-bg-primary);
+}
+
+.input:hover,
+.select:hover,
+.textarea:hover {
+  border-color: var(--color-primary);
   background-color: var(--color-bg-primary);
 }
 

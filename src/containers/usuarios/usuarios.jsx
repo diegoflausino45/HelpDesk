@@ -85,14 +85,14 @@ function Usuarios() {
           onChange={e => setBusca(e.target.value)}
         />
 
-        <select value={perfil} onChange={e => setPerfil(e.target.value)}>
+        <select className={styles.filterSelect} value={perfil} onChange={e => setPerfil(e.target.value)}>
           <option value="">Perfil</option>
           <option value="Admin">Admin</option>
           <option value="Técnico">Técnico</option>
           <option value="Usuário">Usuário</option>
         </select>
 
-        <select value={status} onChange={e => setStatus(e.target.value)}>
+        <select className={styles.filterSelect} value={status} onChange={e => setStatus(e.target.value)}>
           <option value="">Status</option>
           <option value="Ativo">Ativo</option>
           <option value="Inativo">Inativo</option>

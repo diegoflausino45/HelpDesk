@@ -1,7 +1,10 @@
 .dashboard {
   padding: var(--space-3xl);
-  min-height: 100vh;
-  background-color: var(--color-bg-light);
+  min-height: 100vh;  
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  margin-top: var(--space-lg);
+  background: linear-gradient(135deg, var(--color-bg-light) 0%, rgba(102, 126, 234, 0.03) 100%);
 }
 
 .kpis {
