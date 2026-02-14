@@ -81,20 +81,21 @@ function Usuarios() {
           type="text"
           placeholder="Buscar por nome ou email"
           value={busca}
+          maxLength="100"
           onChange={e => setBusca(e.target.value)}
         />
 
         <select value={perfil} onChange={e => setPerfil(e.target.value)}>
           <option value="">Perfil</option>
-          <option>Admin</option>
-          <option>Técnico</option>
-          <option>Usuário</option>
+          <option value="Admin">Admin</option>
+          <option value="Técnico">Técnico</option>
+          <option value="Usuário">Usuário</option>
         </select>
 
         <select value={status} onChange={e => setStatus(e.target.value)}>
           <option value="">Status</option>
-          <option>Ativo</option>
-          <option>Inativo</option>
+          <option value="Ativo">Ativo</option>
+          <option value="Inativo">Inativo</option>
         </select>
       </section>
 

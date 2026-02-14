@@ -243,8 +243,8 @@ const chamadosFiltrados = chamados.filter((chamado) => {
 
   const matchSearch =
     !searchTerm ||
-    chamado.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    chamado.id.toString().includes(searchTerm)
+    chamado.titulo.toLowerCase().includes(searchTerm.toLowerCase().trim()) ||
+    chamado.id.toString().includes(searchTerm.trim())
 
   return matchStatus && matchPriority && matchSearch
 })
@@ -293,6 +293,7 @@ const totalItems = chamadosFiltrados.length
                     type="text"
                     placeholder="Buscar por título ou ID"
                     value={searchTerm}
+                    maxLength="100"
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
 
@@ -378,12 +379,12 @@ const totalItems = chamadosFiltrados.length
 
           {viewMode === "grid" && (
               <section className={styles.grid}>
-                  {Object.entries(chamadosPorSetor).map(([setor, lista]) => (
+                  {Object.keys(chamadosPorSetor).map((setor) => (
                       <div key={setor} className={styles.setor}>
                           <h2>{setor}</h2>
 
                           <div className={styles.cardsGrid}>
-                                {chamadosPaginados.map((chamado) => (
+                                {chamados.filter(c => c.setor === setor).slice(startIndex, endIndex).map((chamado) => (
                                     <div
                                     key={chamado.id}
                                     className={styles.card}

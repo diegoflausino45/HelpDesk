@@ -1,7 +1,13 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 0.8em;
+  gap: 1.2em;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
 }
 
 input,
@@ -10,12 +16,40 @@ textarea {
   padding: 0.6em;
   border-radius: 6px;
   border: 1px solid #ddd;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #c62828;
+}
+
+.inputError {
+  border-color: #d32f2f !important;
+  background-color: #ffebee;
+}
+
+.error {
+  color: #d32f2f;
+  font-size: 0.85em;
+  margin-top: -0.3em;
+}
+
+.charCount {
+  color: #9e9e9e;
+  font-size: 0.8em;
+  align-self: flex-end;
+  margin-top: -0.3em;
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.8em;
+  margin-top: 0.8em;
 }
 
 .actions button:first-child {
@@ -24,6 +58,12 @@ textarea {
   border: none;
   padding: 0.5em 1.2em;
   border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.actions button:first-child:hover {
+  background: #b71c1c;
 }
 
 .actions button:last-child {
@@ -31,4 +71,11 @@ textarea {
   border: 1px solid #ccc;
   padding: 0.5em 1.2em;
   border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.actions button:last-child:hover {
+  border-color: #999;
+  background: #fafafa;
 }
