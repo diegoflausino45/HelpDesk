@@ -1,6 +1,6 @@
 import styles from "./routes.module.css"
 //Importação do react-router-dom
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 
 //Importações de Páginas
 import DashBoard from "../containers/dashboard/dashboard"
@@ -15,27 +15,38 @@ import NotFound from "../containers/notFound/notFound"
 import Header from "../components/header/header"
 import ScrollToTop from "../components/scrollToTop/scrolltoTop"
 
-//Definição de Rotas
-function RouterApp(){
-    return(
-        <BrowserRouter>
-        <ScrollToTop/>
-            <Header/>
-                <div className={styles.content}>
-                    <Routes>
-                        <Route path="/" element={<DashBoard/>} />
-                        <Route path="/chamados" element={<Chamados/>}/>
-                        <Route path="/relatorios" element={<Relatorios/>}/>
-                        <Route path="/usuarios" element={<Usuarios/>}/>
-                        <Route path="/configuracoes" element={<Configuracoes/>}/>
-                        <Route path="/perfil" element={<Perfil/>}/>
-                        <Route path="/auth" element={<Auth/>}/>
-                        <Route path="*" element={<NotFound/>}/>
-                    </Routes>
-                </div>
-        </BrowserRouter>
-    )
+//Componente interno para lógica de renderização
+function RouterContent() {
+  const location = useLocation()
+  const isAuthPage = location.pathname === "/auth"
+
+  return (
+    <>
+      <ScrollToTop />
+      {!isAuthPage && <Header />}
+      <div className={`${styles.content} ${isAuthPage ? styles.authContent : ""}`}>
+        <Routes>
+          <Route path="/" element={<DashBoard />} />
+          <Route path="/chamados" element={<Chamados />} />
+          <Route path="/relatorios" element={<Relatorios />} />
+          <Route path="/usuarios" element={<Usuarios />} />
+          <Route path="/configuracoes" element={<Configuracoes />} />
+          <Route path="/perfil" element={<Perfil />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
+    </>
+  )
 }
 
+//Definição de Rotas
+function RouterApp() {
+  return (
+    <BrowserRouter>
+      <RouterContent />
+    </BrowserRouter>
+  )
+}
 
 export default RouterApp

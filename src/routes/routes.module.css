@@ -1,5 +1,19 @@
-.content{
-    padding: var(--space-lg);
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-primary) transparent;
+.content {
+  padding: var(--space-lg);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) transparent;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content > div {
+  width: 100%;
+}
+
+/* Classe para página de auth - sem padding e altura 100vh */
+.authContent {
+  padding: 0 !important;
+  min-height: auto !important;
+  height: 100vh !important;
 }

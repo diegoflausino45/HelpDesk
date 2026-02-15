@@ -1,5 +1,6 @@
 import { useState } from "react"
 import styles from "./auth.module.css"
+import ThemeToggle from "../../components/themeToggle/themeToggle"
 
  function Auth() {
   const [isLogin, setIsLogin] = useState(true)
@@ -11,6 +12,10 @@ import styles from "./auth.module.css"
 
   return (
     <div className={styles.container}>
+      <div className={styles.themeToggleWrapper}>
+        <ThemeToggle />
+      </div>
+      
       {/* LADO ESQUERDO - Branding */}
       <div className={styles.left}>
         <div className={styles.brandContent}>
