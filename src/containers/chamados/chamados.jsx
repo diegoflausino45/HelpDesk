@@ -404,12 +404,21 @@ const totalItems = chamadosFiltrados.length
 
           {viewMode === "grid" && (
               <section className={styles.grid}>
-                  {Object.keys(chamadosPorSetor).map((setor) => (
+                  {/* Agrupar chamados filtrados por setor */}
+                  {Object.entries(
+                    chamadosFiltrados.reduce((acc, chamado) => {
+                      if (!acc[chamado.setor]) {
+                        acc[chamado.setor] = []
+                      }
+                      acc[chamado.setor].push(chamado)
+                      return acc
+                    }, {})
+                  ).map(([setor, chamadosDoSetor]) => (
                       <div key={setor} className={styles.setor}>
                           <h2>{setor}</h2>
 
                           <div className={styles.cardsGrid}>
-                                {chamados.filter(c => c.setor === setor).slice(startIndex, endIndex).map((chamado) => (
+                                {chamadosDoSetor.map((chamado) => (
                                     <div
                                     key={chamado.id}
                                     className={styles.card}
