@@ -63,6 +63,7 @@
   background: var(--color-primary-dark);
   box-shadow: var(--shadow-red);
   transform: translateY(-1px);
+  color: var(--color-text-white);
 }
 
 .userWrapper {
