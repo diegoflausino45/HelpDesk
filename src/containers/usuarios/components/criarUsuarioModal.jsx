@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   validateEmail,
   validateNomeUsuario,
@@ -15,6 +15,19 @@ function CreateUser({ onClose }) {
     status: "Ativo",
   })
   const [erros, setErros] = useState({})
+  const [setoresDisponiveis, setSetoresDisponiveis] = useState([])
+
+  // Carregar setores do localStorage
+  useEffect(() => {
+    const setoresSalvos = localStorage.getItem("setores")
+    if (setoresSalvos) {
+      setSetoresDisponiveis(JSON.parse(setoresSalvos))
+    } else {
+      // Setores padrão se não houver no localStorage
+      const setoresPadrao = ["TI", "Administrativo", "RH", "Financeiro", "Manutenção", "Produção", "Engenharia", "Qualidade", "Direção"]
+      setSetoresDisponiveis(setoresPadrao)
+    }
+  }, [])
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -90,13 +103,17 @@ function CreateUser({ onClose }) {
       </div>
 
       <div className={styles.formGroup}>
-        <input
-          name="setor"
-          placeholder="Setor *"
-          value={form.setor}
+        <select 
+          name="setor" 
+          value={form.setor} 
           onChange={handleChange}
           className={erros.setor ? styles.inputError : ""}
-        />
+        >
+          <option value="">Selecione um setor *</option>
+          {setoresDisponiveis.map((setor) => (
+            <option key={setor} value={setor}>{setor}</option>
+          ))}
+        </select>
         {erros.setor && <span className={styles.error}>{erros.setor}</span>}
       </div>
 

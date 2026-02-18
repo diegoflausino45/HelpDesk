@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   validateEmail,
   validateNomeUsuario,
@@ -9,6 +9,19 @@ import styles from "./usuarioModal.module.css"
 function EditUser({ usuario, usuarioLogado, onClose }) {
   const [form, setForm] = useState(usuario || {})
   const [erros, setErros] = useState({})
+  const [setoresDisponiveis, setSetoresDisponiveis] = useState([])
+
+  // Carregar setores do localStorage
+  useEffect(() => {
+    const setoresSalvos = localStorage.getItem("setores")
+    if (setoresSalvos) {
+      setSetoresDisponiveis(JSON.parse(setoresSalvos))
+    } else {
+      // Setores padrão se não houver no localStorage
+      const setoresPadrao = ["TI", "Administrativo", "RH", "Financeiro", "Manutenção", "Produção", "Engenharia", "Qualidade", "Direção"]
+      setSetoresDisponiveis(setoresPadrao)
+    }
+  }, [])
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -89,13 +102,17 @@ function EditUser({ usuario, usuarioLogado, onClose }) {
       )}
 
       <div className={styles.formGroup}>
-        <input
+        <select
           name="setor"
-          placeholder="Setor *"
           value={form.setor || ""}
           onChange={handleChange}
           className={erros.setor ? styles.inputError : ""}
-        />
+        >
+          <option value="">Selecione um setor *</option>
+          {setoresDisponiveis.map((setor) => (
+            <option key={setor} value={setor}>{setor}</option>
+          ))}
+        </select>
         {erros.setor && <span className={styles.error}>{erros.setor}</span>}
       </div>
 

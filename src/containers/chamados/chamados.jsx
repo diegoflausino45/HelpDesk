@@ -1,8 +1,8 @@
+import { useState, useEffect } from "react"
 import styles from "./chamados.module.css"
 import { Link } from "react-router-dom"
 import CriarChamadoModal from "./components/criarChamado/criarChamadoModal"
 import DetalhesChamadoModal from "./components/detalhesChamado/detalhesChamadoModal"
-import { useState } from "react"
 import { FaEye, FaList, FaThLarge } from "react-icons/fa"
 import Pagination from "../../components/paginacao/paginacao"
 
@@ -14,13 +14,26 @@ function Chamados() {
     const [viewMode, setViewMode] = useState("list")
     const [statusFilter, setStatusFilter] = useState("")
 const [priorityFilter, setPriorityFilter] = useState("")
+const [setorFilter, setSetorFilter] = useState("")
 const [searchTerm, setSearchTerm] = useState("")
+const [setoresDisponiveis, setSetoresDisponiveis] = useState([])
 
 const [currentPage, setCurrentPage] = useState(1)
 const itemsPerPage = 5
 const startIndex = (currentPage - 1) * itemsPerPage
 const endIndex = startIndex + itemsPerPage
 
+// Carregar setores do localStorage
+useEffect(() => {
+  const setoresSalvos = localStorage.getItem("setores")
+  if (setoresSalvos) {
+    setSetoresDisponiveis(JSON.parse(setoresSalvos))
+  } else {
+    // Setores padrão se não houver no localStorage
+    const setoresPadrao = ["TI", "Administrativo", "RH", "Financeiro", "Manutenção", "Produção", "Engenharia", "Qualidade", "Direção"]
+    setSetoresDisponiveis(setoresPadrao)
+  }
+}, [])
 
   const chamados = [
   {
@@ -241,12 +254,15 @@ const chamadosFiltrados = chamados.filter((chamado) => {
   const matchPriority =
     !priorityFilter || chamado.prioridade === priorityFilter
 
+  const matchSetor =
+    !setorFilter || chamado.setor === setorFilter
+
   const matchSearch =
     !searchTerm ||
     chamado.titulo.toLowerCase().includes(searchTerm.toLowerCase().trim()) ||
     chamado.id.toString().includes(searchTerm.trim())
 
-  return matchStatus && matchPriority && matchSearch
+  return matchStatus && matchPriority && matchSetor && matchSearch
 })
 
 const chamadosPaginados = chamadosFiltrados.slice(startIndex, endIndex)
@@ -285,6 +301,13 @@ const totalItems = chamadosFiltrados.length
                     <option value="Alta">Alta</option>
                     <option value="Média">Média</option>
                     <option value="Baixa">Baixa</option>
+                  </select>
+
+                  <select className={styles.filterSelect} onChange={(e) => setSetorFilter(e.target.value)}>
+                    <option value="">Setor</option>
+                    {setoresDisponiveis.map((setor) => (
+                      <option key={setor} value={setor}>{setor}</option>
+                    ))}
                   </select>
 
 
@@ -329,6 +352,7 @@ const totalItems = chamadosFiltrados.length
                     <th>Título</th>
                     <th>Status</th>
                     <th>Prioridade</th>
+                    <th>Setor</th>
                     <th>Responsável</th>
                     <th>Atualizado</th>
                     <th>Ações</th>
@@ -354,6 +378,7 @@ const totalItems = chamadosFiltrados.length
                                 {chamado.prioridade}
                             </span>
                         </td>
+                        <td>{chamado.setor}</td>
                         <td>{chamado.responsavel}</td>
                         <td>{chamado.atualizado}</td>
                         <td>
