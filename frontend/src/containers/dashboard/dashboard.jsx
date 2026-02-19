@@ -1,9 +1,43 @@
+import { useState, useEffect } from "react"
 import styles from "./dashboard.module.css"
 import { FiUsers, FiClock, FiCheckCircle, FiAlertCircle } from "react-icons/fi"
 import StatusChart from "./components/statusChart"
 import PeriodChart from "./components/periodChart"
+import { ticketsAPI } from "../../utils/api"
 
 function Dashboard() {
+  const [tickets, setTickets] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    loadTickets()
+  }, [])
+
+  async function loadTickets() {
+    try {
+      const response = await ticketsAPI.getAll()
+      setTickets(response.data)
+    } catch (err) {
+      setError('Erro ao carregar chamados')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Calcular KPIs
+  const totalTickets = tickets.length
+  const openTickets = tickets.filter(t => t.status === 'open').length
+  const inProgressTickets = tickets.filter(t => t.status === 'in-progress').length
+  const closedTickets = tickets.filter(t => t.status === 'closed').length
+
+  if (loading) {
+    return <div className={styles.loading}>Carregando...</div>
+  }
+
+  if (error) {
+    return <div className={styles.error}>{error}</div>
+  }
   return (
     <main className={styles.dashboard}>
       
@@ -12,7 +46,7 @@ function Dashboard() {
           <FiUsers size={28} />
           <div>
             <span>Total</span>
-            <strong>124</strong>
+            <strong>{totalTickets}</strong>
           </div>
         </div>
 
@@ -20,7 +54,7 @@ function Dashboard() {
           <FiAlertCircle size={28} />
           <div>
             <span>Abertos</span>
-            <strong>18</strong>
+            <strong>{openTickets}</strong>
           </div>
         </div>
 
@@ -28,7 +62,7 @@ function Dashboard() {
           <FiClock size={28} />
           <div>
             <span>Em andamento</span>
-            <strong>32</strong>
+            <strong>{inProgressTickets}</strong>
           </div>
         </div>
 
@@ -36,7 +70,7 @@ function Dashboard() {
           <FiCheckCircle size={28} />
           <div>
             <span>Resolvidos</span>
-            <strong>74</strong>
+            <strong>{closedTickets}</strong>
           </div>
         </div>
       </section>
@@ -65,18 +99,26 @@ function Dashboard() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>#1023</td>
-              <td>Erro no sistema</td>
-              <td>Aberto</td>
-              <td>Alta</td>
-            </tr>
-            <tr>
-              <td>#1022</td>
-              <td>Computador lento</td>
-              <td>Em andamento</td>
-              <td>Média</td>
-            </tr>
+            {tickets.slice(0, 5).map(ticket => (
+              <tr key={ticket.id}>
+                <td>#{ticket.id}</td>
+                <td>{ticket.title}</td>
+                <td>
+                  <span className={`${styles.status} ${styles[ticket.status]}`}>
+                    {ticket.status === 'open' ? 'Aberto' :
+                     ticket.status === 'in-progress' ? 'Em andamento' :
+                     ticket.status === 'closed' ? 'Fechado' : ticket.status}
+                  </span>
+                </td>
+                <td>
+                  <span className={`${styles.priority} ${styles[ticket.priority]}`}>
+                    {ticket.priority === 'low' ? 'Baixa' :
+                     ticket.priority === 'medium' ? 'Média' :
+                     ticket.priority === 'high' ? 'Alta' : ticket.priority}
+                  </span>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </section>

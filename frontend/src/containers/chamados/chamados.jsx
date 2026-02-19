@@ -5,6 +5,7 @@ import CriarChamadoModal from "./components/criarChamado/criarChamadoModal"
 import DetalhesChamadoModal from "./components/detalhesChamado/detalhesChamadoModal"
 import { FaEye, FaList, FaThLarge } from "react-icons/fa"
 import Pagination from "../../components/paginacao/paginacao"
+import { ticketsAPI } from "../../utils/api"
 
 
 function Chamados() {
@@ -13,261 +14,75 @@ function Chamados() {
     const [selectedChamado, setSelectedChamado] = useState(null)
     const [viewMode, setViewMode] = useState("list")
     const [statusFilter, setStatusFilter] = useState("")
-const [priorityFilter, setPriorityFilter] = useState("")
-const [setorFilter, setSetorFilter] = useState("")
-const [searchTerm, setSearchTerm] = useState("")
-const [setoresDisponiveis, setSetoresDisponiveis] = useState([])
+    const [priorityFilter, setPriorityFilter] = useState("")
+    const [setorFilter, setSetorFilter] = useState("")
+    const [searchTerm, setSearchTerm] = useState("")
+    const [setoresDisponiveis, setSetoresDisponiveis] = useState([])
+    const [chamados, setChamados] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState('')
 
-const [currentPage, setCurrentPage] = useState(1)
-const itemsPerPage = 5
-const startIndex = (currentPage - 1) * itemsPerPage
-const endIndex = startIndex + itemsPerPage
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 5
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const endIndex = startIndex + itemsPerPage
 
-// Carregar setores do localStorage
-useEffect(() => {
-  const setoresSalvos = localStorage.getItem("setores")
-  if (setoresSalvos) {
-    setSetoresDisponiveis(JSON.parse(setoresSalvos))
-  } else {
-    // Setores padrão se não houver no localStorage
-    const setoresPadrao = ["TI", "Administrativo", "RH", "Financeiro", "Manutenção", "Produção", "Engenharia", "Qualidade", "Direção"]
-    setSetoresDisponiveis(setoresPadrao)
+    // Carregar chamados da API
+    useEffect(() => {
+      loadChamados()
+    }, [])
+
+    async function loadChamados() {
+      try {
+        const response = await ticketsAPI.getAll()
+        setChamados(response.data)
+      } catch (err) {
+        setError('Erro ao carregar chamados')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    // Recarregar chamados após criar um novo
+    function handleChamadoCreated() {
+      loadChamados()
+      setOpenCreate(false)
+    }
+
+    // Carregar setores do localStorage
+    useEffect(() => {
+      const setoresSalvos = localStorage.getItem("setores")
+      if (setoresSalvos) {
+        setSetoresDisponiveis(JSON.parse(setoresSalvos))
+      } else {
+        // Setores padrão se não houver no localStorage
+        const setoresPadrao = ["TI", "Administrativo", "RH", "Financeiro", "Manutenção", "Produção", "Engenharia", "Qualidade", "Direção"]
+        setSetoresDisponiveis(setoresPadrao)
+      }
+    }, [])
+
+  // Filtrar chamados
+  const filteredChamados = chamados.filter(chamado => {
+    const matchesStatus = !statusFilter || chamado.status === statusFilter
+    const matchesPriority = !priorityFilter || chamado.priority === priorityFilter
+    const matchesSearch = !searchTerm ||
+      chamado.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      chamado.description?.toLowerCase().includes(searchTerm.toLowerCase())
+
+    return matchesStatus && matchesPriority && matchesSearch
+  })
+
+  const paginatedChamados = filteredChamados.slice(startIndex, endIndex)
+  const totalPages = Math.ceil(filteredChamados.length / itemsPerPage)
+
+  if (loading) {
+    return <div className={styles.loading}>Carregando chamados...</div>
   }
-}, [])
 
-  const chamados = [
-  {
-    id: 1024,
-    titulo: "Erro ao acessar o sistema",
-    status: "Aberto",
-    prioridade: "Alta",
-    responsavel: "João",
-    atualizado: "Hoje 14:22",
-    setor: "TI",
-  },
-  {
-    id: 1025,
-    titulo: "Email não sincroniza",
-    status: "Em atendimento",
-    prioridade: "Média",
-    responsavel: "Maria",
-    atualizado: "Ontem 16:10",
-    setor: "Administrativo",
-  },
-   {
-    id: 1026,
-    titulo: "Erro ao acessar o sistema",
-    status: "Aberto",
-    prioridade: "Alta",
-    responsavel: "João",
-    atualizado: "Hoje 14:22",
-    setor: "TI",
-  },
-  {
-    id: 1027,
-    titulo: "Email não sincroniza",
-    status: "Em atendimento",
-    prioridade: "Média",
-    responsavel: "Maria",
-    atualizado: "Ontem 16:10",
-    setor: "Administrativo",
-  },
-   {
-    id: 1028,
-    titulo: "Erro ao acessar o sistema",
-    status: "Aberto",
-    prioridade: "Alta",
-    responsavel: "João",
-    atualizado: "Hoje 14:22",
-    setor: "TI",
-  },
-  {
-    id: 1029,
-    titulo: "Email não sincroniza",
-    status: "Em atendimento",
-    prioridade: "Média",
-    responsavel: "Maria",
-    atualizado: "Ontem 16:10",
-    setor: "Administrativo",
-  },
-   {
-    id: 1030,
-    titulo: "Erro ao acessar o sistema",
-    status: "Aberto",
-    prioridade: "Alta",
-    responsavel: "João",
-    atualizado: "Hoje 14:22",
-    setor: "TI",
-  },
-  {
-    id: 1031,
-    titulo: "Email não sincroniza",
-    status: "Em atendimento",
-    prioridade: "Média",
-    responsavel: "Maria",
-    atualizado: "Ontem 16:10",
-    setor: "Manutenção",
-  },
-   {
-    id: 1032,
-    titulo: "Erro ao acessar o sistema",
-    status: "Aberto",
-    prioridade: "Alta",
-    responsavel: "João",
-    atualizado: "Hoje 14:22",
-    setor: "Manutenção",
-  },
-  {
-    id: 1033,
-    titulo: "Email não sincroniza",
-    status: "Em atendimento",
-    prioridade: "Média",
-    responsavel: "Maria",
-    atualizado: "Ontem 16:10",
-    setor: "Manutenção",
-  },
-    {
-    id: 1034,
-    titulo: "Email não sincroniza",
-    status: "Em atendimento",
-    prioridade: "Média",
-    responsavel: "Maria",
-    atualizado: "Ontem 16:10",
-    setor: "Direção",
-  },
-   {
-    id: 1035,
-    titulo: "Erro ao acessar o sistema",
-    status: "Aberto",
-    prioridade: "Alta",
-    responsavel: "João",
-    atualizado: "Hoje 14:22",
-    setor: "Manutenção",
-  },
-  {
-    id: 1036,
-    titulo: "Email não sincroniza",
-    status: "Em atendimento",
-    prioridade: "Média",
-    responsavel: "Maria",
-    atualizado: "Ontem 16:10",
-    setor: "Manutenção",
-  },
-    {
-    id: 1037,
-    titulo: "Email não sincroniza",
-    status: "Em atendimento",
-    prioridade: "Média",
-    responsavel: "Maria",
-    atualizado: "Ontem 16:10",
-    setor: "Produção",
-  },
-   {
-    id: 1038,
-    titulo: "Erro ao acessar o sistema",
-    status: "Aberto",
-    prioridade: "Alta",
-    responsavel: "João",
-    atualizado: "Hoje 14:22",
-    setor: "Produção",
-  },
-  {
-    id: 1039,
-    titulo: "Email não sincroniza",
-    status: "Em atendimento",
-    prioridade: "Média",
-    responsavel: "Maria",
-    atualizado: "Ontem 16:10",
-    setor: "Produção",
-  },
-    {
-    id: 1040,
-    titulo: "Email não sincroniza",
-    status: "Em atendimento",
-    prioridade: "Média",
-    responsavel: "Maria",
-    atualizado: "Ontem 16:10",
-    setor: "Engenharia",
-  },
-   {
-    id: 1041,
-    titulo: "Erro ao acessar o sistema",
-    status: "Aberto",
-    prioridade: "Alta",
-    responsavel: "João",
-    atualizado: "Hoje 14:22",
-    setor: "Engenharia",
-  },
-  {
-    id: 1042,
-    titulo: "Email não sincroniza",
-    status: "Em atendimento",
-    prioridade: "Média",
-    responsavel: "Maria",
-    atualizado: "Ontem 16:10",
-    setor: "Engenharia",
-  },
-      {
-    id: 1043,
-    titulo: "Email não sincroniza",
-    status: "Em atendimento",
-    prioridade: "Média",
-    responsavel: "Maria",
-    atualizado: "Ontem 16:10",
-    setor: "Qualidade",
-  },
-   {
-    id: 1044,
-    titulo: "Erro ao acessar o sistema",
-    status: "Aberto",
-    prioridade: "Alta",
-    responsavel: "João",
-    atualizado: "Hoje 14:22",
-    setor: "Qualidade",
-  },
-  {
-    id: 1045,
-    titulo: "Email não sincroniza",
-    status: "Em atendimento",
-    prioridade: "Média",
-    responsavel: "Maria",
-    atualizado: "Ontem 16:10",
-    setor: "Qualidade",
-  },
-]
-
-
-
-
-const chamadosPorSetor = chamados.reduce((acc, chamado) => {
-  if (!acc[chamado.setor]) {
-    acc[chamado.setor] = []
+  if (error) {
+    return <div className={styles.error}>{error}</div>
   }
-  acc[chamado.setor].push(chamado)
-  return acc
-}, {})
-
-const chamadosFiltrados = chamados.filter((chamado) => {
-  const matchStatus =
-    !statusFilter || chamado.status === statusFilter
-
-  const matchPriority =
-    !priorityFilter || chamado.prioridade === priorityFilter
-
-  const matchSetor =
-    !setorFilter || chamado.setor === setorFilter
-
-  const matchSearch =
-    !searchTerm ||
-    chamado.titulo.toLowerCase().includes(searchTerm.toLowerCase().trim()) ||
-    chamado.id.toString().includes(searchTerm.trim())
-
-  return matchStatus && matchPriority && matchSetor && matchSearch
-})
-
-const chamadosPaginados = chamadosFiltrados.slice(startIndex, endIndex)
-const totalItems = chamadosFiltrados.length
-
+  
   return (
     <main className={styles.container}>
       {/* Header da página */}
@@ -360,27 +175,30 @@ const totalItems = chamadosFiltrados.length
             </thead>
 
             <tbody>
-                {chamadosPaginados.map((chamado) => (
+                {paginatedChamados.map((chamado) => (
                     <tr key={chamado.id}>
                         <td>#{chamado.id}</td>
-                        <td>{chamado.titulo}</td>
+                        <td>{chamado.title}</td>
                         <td>
                             <span
-                                className={`${styles.badge} ${styles[chamado.status.replace(" ", "").toLowerCase()]}`}
+                                className={`${styles.badge} ${styles[chamado.status.replace("-", "").toLowerCase()]}`}
                             >
-                                {chamado.status}
+                                {chamado.status === 'open' ? 'Aberto' :
+                                 chamado.status === 'in-progress' ? 'Em andamento' :
+                                 chamado.status === 'closed' ? 'Fechado' : chamado.status}
                             </span>
                         </td>
                         <td>
                             <span
-                                className={`${styles.badge} ${styles[chamado.prioridade.toLowerCase()]}`}
+                                className={`${styles.badge} ${styles[chamado.priority]}`}
                             >
-                                {chamado.prioridade}
+                                {chamado.priority === 'low' ? 'Baixa' :
+                                 chamado.priority === 'medium' ? 'Média' :
+                                 chamado.priority === 'high' ? 'Alta' : chamado.priority}
                             </span>
                         </td>
-                        <td>{chamado.setor}</td>
-                        <td>{chamado.responsavel}</td>
-                        <td>{chamado.atualizado}</td>
+                        <td>{chamado.createdBy?.name || 'N/A'}</td>
+                        <td>{new Date(chamado.createdAt).toLocaleDateString('pt-BR')}</td>
                         <td>
                             <Link onClick={() => {
                                 setSelectedChamado(chamado)
@@ -395,7 +213,7 @@ const totalItems = chamadosFiltrados.length
 
     {viewMode === "list" && (
            <Pagination
-            totalItems={totalItems}
+            totalItems={filteredChamados.length}
             itemsPerPage={itemsPerPage}
             currentPage={currentPage}
             onPageChange={setCurrentPage}
@@ -404,21 +222,8 @@ const totalItems = chamadosFiltrados.length
 
           {viewMode === "grid" && (
               <section className={styles.grid}>
-                  {/* Agrupar chamados filtrados por setor */}
-                  {Object.entries(
-                    chamadosFiltrados.reduce((acc, chamado) => {
-                      if (!acc[chamado.setor]) {
-                        acc[chamado.setor] = []
-                      }
-                      acc[chamado.setor].push(chamado)
-                      return acc
-                    }, {})
-                  ).map(([setor, chamadosDoSetor]) => (
-                      <div key={setor} className={styles.setor}>
-                          <h2>{setor}</h2>
-
-                          <div className={styles.cardsGrid}>
-                                {chamadosDoSetor.map((chamado) => (
+                  <div className={styles.cardsGrid}>
+                        {paginatedChamados.map((chamado) => (
                                     <div
                                     key={chamado.id}
                                     className={styles.card}
@@ -433,60 +238,71 @@ const totalItems = chamadosFiltrados.length
 
                                         <span
                                         className={`${styles.badge} ${styles[chamado.status
-                                            .replace(" ", "")
+                                            .replace("-", "")
                                             .toLowerCase()]}`}
                                         >
-                                        {chamado.status}
+                                        {chamado.status === 'open' ? 'Aberto' :
+                                         chamado.status === 'in-progress' ? 'Em andamento' :
+                                         chamado.status === 'closed' ? 'Fechado' : chamado.status}
                                         </span>
                                     </div>
 
                                     {/* Título */}
-                                    <h3 className={styles.cardTitle}>{chamado.titulo}</h3>
+                                    <h3 className={styles.cardTitle}>{chamado.title}</h3>
 
                                     {/* Infos */}
                                     <div className={styles.cardInfo}>
                                         <div>
                                         <strong>Prioridade</strong>
                                         <span
-                                            className={`${styles.priority} ${styles[chamado.prioridade.toLowerCase()]}`}
+                                            className={`${styles.priority} ${styles[chamado.priority]}`}
                                         >
-                                            {chamado.prioridade}
+                                            {chamado.priority === 'low' ? 'Baixa' :
+                                             chamado.priority === 'medium' ? 'Média' :
+                                             chamado.priority === 'high' ? 'Alta' : chamado.priority}
                                         </span>
                                         </div>
 
                                         <div>
-                                        <strong>Responsável</strong>
-                                        <span>{chamado.responsavel}</span>
+                                        <strong>Criado por</strong>
+                                        <span>{chamado.createdBy?.name || 'N/A'}</span>
                                         </div>
                                     </div>
 
                                     {/* Footer */}
                                     <div className={styles.cardFooter}>
                                         <span className={styles.update}>
-                                        Atualizado: {chamado.atualizado}
+                                        Criado: {new Date(chamado.createdAt).toLocaleDateString('pt-BR')}
                                         </span>
 
-                                        <button className={styles.viewBtn}>Ver detalhes</button>
+                                        <button
+                                          className={styles.viewBtn}
+                                          onClick={() => {
+                                            setSelectedChamado(chamado)
+                                            setOpenDetails(true)
+                                          }}
+                                        >
+                                          Ver detalhes
+                                        </button>
                                     </div>
                                     </div>
                                 ))}
-                                </div>
-
-                      </div>
-                  ))}
-              </section>
-          )}
+                            </div>
+                          </section>
+                      )}
 
 
         <CriarChamadoModal
             isOpen={openCreate}
             onClose={() => setOpenCreate(false)}
+            onCreated={handleChamadoCreated}
         />
 
         <DetalhesChamadoModal
             isOpen={openDetails}
             onClose={() => setOpenDetails(false)}
             chamado={selectedChamado}
+            onUpdated={loadChamados}
         />
 
        

@@ -202,3 +202,13 @@
     transform: translateY(0);
   }
 }
+
+.error {
+  background: #fee;
+  color: #c33;
+  padding: var(--space-md);
+  border-radius: var(--border-radius);
+  border: 1px solid #fcc;
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-sm);
+}

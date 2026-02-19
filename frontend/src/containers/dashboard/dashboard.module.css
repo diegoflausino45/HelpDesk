@@ -154,3 +154,69 @@ tr:hover {
     padding: var(--space-lg);
   }
 }
+
+/* Status badges */
+.status {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+}
+
+.status.open {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.status.in-progress {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.status.closed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+/* Priority badges */
+.priority {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.priority.low {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.priority.medium {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.priority.high {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Loading and error states */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.error {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: var(--space-lg);
+  border-radius: var(--border-radius);
+  text-align: center;
+  margin: var(--space-xl) 0;
+}

@@ -5,14 +5,17 @@ import {
   validateDescricao,
   validateRequired,
 } from "../../../../utils/validations"
+import { ticketsAPI } from "../../../../utils/api"
+import toast from 'react-hot-toast'
 import styles from "./criarChamadoModal.module.css"
 
-function CriarChamadoModal({ isOpen, onClose }) {
+function CriarChamadoModal({ isOpen, onClose, onCreated }) {
   const [titulo, setTitulo] = useState("")
   const [descricao, setDescricao] = useState("")
   const [categoria, setCategoria] = useState("")
-  const [prioridade, setPrioridade] = useState("Média")
+  const [prioridade, setPrioridade] = useState("medium")
   const [erros, setErros] = useState({})
+  const [loading, setLoading] = useState(false)
 
   function handleSubmit(e) {
     e.preventDefault()
@@ -42,20 +45,38 @@ function CriarChamadoModal({ isOpen, onClose }) {
       return
     }
 
-    console.log({
-      titulo,
-      descricao,
-      categoria,
-      prioridade,
-      status: "Aberto",
-    })
+    // Enviar para API
+    createTicket()
+  }
 
-    onClose()
-    setTitulo("")
-    setDescricao("")
-    setCategoria("")
-    setPrioridade("Média")
-    setErros({})
+  async function createTicket() {
+    setLoading(true)
+    try {
+      await ticketsAPI.create({
+        title: titulo,
+        description: descricao,
+        priority: prioridade,
+      })
+
+      toast.success('Chamado criado com sucesso')
+
+      // Limpar formulário
+      setTitulo("")
+      setDescricao("")
+      setCategoria("")
+      setPrioridade("medium")
+      setErros({})
+
+      // Fechar modal e notificar pai
+      onClose()
+      if (onCreated) onCreated()
+    } catch (err) {
+      const message = err.response?.data?.error || 'Erro ao criar chamado'
+      setErros({ geral: message })
+      toast.error(message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -93,9 +114,9 @@ function CriarChamadoModal({ isOpen, onClose }) {
             value={prioridade}
             onChange={(e) => setPrioridade(e.target.value)}
           >
-            <option>Alta</option>
-            <option>Média</option>
-            <option>Baixa</option>
+            <option value="high">Alta</option>
+            <option value="medium">Média</option>
+            <option value="low">Baixa</option>
           </select>
         </div>
 
@@ -115,9 +136,17 @@ function CriarChamadoModal({ isOpen, onClose }) {
           )}
         </div>
 
+        {erros.geral && (
+          <div className={styles.error}>
+            {erros.geral}
+          </div>
+        )}
+
         <div className={styles.actions}>
-          <button type="submit">Criar</button>
-          <button type="button" onClick={onClose}>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Criando...' : 'Criar'}
+          </button>
+          <button type="button" onClick={onClose} disabled={loading}>
             Cancelar
           </button>
         </div>

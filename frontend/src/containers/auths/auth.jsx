@@ -1,13 +1,83 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import styles from "./auth.module.css"
 import ThemeToggle from "../../components/themeToggle/themeToggle"
+import { authAPI } from "../../utils/api"
+import toast from "react-hot-toast"
 
- function Auth() {
+function Auth() {
   const [isLogin, setIsLogin] = useState(true)
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
 
-  function handleSubmit(e) {
+  function handleInputChange(e) {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault()
-    console.log(isLogin ? "Login..." : "Cadastro...")
+    setError('')
+    setLoading(true)
+
+    try {
+      if (isLogin) {
+        // Login
+        const response = await authAPI.login({
+          email: formData.email,
+          password: formData.password
+        })
+
+        // Salvar token e dados do usuário
+        localStorage.setItem('token', response.data.token)
+        localStorage.setItem('user', JSON.stringify(response.data.user))
+
+        toast.success('Login realizado')
+
+        // Redirecionar para dashboard
+        navigate('/')
+      } else {
+        // Registro
+        if (formData.password !== formData.confirmPassword) {
+          setError('As senhas não coincidem')
+          return
+        }
+
+        const response = await authAPI.register({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password
+        })
+
+        // Após registro, fazer login automático
+        const loginResponse = await authAPI.login({
+          email: formData.email,
+          password: formData.password
+        })
+
+        localStorage.setItem('token', loginResponse.data.token)
+        localStorage.setItem('user', JSON.stringify(loginResponse.data.user))
+
+        toast.success('Conta criada e logado')
+
+        navigate('/')
+      }
+    } catch (err) {
+      const message = err.response?.data?.error || 'Erro ao processar solicitação'
+      setError(message)
+      toast.error(message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -37,24 +107,58 @@ import ThemeToggle from "../../components/themeToggle/themeToggle"
             {!isLogin && (
               <div className={styles.inputGroup}>
                 <label>Nome completo</label>
-                <input type="text" placeholder="Digite seu nome" />
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Digite seu nome"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required={!isLogin}
+                />
               </div>
             )}
 
             <div className={styles.inputGroup}>
               <label>Email corporativo</label>
-              <input type="email" placeholder="seu@email.com" />
+              <input
+                type="email"
+                name="email"
+                placeholder="seu@email.com"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+              />
             </div>
 
             <div className={styles.inputGroup}>
               <label>Senha</label>
-              <input type="password" placeholder="••••••••" />
+              <input
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+              />
             </div>
 
             {!isLogin && (
               <div className={styles.inputGroup}>
                 <label>Confirmar senha</label>
-                <input type="password" placeholder="••••••••" />
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="••••••••"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  required={!isLogin}
+                />
+              </div>
+            )}
+
+            {error && (
+              <div className={styles.error}>
+                {error}
               </div>
             )}
 
@@ -70,8 +174,8 @@ import ThemeToggle from "../../components/themeToggle/themeToggle"
               </div>
             )}
 
-            <button className={styles.primaryBtn}>
-              {isLogin ? "Entrar" : "Criar Conta"}
+            <button className={styles.primaryBtn} disabled={loading}>
+              {loading ? 'Processando...' : (isLogin ? "Entrar" : "Criar Conta")}
             </button>
 
             <div className={styles.switch}>
