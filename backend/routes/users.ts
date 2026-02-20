@@ -6,11 +6,54 @@ import { authenticate, authorize } from '../middlewares/auth.js';
 
 const router = express.Router();
 
+// Create user (admin only)
+router.post('/', authenticate, authorize(['admin']), [
+  body('name').notEmpty().withMessage('Name is required'),
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { name, email, password, role, sectorId } = req.body;
+
+  try {
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await prisma.user.create({
+      data: { 
+        name, 
+        email, 
+        password: hashedPassword, 
+        role: role || 'user',
+        sectorId: sectorId ? parseInt(sectorId) : null
+      },
+      select: { id: true, name: true, email: true, role: true },
+    });
+    res.status(201).json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // Get all users (admin only)
 router.get('/', authenticate, authorize(['admin']), async (req, res) => {
   try {
     const users = await prisma.user.findMany({
-      select: { id: true, name: true, email: true, role: true, createdAt: true },
+      select: { 
+        id: true, 
+        name: true, 
+        email: true, 
+        role: true, 
+        createdAt: true,
+        sector: { select: { name: true } }
+      },
     });
     res.json(users);
   } catch (error) {

@@ -43,8 +43,15 @@ export const authAPI = {
 export const usersAPI = {
   getAll: () => api.get('/users'),
   getById: (id) => api.get(`/users/${id}`),
+  create: (data) => api.post('/users', data),
   update: (id, data) => api.put(`/users/${id}`, data),
   delete: (id) => api.delete(`/users/${id}`),
+};
+
+// Funções de API para Setores
+export const sectorsAPI = {
+  getAll: () => api.get('/sectors'),
+  create: (data) => api.post('/sectors', data),
 };
 
 // Funções de API para Chamados

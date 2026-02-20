@@ -18,7 +18,7 @@ router.post('/register', [
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { name, email, password } = req.body;
+  const { name, email, password, sectorId } = req.body;
 
   try {
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -28,7 +28,7 @@ router.post('/register', [
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
-      data: { name, email, password: hashedPassword },
+      data: { name, email, password: hashedPassword, sectorId: sectorId ? parseInt(sectorId) : null },
     });
 
     const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET);

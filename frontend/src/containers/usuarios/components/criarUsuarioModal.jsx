@@ -4,12 +4,14 @@ import {
   validateNomeUsuario,
   validateSetor,
 } from "../../../utils/validations"
+import { sectorsAPI } from "../../../utils/api"
 import styles from "./usuarioModal.module.css"
 
-function CreateUser({ onClose }) {
+function CreateUser({ onClose, onCreate }) {
   const [form, setForm] = useState({
     nome: "",
     email: "",
+    senha: "",
     perfil: "Usuário",
     setor: "",
     status: "Ativo",
@@ -17,16 +19,17 @@ function CreateUser({ onClose }) {
   const [erros, setErros] = useState({})
   const [setoresDisponiveis, setSetoresDisponiveis] = useState([])
 
-  // Carregar setores do localStorage
+  // Carregar setores da API
   useEffect(() => {
-    const setoresSalvos = localStorage.getItem("setores")
-    if (setoresSalvos) {
-      setSetoresDisponiveis(JSON.parse(setoresSalvos))
-    } else {
-      // Setores padrão se não houver no localStorage
-      const setoresPadrao = ["TI", "Administrativo", "RH", "Financeiro", "Manutenção", "Produção", "Engenharia", "Qualidade", "Direção"]
-      setSetoresDisponiveis(setoresPadrao)
+    const fetchSetores = async () => {
+      try {
+        const response = await sectorsAPI.getAll()
+        setSetoresDisponiveis(response.data)
+      } catch (error) {
+        console.error("Erro ao carregar setores:", error)
+      }
     }
+    fetchSetores()
   }, [])
 
   function handleChange(e) {
@@ -53,6 +56,10 @@ function CreateUser({ onClose }) {
       errosValidacao.email = validacaoEmail.error
     }
 
+    if (!form.senha || form.senha.length < 6) {
+      errosValidacao.senha = "Senha deve ter no mínimo 6 caracteres"
+    }
+
     const validacaoSetor = validateSetor(form.setor)
     if (!validacaoSetor.isValid) {
       errosValidacao.setor = validacaoSetor.error
@@ -65,6 +72,7 @@ function CreateUser({ onClose }) {
     }
 
     console.log("Criar usuário:", form)
+    onCreate(form)
     onClose()
   }
 
@@ -95,6 +103,19 @@ function CreateUser({ onClose }) {
       </div>
 
       <div className={styles.formGroup}>
+        <input
+          name="senha"
+          type="password"
+          placeholder="Senha *"
+          value={form.senha}
+          onChange={handleChange}
+          autoComplete="current-password"
+          className={erros.senha ? styles.inputError : ""}
+        />
+        {erros.senha && <span className={styles.error}>{erros.senha}</span>}
+      </div>
+
+      <div className={styles.formGroup}>
         <select name="perfil" value={form.perfil} onChange={handleChange}>
           <option value="Admin">Admin</option>
           <option value="Técnico">Técnico</option>
@@ -111,7 +132,7 @@ function CreateUser({ onClose }) {
         >
           <option value="">Selecione um setor *</option>
           {setoresDisponiveis.map((setor) => (
-            <option key={setor} value={setor}>{setor}</option>
+            <option key={setor.id} value={setor.id}>{setor.name}</option>
           ))}
         </select>
         {erros.setor && <span className={styles.error}>{erros.setor}</span>}
