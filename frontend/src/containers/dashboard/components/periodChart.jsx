@@ -7,15 +7,7 @@ import {
   ResponsiveContainer
 } from "recharts"
 
-const data = [
-  { dia: "Seg", chamados: 12 },
-  { dia: "Ter", chamados: 19 },
-  { dia: "Qua", chamados: 7 },
-  { dia: "Qui", chamados: 22 },
-  { dia: "Sex", chamados: 15 }
-]
-
-function PeriodChart() {
+function PeriodChart({data}) {
   return (
     <ResponsiveContainer width="100%" height={250}>
       <LineChart data={data}>

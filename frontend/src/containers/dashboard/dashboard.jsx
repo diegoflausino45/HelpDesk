@@ -25,6 +25,42 @@ function Dashboard() {
     }
   }
 
+// Base: Segunda a Sábado
+const diasSemana = [
+  { dia: "Seg", chamados: 0 },
+  { dia: "Ter", chamados: 0 },
+  { dia: "Qua", chamados: 0 },
+  { dia: "Qui", chamados: 0 },
+  { dia: "Sex", chamados: 0 },
+  { dia: "Sab", chamados: 0 }
+]
+
+// Clonar array base
+const chamadosPorDia = diasSemana.map(d => ({ ...d }))
+
+const hoje = new Date()
+
+// Início da semana (segunda-feira)
+const inicioSemana = new Date(hoje)
+const diaAtual = hoje.getDay()
+
+// Ajuste para começar na segunda
+const diferencaParaSegunda = diaAtual === 0 ? 6 : diaAtual - 1
+inicioSemana.setDate(hoje.getDate() - diferencaParaSegunda)
+inicioSemana.setHours(0, 0, 0, 0)
+
+tickets.forEach(ticket => {
+  const dataTicket = new Date(ticket.createdAt)
+
+  if (dataTicket >= inicioSemana) {
+    const dia = dataTicket.getDay()
+
+    // Ignorar domingo (0)
+    if (dia >= 1 && dia <= 6) {
+      chamadosPorDia[dia - 1].chamados += 1
+    }
+  }
+})
   // Calcular KPIs
   const totalTickets = tickets.length
   const openTickets = tickets.filter(t => t.status === 'open').length
@@ -78,12 +114,16 @@ function Dashboard() {
       <section className={styles.content}>
           <div className={styles.box}>
               <h3>Chamados por Status</h3>
-              <StatusChart />
+              <StatusChart 
+                open={openTickets}
+                inProgress={inProgressTickets}              
+                isClosed={closedTickets}
+              />
           </div>
 
           <div className={styles.box}>
               <h3>Chamados por Período</h3>
-              <PeriodChart />
+              <PeriodChart data={chamadosPorDia}/>
           </div>
       </section>
 

@@ -7,14 +7,17 @@ import {
   ResponsiveContainer
 } from "recharts"
 
-const data = [
-  { status: "Abertos", total: 18 },
-  { status: "Em andamento", total: 32 },
-  { status: "Resolvidos", total: 74 },
-  { status: "Atrasados", total: 5 }
+
+
+function StatusChart({open, inProgress, isClosed}) {
+
+  const data = [
+  { status: "Abertos", total: open },
+  { status: "Em andamento", total: inProgress },
+  { status: "Resolvidos", total: isClosed },
+  { status: "Atrasados", total: 1 }
 ]
 
-function StatusChart() {
   return (
     <ResponsiveContainer width="100%" height={250}>
       <BarChart data={data}>
