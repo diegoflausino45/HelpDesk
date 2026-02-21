@@ -65,11 +65,12 @@ function Chamados() {
   const filteredChamados = chamados.filter(chamado => {
     const matchesStatus = !statusFilter || chamado.status === statusFilter
     const matchesPriority = !priorityFilter || chamado.priority === priorityFilter
+    const matchesSetor = !setorFilter || chamado.sector === setorFilter
     const matchesSearch = !searchTerm ||
       chamado.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      chamado.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      chamado.id == Number(searchTerm)
 
-    return matchesStatus && matchesPriority && matchesSearch
+    return matchesStatus && matchesPriority && matchesSearch && matchesSetor
   })
 
   const paginatedChamados = filteredChamados.slice(startIndex, endIndex)
@@ -103,19 +104,24 @@ function Chamados() {
       {/* Filtros */}
       <section className={styles.filters}>
               <div className={styles.filters}>
-                  <select className={styles.filterSelect} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <select
+                    className={styles.filterSelect}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                  >
                     <option value="">Status</option>
-                    <option value="Aberto">Aberto</option>
-                    <option value="Em atendimento">Em atendimento</option>
-                    <option value="Resolvido">Resolvido</option>
+                    <option value="open">Aberto</option>
+                    <option value="in-progress">Em atendimento</option>
+                    <option value="closed">Resolvido</option>
                   </select>
 
-
-                  <select className={styles.filterSelect} onChange={(e) => setPriorityFilter(e.target.value)}>
+                  <select
+                    className={styles.filterSelect}
+                    onChange={(e) => setPriorityFilter(e.target.value)}
+                  >
                     <option value="">Prioridade</option>
-                    <option value="Alta">Alta</option>
-                    <option value="Média">Média</option>
-                    <option value="Baixa">Baixa</option>
+                    <option value="high">Alta</option>
+                    <option value="medium">Média</option>
+                    <option value="low">Baixa</option>
                   </select>
 
                   <select className={styles.filterSelect} onChange={(e) => setSetorFilter(e.target.value)}>
