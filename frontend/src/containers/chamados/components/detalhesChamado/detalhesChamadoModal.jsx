@@ -97,7 +97,8 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated }) {
         <p>{ticket.description}</p>
 
         <div className={styles.meta}>
-          <span>Status:
+          <span className={styles.selectDiv}>
+            <span>Status:</span>
             <select
               value={ticket.status}
               onChange={(e) => handleStatusChange(e.target.value)}

@@ -74,6 +74,12 @@ tickets.forEach(ticket => {
   if (error) {
     return <div className={styles.error}>{error}</div>
   }
+
+  const ultimosChamados = [...tickets]
+  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+  .slice(0, 5)
+
+
   return (
     <main className={styles.dashboard}>
       
@@ -139,7 +145,7 @@ tickets.forEach(ticket => {
             </tr>
           </thead>
           <tbody>
-            {tickets.slice(0, 5).map(ticket => (
+            {ultimosChamados.map(ticket => (
               <tr key={ticket.id}>
                 <td>#{ticket.id}</td>
                 <td>{ticket.title}</td>

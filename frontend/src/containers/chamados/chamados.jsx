@@ -73,7 +73,9 @@ function Chamados() {
     return matchesStatus && matchesPriority && matchesSearch && matchesSetor
   })
 
-  const paginatedChamados = filteredChamados.slice(startIndex, endIndex)
+  const ultimosChamados = [...filteredChamados]
+.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+  const paginatedChamados = ultimosChamados.slice(startIndex, endIndex)
   const totalPages = Math.ceil(filteredChamados.length / itemsPerPage)
 
   if (loading) {
@@ -230,7 +232,7 @@ function Chamados() {
           {viewMode === "grid" && (
               <section className={styles.grid}>
                   <div className={styles.cardsGrid}>
-                        {paginatedChamados.map((chamado) => (
+                        {ultimosChamados.map((chamado) => (
                                     <div
                                     key={chamado.id}
                                     className={styles.card}

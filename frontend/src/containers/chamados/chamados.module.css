@@ -136,33 +136,33 @@ html.dark .filterSelect {
 }
 
 /* Status Badges */
-.aberto {
+.closed {
   background-color: var(--color-status-open-bg);
   color: var(--color-status-open);
 }
 
-.ematendimento {
+.inprogress {
   background-color: var(--color-status-progress-bg);
   color: var(--color-status-progress);
 }
 
-.resolvido {
+.open {
   background-color: var(--color-status-resolved-bg);
   color: var(--color-status-resolved);
 }
 
 /* Prioridade Badges */
-.alta {
+.high {
   background-color: var(--color-priority-high-bg);
   color: var(--color-priority-high);
 }
 
-.média {
+.medium {
   background-color: var(--color-priority-medium-bg);
   color: var(--color-priority-medium);
 }
 
-.baixa {
+.low {
   background-color: var(--color-priority-low-bg);
   color: var(--color-priority-low);
 }
