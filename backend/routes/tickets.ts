@@ -19,7 +19,7 @@ router.get('/', authenticate, async (req, res) => {
         ],
       },
       include: {
-        createdBy: { select: { id: true, name: true } },
+        createdBy: { select: { id: true, name: true, sector: {select:{id: true, name:true}} } },
         assignedTo: { select: { id: true, name: true } },
         comments: { include: { user: { select: { id: true, name: true } } } },
       },
@@ -40,7 +40,7 @@ router.get('/:id', authenticate, async (req, res) => {
     const ticket = await prisma.ticket.findUnique({
       where: { id: parseInt(id) },
       include: {
-        createdBy: { select: { id: true, name: true } },
+        createdBy: { select: { id: true, name: true, sector: {select:{id: true, name:true}}} },
         assignedTo: { select: { id: true, name: true } },
         comments: { include: { user: { select: { id: true, name: true } } } },
       },
