@@ -119,6 +119,7 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated }) {
           <span>Criado por: <strong>{ticket.createdBy?.name || 'N/A'}</strong></span>
           <span>Atribuído a: <strong>{ticket.assignedTo?.name || 'N/A'}</strong></span>
           <span>Criado em: <strong>{new Date(ticket.createdAt).toLocaleString('pt-BR')}</strong></span>
+          <span>Setor: <strong>{ticket.createdBy?.sector?.name ?? 'Error'}</strong></span>
         </div>
       </div>
 
