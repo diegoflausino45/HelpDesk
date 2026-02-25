@@ -99,10 +99,10 @@ function CriarChamadoModal({ isOpen, onClose, onCreated }) {
             className={erros.categoria ? styles.inputError : ""}
           >
             <option value="">Categoria *</option>
-            <option>Software</option>
-            <option>Hardware</option>
-            <option>Rede</option>
-            <option>Acesso</option>
+            <option>Software - (Sistema)</option>
+            <option>Hardware - (Máquina)</option>
+            <option>Rede - (Internet)</option>
+            <option>Acesso - (Login)</option>
           </select>
           {erros.categoria && (
             <span className={styles.error}>{erros.categoria}</span>

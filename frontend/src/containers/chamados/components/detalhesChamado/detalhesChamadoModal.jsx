@@ -89,7 +89,6 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated }) {
       onClose={onClose}
       title={`Chamado #${ticket.id}`}
     >
-      {loading && <div className={styles.loading}>Carregando...</div>}
       {error && <div className={styles.error}>{error}</div>}
 
       <div className={styles.info}>
@@ -123,7 +122,7 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated }) {
         </div>
       </div>
 
-      <hr />
+      <hr className={styles.linha} />
 
       <h4>Comentários</h4>
 

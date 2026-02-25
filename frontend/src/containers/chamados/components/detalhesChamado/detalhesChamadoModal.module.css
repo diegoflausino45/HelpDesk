@@ -51,7 +51,7 @@
 .comentarios {
   max-height: 300px;
   overflow-y: auto;
-  margin: var(--space-lg) 0;
+  margin: 0 0 var(--space-lg) 0;
 }
 
 .commentHeader {
@@ -124,3 +124,8 @@
   text-align: center;
   margin: var(--space-lg) 0;
 }
+
+.linha{
+  margin: 1em 0em;
+}
+
