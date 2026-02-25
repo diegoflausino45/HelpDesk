@@ -352,3 +352,22 @@ html.dark .filterSelect {
     grid-template-columns: 1fr;
   }
 }
+
+/* Loading and error states */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.error {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: var(--space-lg);
+  border-radius: var(--border-radius);
+  text-align: center;
+  margin: var(--space-xl) 0;
+}

@@ -65,7 +65,7 @@ function Chamados() {
   const filteredChamados = chamados.filter(chamado => {
     const matchesStatus = !statusFilter || chamado.status === statusFilter
     const matchesPriority = !priorityFilter || chamado.priority === priorityFilter
-    const matchesSetor = !setorFilter || chamado.sector === setorFilter
+    const matchesSetor = !setorFilter || chamado.createdBy?.sector?.name === setorFilter
     const matchesSearch = !searchTerm ||
       chamado.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       chamado.id == Number(searchTerm)
