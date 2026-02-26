@@ -46,16 +46,19 @@ router.post('/', authenticate, authorize(['admin']), [
 router.get('/', authenticate, authorize(['admin']), async (req, res) => {
   try {
     const users = await prisma.user.findMany({
-      select: { 
-        id: true, 
-        name: true, 
-        email: true, 
-        role: true, 
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
         createdAt: true,
-        sector: { select: { name: true } }
+        sectorId: true,
+        sector: { select: { id: true, name: true } }
       },
     });
+
     res.json(users);
+
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }
@@ -84,34 +87,49 @@ router.put('/:id', authenticate, [
   body('email').optional().isEmail().withMessage('Valid email is required'),
   body('password').optional().isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
 ], async (req, res) => {
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
   const { id } = req.params;
-  const { name, email, password, role } = req.body;
-  const userId = (req as any).user.id;
-  const userRole = (req as any).user.role;
+  const { name, email, password, role, sectorId } = req.body;
 
-  // Allow self-update or admin
+  const userId = req.user.id;
+  const userRole = req.user.role;
+
   if (parseInt(id) !== userId && userRole !== 'admin') {
     return res.status(403).json({ error: 'Forbidden' });
   }
 
   try {
     const updateData: any = {};
+
     if (name) updateData.name = name;
     if (email) updateData.email = email;
     if (password) updateData.password = await bcrypt.hash(password, 10);
     if (role && userRole === 'admin') updateData.role = role;
 
+    if (sectorId !== undefined) {
+      updateData.sectorId = sectorId ? parseInt(sectorId) : null;
+    }
+
     const user = await prisma.user.update({
       where: { id: parseInt(id) },
       data: updateData,
-      select: { id: true, name: true, email: true, role: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        sectorId: true,
+        sector: { select: { id: true, name: true } }
+      },
     });
+
     res.json(user);
+
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }

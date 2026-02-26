@@ -185,11 +185,11 @@ export function validateDescricao(descricao) {
 
 /**
  * Valida nome de usuário
- * @param {string} nome - Nome a validar
+ * @param {string} name - Nome a validar
  * @returns {object} { isValid: boolean, error: string }
  */
-export function validateNomeUsuario(nome) {
-  const trimmed = nome.trim();
+export function validateNomeUsuario(name) {
+  const trimmed = name.trim();
 
   if (!trimmed) {
     return {
@@ -225,11 +225,11 @@ export function validateNomeUsuario(nome) {
 
 /**
  * Valida setor
- * @param {string} setor - Setor a validar
+ * @param {string} sector - Setor a validar
  * @returns {object} { isValid: boolean, error: string }
  */
-export function validateSetor(setor) {
-  if (!setor || !setor.trim()) {
+export function validateSetor(sector) {
+  if (!sector) {
     return {
       isValid: false,
       error: "Setor é obrigatório",
