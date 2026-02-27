@@ -138,13 +138,6 @@ function CreateUser({ onClose, onCreate }) {
         {erros.setor && <span className={styles.error}>{erros.setor}</span>}
       </div>
 
-      <div className={styles.formGroup}>
-        <select name="status" value={form.status} onChange={handleChange}>
-          <option value="Ativo">Ativo</option>
-          <option value="Inativo">Inativo</option>
-        </select>
-      </div>
-
       <footer className={styles.actions}>
         <button type="button" onClick={onClose}>
           Cancelar
