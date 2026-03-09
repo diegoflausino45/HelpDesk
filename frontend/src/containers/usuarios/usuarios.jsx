@@ -4,7 +4,8 @@ import { FaEye, FaEdit } from "react-icons/fa"
 import Modal from "../../components/Modal/modal"
 import CreateUser from "./components/criarUsuarioModal"
 import EditUser from "./components/editarUsuarioModal"
-import { usersAPI } from "../../utils/api"
+import { usersAPI, sectorsAPI } from "../../utils/api"
+import toast from "react-hot-toast"
 
 function Usuarios() {
   const [busca, setBusca] = useState("")
@@ -25,28 +26,36 @@ function Usuarios() {
     perfil: "Admin",
   }
 
+  // Função helper para traduzir roles
+  const translateRole = (role) => {
+    const roles = {
+      'admin': 'Admin',
+      'technician': 'Técnico',
+      'user': 'Usuário'
+    }
+    return roles[role] || role
+  }
+
   useEffect(() => {
     fetchUsuarios()
+    fetchSetores()
   }, [])
 
-      // Carregar setores do localStorage
-    useEffect(() => {
-      const setoresSalvos = localStorage.getItem("setores")
-      if (setoresSalvos) {
-        setSetoresDisponiveis(JSON.parse(setoresSalvos))
-      } else {
-        // Setores padrão se não houver no localStorage
-        const setoresPadrao = ["TI", "Administrativo", "RH", "Financeiro", "Manutenção", "Produção", "Engenharia", "Qualidade", "Direção"]
-        setSetoresDisponiveis(setoresPadrao)
-      }
-    }, [])
+  const fetchSetores = async () => {
+    try {
+      const response = await sectorsAPI.getAll()
+      setSetoresDisponiveis(response.data)
+    } catch (error) {
+      toast.error("Erro ao carregar setores")
+    }
+  }
 
   const fetchUsuarios = async () => {
     try {
       const response = await usersAPI.getAll()
       setUsuarios(response.data)
     } catch (error) {
-      // Erro silencioso - adicionar toast se necessário
+      toast.error("Erro ao carregar usuários")
     } finally {
       setLoading(false)
     }
@@ -62,10 +71,11 @@ function Usuarios() {
         sectorId: userData.setor ? parseInt(userData.setor) : null,
       }
       await usersAPI.create(data)
+      toast.success("Usuário criado com sucesso!")
       setOpenCreate(false)
       fetchUsuarios() // Recarregar lista
     } catch (error) {
-      // Erro silencioso - adicionar toast se necessário
+      toast.error(error.response?.data?.error || "Erro ao criar usuário")
     }
   }
 
@@ -110,14 +120,14 @@ function Usuarios() {
         <select className={styles.filterSelect} value={perfil} onChange={e => setPerfil(e.target.value)}>
           <option value="">Perfil</option>
           <option value="admin">Admin</option>
-          <option value="técnico">Técnico</option>
-          <option value="usuário">Usuário</option>
+          <option value="technician">Técnico</option>
+          <option value="user">Usuário</option>
         </select>
 
-        <select className={styles.filterSelect} onChange={(e) => setSetorFilter(e.target.value)}>
+        <select className={styles.filterSelect} value={setorFilter} onChange={(e) => setSetorFilter(e.target.value)}>
           <option value="">Setor</option>
           {setoresDisponiveis.map((setor) => (
-            <option key={setor} value={setor}>{setor}</option>
+            <option key={setor.id} value={setor.name}>{setor.name}</option>
           ))}
         </select>
       </section>
@@ -143,7 +153,7 @@ function Usuarios() {
             <tr key={user.id}>
               <td>{user.name}</td>
               <td>{user.email}</td>
-              <td>{user.role}</td>
+              <td>{translateRole(user.role)}</td>
               <td>{user.sector?.name || 'N/A'}</td>
               <td>{new Date(user.createdAt).toLocaleDateString()}</td>
               <td className={styles.actions}>
@@ -186,6 +196,7 @@ function Usuarios() {
           usuario={usuarioSelecionado}
           usuarioLogado={usuarioLogado}
           onClose={() => setOpenEdit(false)}
+          onUpdated={fetchUsuarios}
         />
       </Modal>
     </main>

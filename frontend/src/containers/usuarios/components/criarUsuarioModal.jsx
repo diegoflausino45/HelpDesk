@@ -12,7 +12,7 @@ function CreateUser({ onClose, onCreate }) {
     nome: "",
     email: "",
     senha: "",
-    perfil: "Usuário",
+    perfil: "user",
     setor: "",
     status: "Ativo",
   })
@@ -26,7 +26,7 @@ function CreateUser({ onClose, onCreate }) {
         const response = await sectorsAPI.getAll()
         setSetoresDisponiveis(response.data)
       } catch (error) {
-        console.error("Erro ao carregar setores:", error)
+        // Erro silencioso
       }
     }
     fetchSetores()
@@ -116,9 +116,9 @@ function CreateUser({ onClose, onCreate }) {
 
       <div className={styles.formGroup}>
         <select name="perfil" value={form.perfil} onChange={handleChange}>
-          <option value="Admin">Admin</option>
-          <option value="Técnico">Técnico</option>
-          <option value="Usuário">Usuário</option>
+          <option value="admin">Admin</option>
+          <option value="technician">Técnico</option>
+          <option value="user">Usuário</option>
         </select>
       </div>
 

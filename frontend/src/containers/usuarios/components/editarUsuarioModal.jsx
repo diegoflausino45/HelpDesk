@@ -5,6 +5,7 @@ import {
   validateNomeUsuario,
   validateSetor,
 } from "../../../utils/validations"
+import toast from "react-hot-toast"
 import styles from "./usuarioModal.module.css"
 
 function EditUser({ usuario, usuarioLogado, onClose, onUpdated }) {
@@ -13,7 +14,7 @@ function EditUser({ usuario, usuarioLogado, onClose, onUpdated }) {
     name: usuario?.name || "",
     email: usuario?.email || "",
     role: usuario?.role || "user",
-    sectorId: usuario?.sectorId || "",
+    sectorId: usuario?.sectorId ? String(usuario.sectorId) : "",
     status: usuario?.status || "Ativo"
   })
 
@@ -23,6 +24,19 @@ function EditUser({ usuario, usuarioLogado, onClose, onUpdated }) {
   useEffect(() => {
     loadSectors()
   }, [])
+
+  // Atualizar form quando o usuário mudar
+  useEffect(() => {
+    if (usuario) {
+      setForm({
+        name: usuario.name || "",
+        email: usuario.email || "",
+        role: usuario.role || "user",
+        sectorId: usuario.sectorId ? String(usuario.sectorId) : "",
+        status: usuario.status || "Ativo"
+      })
+    }
+  }, [usuario])
 
   async function loadSectors() {
     try {
@@ -76,15 +90,17 @@ function EditUser({ usuario, usuarioLogado, onClose, onUpdated }) {
         name: form.name,
         email: form.email,
         role: form.role,
-        sectorId: form.sectorId
+        sectorId: parseInt(form.sectorId)
       })
 
+      toast.success("Usuário atualizado com sucesso!")
+      
       if (onUpdated) onUpdated()
 
       onClose()
 
     } catch (error) {
-      // Erro silencioso - adicionar toast se necessário
+      toast.error(error.response?.data?.error || "Erro ao atualizar usuário")
     }
   }
 
