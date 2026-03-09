@@ -345,7 +345,7 @@
 
 .deleteBtn:hover:not(:disabled) {
   background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  color: var(--color-error);
 }
 
 .deleteBtn:disabled {
@@ -390,7 +390,7 @@
 }
 
 .saveBtn:hover {
-  background: #059669;
+  background: var(--color-success-dark);
 }
 
 .cancelBtn {
@@ -399,5 +399,5 @@
 }
 
 .cancelBtn:hover {
-  background: #6b7280;
+  background: var(--color-gray);
 }

@@ -46,7 +46,7 @@ function Usuarios() {
       const response = await usersAPI.getAll()
       setUsuarios(response.data)
     } catch (error) {
-      console.error("Erro ao carregar usuários:", error)
+      // Erro silencioso - adicionar toast se necessário
     } finally {
       setLoading(false)
     }
@@ -65,7 +65,7 @@ function Usuarios() {
       setOpenCreate(false)
       fetchUsuarios() // Recarregar lista
     } catch (error) {
-      console.error("Erro ao criar usuário:", error)
+      // Erro silencioso - adicionar toast se necessário
     }
   }
 

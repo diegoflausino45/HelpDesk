@@ -206,7 +206,6 @@ function Chamados() {
                             </span>
                         </td>
                         <td>{chamado.createdBy?.sector?.name ?? 'Error'}</td>
-                        {console.log(chamado)}
                         <td>{chamado.createdBy?.name || 'N/A'}</td>
                         <td>{new Date(chamado.createdAt).toLocaleDateString('pt-BR')}</td>
                         <td>

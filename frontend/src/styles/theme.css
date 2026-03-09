@@ -63,8 +63,13 @@
   --color-error-bg: rgba(211, 47, 47, 0.06);
   --color-success: #2e7d32;
   --color-success-bg: rgba(46, 125, 50, 0.06);
+  --color-success-dark: #1b5e20;
   --color-warning: #ff6f00;
   --color-warning-bg: rgba(255, 111, 0, 0.06);
+  --color-info: #1976d2;
+  --color-info-bg: rgba(25, 118, 210, 0.06);
+  --color-gray: #6b7280;
+  --color-gray-bg: #f3f4f6;
   
   /* ===== ESPAÇAMENTO - Sistema 8px ===== */
   --space-xs: 0.25rem;
@@ -121,11 +126,17 @@
   /* Sombras coloridas com vermelho */
   --shadow-red: 0 4px 12px rgba(211, 47, 47, 0.15);
   --shadow-red-lg: 0 12px 40px rgba(211, 47, 47, 0.2);
+  --shadow-success: 0 4px 12px rgba(72, 187, 120, 0.3);
+  --shadow-success-lg: 0 8px 25px rgba(72, 187, 120, 0.4);
+  --shadow-error: 0 4px 15px rgba(245, 101, 101, 0.3);
+  --shadow-error-lg: 0 8px 25px rgba(245, 101, 101, 0.4);
   
   /* ===== GRADIENTES - Vermelho e Branco ===== */
   --gradient-primary: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
   --gradient-primary-light: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
   --gradient-secondary: linear-gradient(135deg, #ef5350 0%, #d32f2f 100%);
+  --gradient-success: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  --gradient-error: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
   
   /* ===== TRANSIÇÕES - Fluidas e Naturais ===== */
   --transition-fast: 100ms ease;

@@ -29,7 +29,7 @@ function EditUser({ usuario, usuarioLogado, onClose, onUpdated }) {
       const response = await sectorsAPI.getAll()
       setSetoresDisponiveis(response.data)
     } catch (error) {
-      console.error("Erro ao carregar setores")
+      // Erro silencioso - adicionar toast se necessário
     }
   }
 
@@ -84,7 +84,7 @@ function EditUser({ usuario, usuarioLogado, onClose, onUpdated }) {
       onClose()
 
     } catch (error) {
-      console.error("Erro ao atualizar usuário:", error)
+      // Erro silencioso - adicionar toast se necessário
     }
   }
 

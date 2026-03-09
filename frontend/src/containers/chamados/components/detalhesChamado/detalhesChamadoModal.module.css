@@ -117,8 +117,8 @@
 }
 
 .error {
-  background: #fee2e2;
-  color: #dc2626;
+  background: var(--color-error-bg);
+  color: var(--color-error);
   padding: var(--space-lg);
   border-radius: var(--border-radius);
   text-align: center;

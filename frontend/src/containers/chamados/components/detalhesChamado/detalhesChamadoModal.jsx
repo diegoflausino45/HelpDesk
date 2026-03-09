@@ -40,7 +40,7 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated }) {
       const response = await commentsAPI.getByTicket(chamado.id)
       setComentarios(response.data)
     } catch (err) {
-      console.error('Erro ao carregar comentários:', err)
+      // Erro silencioso - usuário verá lista vazia
     }
   }
 
@@ -58,7 +58,6 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated }) {
       loadComentarios() // Recarregar comentários
       toast.success('Comentário adicionado')
     } catch (err) {
-      console.error('Erro ao adicionar comentário:', err)
       toast.error(err.response?.data?.error || 'Erro ao adicionar comentário')
     } finally {
       setPostingComment(false)
@@ -74,7 +73,6 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated }) {
       if (onUpdated) onUpdated()
       toast.success('Status atualizado')
     } catch (err) {
-      console.error('Erro ao atualizar status:', err)
       toast.error(err.response?.data?.error || 'Erro ao atualizar status')
     }
   }

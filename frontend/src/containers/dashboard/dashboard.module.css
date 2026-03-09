@@ -165,18 +165,18 @@ tr:hover {
 }
 
 .status.open {
-  background: #fef3c7;
-  color: #d97706;
+  background: var(--color-status-open-bg);
+  color: var(--color-status-open);
 }
 
 .status.in-progress {
-  background: #dbeafe;
-  color: #2563eb;
+  background: var(--color-status-progress-bg);
+  color: var(--color-status-progress);
 }
 
 .status.closed {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-status-resolved-bg);
+  color: var(--color-status-resolved);
 }
 
 /* Priority badges */
@@ -188,18 +188,18 @@ tr:hover {
 }
 
 .priority.low {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--color-priority-low-bg);
+  color: var(--color-priority-low);
 }
 
 .priority.medium {
-  background: #fef3c7;
-  color: #d97706;
+  background: var(--color-priority-medium-bg);
+  color: var(--color-priority-medium);
 }
 
 .priority.high {
-  background: #fee2e2;
-  color: #dc2626;
+  background: var(--color-priority-high-bg);
+  color: var(--color-priority-high);
 }
 
 /* Loading and error states */
@@ -213,8 +213,8 @@ tr:hover {
 }
 
 .error {
-  background: #fee2e2;
-  color: #dc2626;
+  background: var(--color-error-bg);
+  color: var(--color-error);
   padding: var(--space-lg);
   border-radius: var(--border-radius);
   text-align: center;

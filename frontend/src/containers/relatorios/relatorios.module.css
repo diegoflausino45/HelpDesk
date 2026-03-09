@@ -34,25 +34,25 @@
 }
 
 .actions button:first-child {
-  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  background: var(--gradient-error);
   color: white;
-  box-shadow: 0 4px 15px rgba(245, 101, 101, 0.3);
+  box-shadow: var(--shadow-error);
 }
 
 .actions button:first-child:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(245, 101, 101, 0.4);
+  box-shadow: var(--shadow-error-lg);
 }
 
 .actions button:last-child {
-  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  background: var(--gradient-success);
   color: white;
-  box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+  box-shadow: var(--shadow-success);
 }
 
 .actions button:last-child:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4);
+  box-shadow: var(--shadow-success-lg);
 }
 
 /* Filtros */

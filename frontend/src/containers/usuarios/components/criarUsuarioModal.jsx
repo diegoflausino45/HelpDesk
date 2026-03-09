@@ -71,7 +71,6 @@ function CreateUser({ onClose, onCreate }) {
       return
     }
 
-    console.log("Criar usuário:", form)
     onCreate(form)
     onClose()
   }
