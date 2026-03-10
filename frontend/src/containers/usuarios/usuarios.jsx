@@ -4,6 +4,7 @@ import { FaEye, FaEdit } from "react-icons/fa"
 import Modal from "../../components/Modal/modal"
 import CreateUser from "./components/criarUsuarioModal"
 import EditUser from "./components/editarUsuarioModal"
+import Pagination from "../../components/paginacao/paginacao"
 import { usersAPI, sectorsAPI } from "../../utils/api"
 import toast from "react-hot-toast"
 
@@ -21,6 +22,12 @@ function Usuarios() {
   const [openCreate, setOpenCreate] = useState(false)
   const [openEdit, setOpenEdit] = useState(false)
   const [usuarioSelecionado, setUsuarioSelecionado] = useState(null)
+
+  // Paginação
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
 
   const usuarioLogado = {
     perfil: "Admin",
@@ -91,6 +98,9 @@ function Usuarios() {
     return texto && perfilOk && setorOk// && statusOk
   })
 
+  // Aplicar paginação
+  const paginatedUsuarios = usuariosFiltrados.slice(startIndex, endIndex)
+
   return (
     <main className={styles.container}>
       {/* Header */}
@@ -136,45 +146,54 @@ function Usuarios() {
       {loading ? (
         <p>Carregando usuários...</p>
       ) : (
-        <table className={styles.table}>
-          <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Email</th>
-            <th>Perfil</th>
-            <th>Setor</th>
-            <th>Último acesso</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {usuariosFiltrados.map(user => (
-            <tr key={user.id}>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>{translateRole(user.role)}</td>
-              <td>{user.sector?.name || 'N/A'}</td>
-              <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-              <td className={styles.actions}>
-
-                {(usuarioLogado.perfil === "Admin" ||
-                  (usuarioLogado.perfil === "Técnico" &&
-                    user.role === "user")) && (
-                  <button
-                    onClick={() => {
-                      setUsuarioSelecionado(user)
-                      setOpenEdit(true)
-                    }}
-                  >
-                    <FaEdit />
-                  </button>
-                )}
-              </td>
+        <>
+          <table className={styles.table}>
+            <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Email</th>
+              <th>Perfil</th>
+              <th>Setor</th>
+              <th>Último acesso</th>
+              <th>Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {paginatedUsuarios.map(user => (
+              <tr key={user.id}>
+                <td>{user.name}</td>
+                <td>{user.email}</td>
+                <td>{translateRole(user.role)}</td>
+                <td>{user.sector?.name || 'N/A'}</td>
+                <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                <td className={styles.actions}>
+
+                  {(usuarioLogado.perfil === "Admin" ||
+                    (usuarioLogado.perfil === "Técnico" &&
+                      user.role === "user")) && (
+                    <button
+                      onClick={() => {
+                        setUsuarioSelecionado(user)
+                        setOpenEdit(true)
+                      }}
+                    >
+                      <FaEdit />
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <Pagination
+          totalItems={usuariosFiltrados.length}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+        </>
       )}
 
       {/* Modal Criar */}
