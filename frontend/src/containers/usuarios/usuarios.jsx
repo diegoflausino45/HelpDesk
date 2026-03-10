@@ -7,6 +7,7 @@ import CreateUser from "./components/criarUsuarioModal"
 import EditUser from "./components/editarUsuarioModal"
 import Pagination from "../../components/paginacao/paginacao"
 import { usersAPI, sectorsAPI } from "../../utils/api"
+import { getUserPermissions } from "../../utils/settings"
 import toast from "react-hot-toast"
 
 function Usuarios() {
@@ -26,6 +27,7 @@ function Usuarios() {
   const [mostrarModalExcluir, setMostrarModalExcluir] = useState(false)
   const [usuarioParaExcluir, setUsuarioParaExcluir] = useState(null)
   const [excluindoUsuario, setExcluindoUsuario] = useState(false)
+  const [permissoes, setPermissoes] = useState(() => getUserPermissions())
 
   // Paginação
   const [currentPage, setCurrentPage] = useState(1)
@@ -34,7 +36,7 @@ function Usuarios() {
   const endIndex = startIndex + itemsPerPage
 
   const usuarioLogado = {
-    perfil: "Admin",
+    perfil: permissoes.isAdmin ? "Admin" : (permissoes.isTechnician ? "Técnico" : "Usuário"),
   }
 
   // Função helper para traduzir roles
@@ -48,9 +50,24 @@ function Usuarios() {
   }
 
   useEffect(() => {
+    const refreshPermissoes = () => setPermissoes(getUserPermissions())
+    window.addEventListener("storage", refreshPermissoes)
+    window.addEventListener("config-updated", refreshPermissoes)
+    return () => {
+      window.removeEventListener("storage", refreshPermissoes)
+      window.removeEventListener("config-updated", refreshPermissoes)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!permissoes.canManageUsers) {
+      setLoading(false)
+      return
+    }
+
     fetchUsuarios()
     fetchSetores()
-  }, [])
+  }, [permissoes.canManageUsers])
 
   const fetchSetores = async () => {
     try {
@@ -91,9 +108,8 @@ function Usuarios() {
   }
 
   const handleDeleteUser = async (user) => {
-    // Apenas Admin pode excluir
-    if (usuarioLogado.perfil !== "Admin") {
-      toast.error("Apenas administradores podem excluir usuários")
+    if (!permissoes.canManageUsers) {
+      toast.error("Você não tem permissão para excluir usuários")
       return
     }
 
@@ -118,9 +134,8 @@ function Usuarios() {
   }
 
   const handleEditUser = (user) => {
-    // Apenas Admin pode editar
-    if (usuarioLogado.perfil !== "Admin") {
-      toast.error("Apenas administradores podem editar usuários")
+    if (!permissoes.canManageUsers) {
+      toast.error("Você não tem permissão para editar usuários")
       return
     }
 
@@ -143,21 +158,42 @@ function Usuarios() {
   // Aplicar paginação
   const paginatedUsuarios = usuariosFiltrados.slice(startIndex, endIndex)
 
+  if (!permissoes.canManageUsers) {
+    return (
+      <main className={styles.container}>
+        <section className={styles.pageHeader}>
+          <h1>Usuários</h1>
+        </section>
+        <p>Seu perfil não possui permissão para gerenciar usuários.</p>
+      </main>
+    )
+  }
+
+  const limiteUsuariosAtingido = usuarios.length >= (permissoes.config.usuarios.maxUsuariosAtivos || 500)
+
   return (
     <main className={styles.container}>
       {/* Header */}
       <section className={styles.pageHeader}>
         <h1>Usuários</h1>
 
-        {usuarioLogado.perfil === "Admin" && (
+        {permissoes.canInviteUsers && (
           <button
             className={styles.newUser}
             onClick={() => setOpenCreate(true)}
+            disabled={limiteUsuariosAtingido}
+            title={limiteUsuariosAtingido ? "Limite de usuários ativos atingido" : "Criar novo usuário"}
           >
             + Novo Usuário
           </button>
         )}
       </section>
+
+      {limiteUsuariosAtingido && (
+        <section className={styles.filters}>
+          <p>Limite de usuários ativos atingido ({usuarios.length}/{permissoes.config.usuarios.maxUsuariosAtivos}).</p>
+        </section>
+      )}
 
       {/* Filtros */}
       <section className={styles.filters}>
@@ -211,7 +247,7 @@ function Usuarios() {
                 <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                 <td className={styles.actions}>
 
-                  {usuarioLogado.perfil === "Admin" && (
+                  {permissoes.canManageUsers && (
                     <button
                       className={styles.editBtn}
                       onClick={() => handleEditUser(user)}
@@ -221,7 +257,7 @@ function Usuarios() {
                     </button>
                   )}
 
-                  {usuarioLogado.perfil === "Admin" && (
+                  {permissoes.canManageUsers && (
                     <button
                       className={styles.deleteBtn}
                       onClick={() => handleDeleteUser(user)}

@@ -140,6 +140,7 @@ function Configuracoes() {
                     dados={configuracoes.usuarios} 
                     onAtualizar={atualizar}
                     carregando={carregando}
+                    errosValidacao={errosValidacao.usuarios || {}}
                   />
                 )}
 
@@ -148,6 +149,7 @@ function Configuracoes() {
                     dados={configuracoes.notificacoes} 
                     onAtualizar={atualizar}
                     carregando={carregando}
+                    errosValidacao={errosValidacao.notificacoes || {}}
                   />
                 )}
 

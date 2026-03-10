@@ -6,6 +6,7 @@ import DetalhesChamadoModal from "./components/detalhesChamado/detalhesChamadoMo
 import { FaEye, FaList, FaThLarge } from "react-icons/fa"
 import Pagination from "../../components/paginacao/paginacao"
 import { ticketsAPI } from "../../utils/api"
+import { getUserPermissions } from "../../utils/settings"
 
 
 function Chamados() {
@@ -21,6 +22,7 @@ function Chamados() {
     const [chamados, setChamados] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
+    const [permissoes, setPermissoes] = useState(() => getUserPermissions())
 
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 5
@@ -30,6 +32,16 @@ function Chamados() {
     // Carregar chamados da API
     useEffect(() => {
       loadChamados()
+    }, [])
+
+    useEffect(() => {
+      const refreshPermissoes = () => setPermissoes(getUserPermissions())
+      window.addEventListener("storage", refreshPermissoes)
+      window.addEventListener("config-updated", refreshPermissoes)
+      return () => {
+        window.removeEventListener("storage", refreshPermissoes)
+        window.removeEventListener("config-updated", refreshPermissoes)
+      }
     }, [])
 
     async function loadChamados() {
@@ -95,10 +107,10 @@ function Chamados() {
         <div className={styles.headerActions}>
 
             <Link
-                onClick={() => setOpenCreate(true)}
-                className={styles.newTicket}
+              onClick={() => setOpenCreate(true)}
+              className={styles.newTicket}
             >
-                + Novo Chamado
+              + Novo Chamado
             </Link>
         </div>
     </section>
@@ -312,6 +324,7 @@ function Chamados() {
             onClose={() => setOpenDetails(false)}
             chamado={selectedChamado}
             onUpdated={loadChamados}
+          permissoes={permissoes}
         />
 
        

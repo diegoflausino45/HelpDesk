@@ -4,7 +4,7 @@ import { ticketsAPI, commentsAPI } from "../../../../utils/api"
 import toast from 'react-hot-toast'
 import styles from "./detalhesChamadoModal.module.css"
 
-function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated }) {
+function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes }) {
   const [detalhes, setDetalhes] = useState(null)
   const [comentarios, setComentarios] = useState([])
   const [loading, setLoading] = useState(false)
@@ -67,6 +67,19 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated }) {
   async function handleStatusChange(newStatus) {
     if (!detalhes?.id) return
 
+    const isOwner = detalhes.createdBy?.id === permissoes?.user?.id
+    const podeAlterarStatus = permissoes?.isAdmin || permissoes?.isTechnician || (isOwner && permissoes?.canCloseOwnTickets)
+
+    if (!podeAlterarStatus) {
+      toast.error('Você não tem permissão para alterar o status deste chamado')
+      return
+    }
+
+    if (permissoes?.isUser && newStatus !== 'closed') {
+      toast.error('Usuários podem apenas encerrar chamados próprios')
+      return
+    }
+
     try {
       await ticketsAPI.update(detalhes.id, { status: newStatus })
       loadDetalhes() // Recarregar detalhes
@@ -78,6 +91,8 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated }) {
   }
 
   const ticket = detalhes || chamado
+  const isOwner = ticket?.createdBy?.id === permissoes?.user?.id
+  const podeAlterarStatus = permissoes?.isAdmin || permissoes?.isTechnician || (isOwner && permissoes?.canCloseOwnTickets)
 
   if (!ticket) return null
 
@@ -100,9 +115,12 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated }) {
               value={ticket.status}
               onChange={(e) => handleStatusChange(e.target.value)}
               className={styles.statusSelect}
+              disabled={!podeAlterarStatus}
             >
               <option value="open">Aberto</option>
-              <option value="in-progress">Em andamento</option>
+              {(permissoes?.isAdmin || permissoes?.isTechnician) && (
+                <option value="in-progress">Em andamento</option>
+              )}
               <option value="closed">Fechado</option>
             </select>
           </span>

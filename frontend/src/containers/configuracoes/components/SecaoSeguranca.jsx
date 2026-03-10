@@ -8,65 +8,156 @@ const SecaoSeguranca = ({ dados, onAtualizar, carregando, errosValidacao = {} })
     });
   };
 
+  const handleToggle = (campo) => {
+    onAtualizar('seguranca', {
+      ...dados,
+      [campo]: !dados[campo],
+    });
+  };
+
   const erroTentativas = errosValidacao.tentativasLogin;
   const erroValidade = errosValidacao.validadeSenha;
+  const erroTamanhoMinimo = errosValidacao.tamanhoMinimoSenha;
+  const erroTempoBloqueio = errosValidacao.tempoBloqueioMinutos;
 
   return (
-    <>
-      <div className={styles.formRow}>
-        <label htmlFor="tentativasLogin">Tentativas máximas de login</label>
-        <input
-          id="tentativasLogin"
-          type="number"
-          min="1"
-          max="10"
-          value={dados?.tentativasLogin || 5}
-          onChange={(e) => handleMudanca('tentativasLogin', e.target.value)}
-          disabled={carregando}
-          title="Número de tentativas permitidas antes de bloquear a conta (1-10)"
-          style={{
-            borderColor: erroTentativas ? 'var(--color-error)' : 'rgba(102, 126, 234, 0.2)',
-            boxShadow: erroTentativas ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : 'none',
-          }}
-        />
-        {erroTentativas ? (
-          <small style={{ color: 'var(--color-error)', marginTop: '4px' }}>
-            ⚠️ {erroTentativas}
-          </small>
-        ) : (
-          <small style={{ color: 'var(--color-text-tertiary)', marginTop: '4px' }}>
-            Número de tentativas permitidas antes de bloquear a conta
-          </small>
-        )}
+    <div className={styles.sectionGrid}>
+      <div className={styles.sectionBlock}>
+        <h4>Política de senha</h4>
+        <p>Defina a robustez mínima e validade das senhas corporativas.</p>
+
+        <div className={styles.formRow}>
+          <label htmlFor="tamanhoMinimoSenha">Tamanho mínimo da senha</label>
+          <input
+            id="tamanhoMinimoSenha"
+            type="number"
+            min="6"
+            max="32"
+            value={dados?.tamanhoMinimoSenha || 8}
+            onChange={(e) => handleMudanca('tamanhoMinimoSenha', e.target.value)}
+            disabled={carregando}
+          />
+          {erroTamanhoMinimo && <small className={styles.validationMessage}>{erroTamanhoMinimo}</small>}
+        </div>
+
+        <div className={styles.formRow}>
+          <label htmlFor="validadeSenha">Validade da senha (dias)</label>
+          <input
+            id="validadeSenha"
+            type="number"
+            min="0"
+            max="365"
+            value={dados?.validadeSenha || 90}
+            onChange={(e) => handleMudanca('validadeSenha', e.target.value)}
+            disabled={carregando}
+          />
+          {erroValidade && <small className={styles.validationMessage}>{erroValidade}</small>}
+        </div>
+
+        <div className={styles.toggleRow}>
+          <span>Exigir senha forte</span>
+          <input
+            type="checkbox"
+            checked={dados?.exigirSenhaForte || false}
+            onChange={() => handleToggle('exigirSenhaForte')}
+            disabled={carregando}
+          />
+        </div>
+
+        <div className={styles.toggleRow}>
+          <span>Exigir letra maiúscula</span>
+          <input
+            type="checkbox"
+            checked={dados?.exigirMaiuscula || false}
+            onChange={() => handleToggle('exigirMaiuscula')}
+            disabled={carregando || !dados?.exigirSenhaForte}
+          />
+        </div>
+
+        <div className={styles.toggleRow}>
+          <span>Exigir número</span>
+          <input
+            type="checkbox"
+            checked={dados?.exigirNumero || false}
+            onChange={() => handleToggle('exigirNumero')}
+            disabled={carregando || !dados?.exigirSenhaForte}
+          />
+        </div>
+
+        <div className={styles.toggleRow}>
+          <span>Exigir símbolo</span>
+          <input
+            type="checkbox"
+            checked={dados?.exigirSimbolo || false}
+            onChange={() => handleToggle('exigirSimbolo')}
+            disabled={carregando || !dados?.exigirSenhaForte}
+          />
+        </div>
       </div>
 
-      <div className={styles.formRow}>
-        <label htmlFor="validadeSenha">Validade da senha (dias)</label>
-        <input
-          id="validadeSenha"
-          type="number"
-          min="0"
-          max="365"
-          value={dados?.validadeSenha || 90}
-          onChange={(e) => handleMudanca('validadeSenha', e.target.value)}
-          disabled={carregando}
-          title="Dias até a senha expirar (0 = sem expiração, 1-365)"
-          style={{
-            borderColor: erroValidade ? 'var(--color-error)' : 'rgba(102, 126, 234, 0.2)',
-            boxShadow: erroValidade ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : 'none',
-          }}
-        />
-        {erroValidade ? (
-          <small style={{ color: 'var(--color-error)', marginTop: '4px' }}>
-            ⚠️ {erroValidade}
-          </small>
-        ) : (
-          <small style={{ color: 'var(--color-text-tertiary)', marginTop: '4px' }}>
-            Dias até a senha expirar (0 = sem expiração)
-          </small>
-        )}
+      <div className={styles.sectionBlock}>
+        <h4>Acesso e proteção de conta</h4>
+        <p>Controle tentativas de login, bloqueio e autenticação adicional.</p>
+
+        <div className={styles.formRow}>
+          <label htmlFor="tentativasLogin">Tentativas máximas de login</label>
+          <input
+            id="tentativasLogin"
+            type="number"
+            min="1"
+            max="10"
+            value={dados?.tentativasLogin || 5}
+            onChange={(e) => handleMudanca('tentativasLogin', e.target.value)}
+            disabled={carregando}
+          />
+          {erroTentativas && <small className={styles.validationMessage}>{erroTentativas}</small>}
+        </div>
+
+        <div className={styles.toggleRow}>
+          <span>Bloquear conta após falhas consecutivas</span>
+          <input
+            type="checkbox"
+            checked={dados?.bloquearAposFalhas || false}
+            onChange={() => handleToggle('bloquearAposFalhas')}
+            disabled={carregando}
+          />
+        </div>
+
+        <div className={styles.formRow}>
+          <label htmlFor="tempoBloqueioMinutos">Tempo de bloqueio (minutos)</label>
+          <input
+            id="tempoBloqueioMinutos"
+            type="number"
+            min="5"
+            max="1440"
+            value={dados?.tempoBloqueioMinutos || 30}
+            onChange={(e) => handleMudanca('tempoBloqueioMinutos', e.target.value)}
+            disabled={carregando || !dados?.bloquearAposFalhas}
+          />
+          {erroTempoBloqueio && <small className={styles.validationMessage}>{erroTempoBloqueio}</small>}
+        </div>
+
+        <div className={styles.toggleRow}>
+          <span>Forçar 2FA para administradores</span>
+          <input
+            type="checkbox"
+            checked={dados?.forcar2FAAdmins || false}
+            onChange={() => handleToggle('forcar2FAAdmins')}
+            disabled={carregando}
+          />
+        </div>
+
+        <div className={styles.toggleRow}>
+          <span>Alertar login em novo dispositivo</span>
+          <input
+            type="checkbox"
+            checked={dados?.alertaNovoDispositivo || false}
+            onChange={() => handleToggle('alertaNovoDispositivo')}
+            disabled={carregando}
+          />
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

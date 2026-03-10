@@ -25,6 +25,53 @@ const VALIDACOES = {
     }
     return null;
   },
+  tamanhoMinimoSenha: (valor) => {
+    const num = parseInt(valor, 10);
+    if (isNaN(num) || num < 6 || num > 32) {
+      return 'Tamanho mínimo da senha deve estar entre 6 e 32 caracteres';
+    }
+    return null;
+  },
+  tempoBloqueioMinutos: (valor) => {
+    const num = parseInt(valor, 10);
+    if (isNaN(num) || num < 5 || num > 1440) {
+      return 'Tempo de bloqueio deve estar entre 5 e 1440 minutos';
+    }
+    return null;
+  },
+  limiteSessaoMinutos: (valor) => {
+    const num = parseInt(valor, 10);
+    if (isNaN(num) || num < 15 || num > 1440) {
+      return 'Tempo de sessão deve estar entre 15 e 1440 minutos';
+    }
+    return null;
+  },
+  maxUsuariosAtivos: (valor) => {
+    const num = parseInt(valor, 10);
+    if (isNaN(num) || num < 1 || num > 5000) {
+      return 'Limite de usuários ativos deve estar entre 1 e 5000';
+    }
+    return null;
+  },
+  remetenteEmail: (valor) => {
+    if (!valor || valor.trim().length === 0) {
+      return 'Email remetente é obrigatório';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(valor.trim())) {
+      return 'Email remetente inválido';
+    }
+    return null;
+  },
+  horarioSilencioso: (inicio, fim) => {
+    if (!inicio || !fim) {
+      return 'Defina início e fim do horário silencioso';
+    }
+    if (inicio === fim) {
+      return 'Horários de início e fim não podem ser iguais';
+    }
+    return null;
+  },
   nomeSetor: (valor) => {
     if (!valor || valor.trim().length === 0) {
       return 'Nome do setor é obrigatório';
@@ -40,7 +87,7 @@ const VALIDACOES = {
 };
 
 const useConfiguracoes = () => {
-  const [configuracoes, setConfiguracoes] = useState({
+  const configuracoesPadrao = {
     geral: {
       organizacao: 'HelpDesk Enterprise',
       idioma: 'pt-BR',
@@ -49,15 +96,42 @@ const useConfiguracoes = () => {
     usuarios: {
       tecnicosGerenciam: false,
       usuariosEncerram: false,
+      permitirConviteUsuarios: true,
+      autoAprovarNovosUsuarios: false,
+      papelPadraoNovoUsuario: 'user',
+      limiteSessaoMinutos: 120,
+      maxUsuariosAtivos: 500,
     },
     notificacoes: {
       emailCriarChamado: true,
-      emailAtribuirChamado: false,
+      emailAtribuirChamado: true,
+      emailAlteracaoStatus: true,
+      notificarComentario: true,
+      notificarSLA: true,
+      receberResumoDiario: false,
+      canalPadrao: 'email',
+      frequenciaResumo: 'diario',
+      remetenteEmail: 'helpdesk@empresa.com',
+      horarioSilenciosoInicio: '22:00',
+      horarioSilenciosoFim: '07:00',
     },
     seguranca: {
       tentativasLogin: 5,
       validadeSenha: 90,
+      forcar2FAAdmins: false,
+      exigirSenhaForte: true,
+      tamanhoMinimoSenha: 8,
+      exigirMaiuscula: true,
+      exigirNumero: true,
+      exigirSimbolo: false,
+      bloquearAposFalhas: true,
+      tempoBloqueioMinutos: 30,
+      alertaNovoDispositivo: true,
     },
+  };
+
+  const [configuracoes, setConfiguracoes] = useState({
+    ...configuracoesPadrao,
   });
 
   const [carregando, setCarregando] = useState(true);
@@ -92,9 +166,30 @@ const useConfiguracoes = () => {
       if (configSalvas) {
         try {
           const parsed = JSON.parse(configSalvas);
+          const mergedConfig = {
+            ...configuracoesPadrao,
+            ...parsed,
+            geral: {
+              ...configuracoesPadrao.geral,
+              ...(parsed.geral || {}),
+            },
+            usuarios: {
+              ...configuracoesPadrao.usuarios,
+              ...(parsed.usuarios || {}),
+            },
+            notificacoes: {
+              ...configuracoesPadrao.notificacoes,
+              ...(parsed.notificacoes || {}),
+            },
+            seguranca: {
+              ...configuracoesPadrao.seguranca,
+              ...(parsed.seguranca || {}),
+            },
+          };
+
           setConfiguracoes(prev => ({
             ...prev,
-            ...parsed,
+            ...mergedConfig,
             setores: setoresDoBackend, // Sempre usar setores do backend
           }));
         } catch (parseError) {
@@ -137,10 +232,45 @@ const useConfiguracoes = () => {
         const erro = VALIDACOES.validadeSenha(dados.validadeSenha);
         if (erro) erros.validadeSenha = erro;
       }
+      if (dados.tamanhoMinimoSenha !== undefined) {
+        const erro = VALIDACOES.tamanhoMinimoSenha(dados.tamanhoMinimoSenha);
+        if (erro) erros.tamanhoMinimoSenha = erro;
+      }
+      if (dados.tempoBloqueioMinutos !== undefined) {
+        const erro = VALIDACOES.tempoBloqueioMinutos(dados.tempoBloqueioMinutos);
+        if (erro) erros.tempoBloqueioMinutos = erro;
+      }
+    }
+
+    if (secao === 'usuarios') {
+      if (dados.limiteSessaoMinutos !== undefined) {
+        const erro = VALIDACOES.limiteSessaoMinutos(dados.limiteSessaoMinutos);
+        if (erro) erros.limiteSessaoMinutos = erro;
+      }
+
+      if (dados.maxUsuariosAtivos !== undefined) {
+        const erro = VALIDACOES.maxUsuariosAtivos(dados.maxUsuariosAtivos);
+        if (erro) erros.maxUsuariosAtivos = erro;
+      }
+    }
+
+    if (secao === 'notificacoes') {
+      if (dados.remetenteEmail !== undefined) {
+        const erro = VALIDACOES.remetenteEmail(dados.remetenteEmail);
+        if (erro) erros.remetenteEmail = erro;
+      }
+
+      if (dados.horarioSilenciosoInicio !== undefined || dados.horarioSilenciosoFim !== undefined) {
+        const erro = VALIDACOES.horarioSilencioso(
+          dados.horarioSilenciosoInicio ?? configuracoes.notificacoes.horarioSilenciosoInicio,
+          dados.horarioSilenciosoFim ?? configuracoes.notificacoes.horarioSilenciosoFim,
+        );
+        if (erro) erros.horarioSilencioso = erro;
+      }
     }
 
     return erros;
-  }, []);
+  }, [configuracoes.notificacoes.horarioSilenciosoFim, configuracoes.notificacoes.horarioSilenciosoInicio]);
 
   const atualizarConfiguracao = useCallback((secao, dados) => {
     const erros = validar(secao, dados);
@@ -250,15 +380,28 @@ const useConfiguracoes = () => {
       // Validar todas as seções antes de salvar
       const errosGeral = validar('geral', configuracoes.geral);
       const errosSeguranca = validar('seguranca', configuracoes.seguranca);
+      const errosUsuarios = validar('usuarios', configuracoes.usuarios);
+      const errosNotificacoes = validar('notificacoes', configuracoes.notificacoes);
       
-      if (Object.keys(errosGeral).length > 0 || Object.keys(errosSeguranca).length > 0) {
-        const todosErros = { ...errosGeral, ...errosSeguranca };
+      if (
+        Object.keys(errosGeral).length > 0 ||
+        Object.keys(errosSeguranca).length > 0 ||
+        Object.keys(errosUsuarios).length > 0 ||
+        Object.keys(errosNotificacoes).length > 0
+      ) {
+        const todosErros = {
+          geral: errosGeral,
+          seguranca: errosSeguranca,
+          usuarios: errosUsuarios,
+          notificacoes: errosNotificacoes,
+        };
         setErrosValidacao(todosErros);
         throw new Error('Corrija os erros de validação');
       }
 
       // Salvar em localStorage por enquanto
       localStorage.setItem('configuracoes', JSON.stringify(configuracoes));
+      window.dispatchEvent(new Event('config-updated'));
       setAlteracoesPendentes(false);
       setErro(null);
       return { sucesso: true, mensagem: 'Configurações salvas com sucesso' };
