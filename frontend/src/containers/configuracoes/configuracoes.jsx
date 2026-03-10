@@ -6,68 +6,34 @@ import {
   FaBell, 
   FaShieldAlt,
   FaBuilding,
-  FaPlus,
-  FaEdit,
-  FaTrash
+  FaSpinner
 } from "react-icons/fa"
+import useConfiguracoes from "./hooks/useConfiguracoes"
+import { useToast } from "../../contexts/ToastContext"
+import ConfirmDialog from "../../components/Modal/confirmDialog"
+import SetoresManager from "./components/SetoresManager"
+import SecaoGeral from "./components/SecaoGeral"
+import SecaoNotificacoes from "./components/SecaoNotificacoes"
+import SecaoUsuarios from "./components/SecaoUsuarios"
+import SecaoSeguranca from "./components/SecaoSeguranca"
 
 function Configuracoes() {
   const [abaAtiva, setAbaAtiva] = useState("geral")
-  const [setores, setSetores] = useState([])
-  const [novoSetor, setNovoSetor] = useState("")
-  const [editandoSetor, setEditandoSetor] = useState(null)
-  const [setorEditado, setSetorEditado] = useState("")
-
-  // Carregar setores do localStorage
-  useEffect(() => {
-    const setoresSalvos = localStorage.getItem("setores")
-    if (setoresSalvos) {
-      setSetores(JSON.parse(setoresSalvos))
-    } else {
-      // Se não houver setores salvos, usar os padrões
-      const setoresPadrao = ["TI", "Administrativo", "RH", "Financeiro", "Manutenção", "Produção", "Engenharia", "Qualidade", "Direção"]
-      setSetores(setoresPadrao)
-      localStorage.setItem("setores", JSON.stringify(setoresPadrao))
-    }
-  }, [])
-
-  // Salvar setores no localStorage sempre que mudar
-  useEffect(() => {
-    if (setores.length > 0) {
-      localStorage.setItem("setores", JSON.stringify(setores))
-    }
-  }, [setores])
-
-  const adicionarSetor = () => {
-    if (novoSetor.trim() && !setores.includes(novoSetor.trim())) {
-      setSetores([...setores, novoSetor.trim()])
-      setNovoSetor("")
-    }
-  }
-
-  const removerSetor = (setor) => {
-    if (setores.length > 1) { // Manter pelo menos um setor
-      setSetores(setores.filter(s => s !== setor))
-    }
-  }
-
-  const iniciarEdicao = (setor) => {
-    setEditandoSetor(setor)
-    setSetorEditado(setor)
-  }
-
-  const salvarEdicao = () => {
-    if (setorEditado.trim() && !setores.includes(setorEditado.trim())) {
-      setSetores(setores.map(s => s === editandoSetor ? setorEditado.trim() : s))
-      setEditandoSetor(null)
-      setSetorEditado("")
-    }
-  }
-
-  const cancelarEdicao = () => {
-    setEditandoSetor(null)
-    setSetorEditado("")
-  }
+  const [mostrarModalDescartar, setMostrarModalDescartar] = useState(false)
+  const { 
+    configuracoes, 
+    carregando, 
+    erro,
+    errosValidacao,
+    alteracoesPendentes,
+    atualizar,
+    adicionarSetor,
+    removerSetor,
+    editarSetor,
+    salvar,
+    cancelar 
+  } = useConfiguracoes()
+  const { addToast } = useToast()
 
   const menu = [
     { id: "geral", label: "Geral", desc: "Preferências do sistema", icon: <FaCogs /> },
@@ -76,6 +42,37 @@ function Configuracoes() {
     { id: "notificacoes", label: "Notificações", desc: "Emails e alertas", icon: <FaBell /> },
     { id: "seguranca", label: "Segurança", desc: "Políticas e autenticação", icon: <FaShieldAlt /> },
   ]
+
+  const handleSalvar = async () => {
+    try {
+      await salvar()
+      addToast("Configurações salvas com sucesso!", "sucesso")
+    } catch (err) {
+      addToast("Erro ao salvar configurações", "erro")
+    }
+  }
+
+  const handleCancelar = () => {
+    if (alteracoesPendentes) {
+      setMostrarModalDescartar(true)
+    }
+  }
+
+  const confirmarDescartar = () => {
+    cancelar()
+    setMostrarModalDescartar(false)
+  }
+
+  if (erro && !carregando) {
+    return (
+      <main className={styles.container}>
+        <div style={{ textAlign: "center", padding: "40px" }}>
+          <p style={{ color: "var(--color-error)" }}>⚠️ {erro}</p>
+          <button onClick={() => window.location.reload()}>Tentar novamente</button>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main className={styles.container}>
@@ -120,140 +117,94 @@ function Configuracoes() {
           </header>
 
           <div className={styles.card}>
-
-            {abaAtiva === "geral" && (
-              <>
-                <div className={styles.formRow}>
-                  <label>Nome da organização</label>
-                  <input type="text" defaultValue="HelpDesk Enterprise" />
-                </div>
-
-                <div className={styles.formRow}>
-                  <label>Idioma padrão</label>
-                  <select>
-                    <option>Português</option>
-                    <option>Inglês</option>
-                  </select>
-                </div>
-              </>
-            )}
-
-            {abaAtiva === "usuarios" && (
-              <>
-                <div className={styles.toggleRow}>
-                  <span>Técnicos podem gerenciar usuários</span>
-                  <input type="checkbox" />
-                </div>
-
-                <div className={styles.toggleRow}>
-                  <span>Usuários podem encerrar chamados</span>
-                  <input type="checkbox" />
-                </div>
-              </>
-            )}
-
-            {abaAtiva === "notificacoes" && (
-              <>
-                <div className={styles.toggleRow}>
-                  <span>Notificar por email ao criar chamado</span>
-                  <input type="checkbox" defaultChecked />
-                </div>
-
-                <div className={styles.toggleRow}>
-                  <span>Notificar técnico ao atribuir chamado</span>
-                  <input type="checkbox" />
-                </div>
-              </>
-            )}
-
-            {abaAtiva === "seguranca" && (
-              <>
-                <div className={styles.formRow}>
-                  <label>Tentativas máximas de login</label>
-                  <input type="number" defaultValue={5} />
-                </div>
-
-                <div className={styles.formRow}>
-                  <label>Validade da senha (dias)</label>
-                  <input type="number" defaultValue={90} />
-                </div>
-              </>
-            )}
-
-            {abaAtiva === "setores" && (
-              <div className={styles.setoresContainer}>
-                <div className={styles.adicionarSetor}>
-                  <input
-                    type="text"
-                    placeholder="Nome do novo setor"
-                    value={novoSetor}
-                    onChange={(e) => setNovoSetor(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && adicionarSetor()}
-                  />
-                  <button 
-                    onClick={adicionarSetor}
-                    className={styles.addBtn}
-                    disabled={!novoSetor.trim()}
-                  >
-                    <FaPlus /> Adicionar
-                  </button>
-                </div>
-
-                <div className={styles.setoresList}>
-                  <h3>Setores Cadastrados ({setores.length})</h3>
-                  {setores.map((setor) => (
-                    <div key={setor} className={styles.setorItem}>
-                      {editandoSetor === setor ? (
-                        <div className={styles.editContainer}>
-                          <input
-                            type="text"
-                            value={setorEditado}
-                            onChange={(e) => setSetorEditado(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && salvarEdicao()}
-                            autoFocus
-                          />
-                          <button onClick={salvarEdicao} className={styles.saveBtn}>
-                            Salvar
-                          </button>
-                          <button onClick={cancelarEdicao} className={styles.cancelBtn}>
-                            Cancelar
-                          </button>
-                        </div>
-                      ) : (
-                        <div className={styles.setorDisplay}>
-                          <span>{setor}</span>
-                          <div className={styles.setorActions}>
-                            <button 
-                              onClick={() => iniciarEdicao(setor)}
-                              className={styles.editBtn}
-                            >
-                              <FaEdit />
-                            </button>
-                            <button 
-                              onClick={() => removerSetor(setor)}
-                              className={styles.deleteBtn}
-                              disabled={setores.length <= 1}
-                            >
-                              <FaTrash />
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+            {carregando && (
+              <div style={{ textAlign: "center", padding: "40px" }}>
+                <FaSpinner style={{ animation: "spin 1s linear infinite" }} size={32} />
+                <p>Carregando configurações...</p>
               </div>
+            )}
+
+            {!carregando && (
+              <>
+                {abaAtiva === "geral" && (
+                  <SecaoGeral 
+                    dados={configuracoes.geral} 
+                    onAtualizar={atualizar}
+                    carregando={carregando}
+                    errosValidacao={errosValidacao.geral || {}}
+                  />
+                )}
+
+                {abaAtiva === "usuarios" && (
+                  <SecaoUsuarios 
+                    dados={configuracoes.usuarios} 
+                    onAtualizar={atualizar}
+                    carregando={carregando}
+                  />
+                )}
+
+                {abaAtiva === "notificacoes" && (
+                  <SecaoNotificacoes 
+                    dados={configuracoes.notificacoes} 
+                    onAtualizar={atualizar}
+                    carregando={carregando}
+                  />
+                )}
+
+                {abaAtiva === "seguranca" && (
+                  <SecaoSeguranca 
+                    dados={configuracoes.seguranca} 
+                    onAtualizar={atualizar}
+                    carregando={carregando}
+                    errosValidacao={errosValidacao.seguranca || {}}
+                  />
+                )}
+
+                {abaAtiva === "setores" && (
+                  <SetoresManager 
+                    setores={configuracoes.setores}
+                    onAdicionarSetor={adicionarSetor}
+                    onRemoverSetor={removerSetor}
+                    onEditarSetor={editarSetor}
+                    carregando={carregando}
+                  />
+                )}
+              </>
             )}
 
           </div>
 
           <div className={styles.actions}>
-            <button className={styles.cancel}>Cancelar</button>
-            <button className={styles.save}>Salvar alterações</button>
+            <button 
+              className={styles.cancel}
+              onClick={handleCancelar}
+              disabled={!alteracoesPendentes || carregando}
+            >
+              Cancelar
+            </button>
+            <button 
+              className={styles.save}
+              onClick={handleSalvar}
+              disabled={!alteracoesPendentes || carregando}
+            >
+              {carregando ? "Salvando..." : "Salvar alterações"}
+            </button>
           </div>
 
         </section>
       </div>
+
+      {/* Modal de confirmação para descartar alterações */}
+      <ConfirmDialog
+        isOpen={mostrarModalDescartar}
+        onClose={() => setMostrarModalDescartar(false)}
+        onConfirm={confirmarDescartar}
+        title="Descartar Alterações"
+        message="Tem certeza que deseja descartar todas as alterações não salvas? Esta ação não pode ser desfeita."
+        confirmText="Sim, descartar"
+        cancelText="Continuar editando"
+        variant="warning"
+      />
     </main>
   )
 }

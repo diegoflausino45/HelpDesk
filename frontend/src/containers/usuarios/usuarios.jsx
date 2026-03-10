@@ -2,6 +2,7 @@ import styles from "./usuarios.module.css"
 import { useState, useEffect } from "react"
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa"
 import Modal from "../../components/Modal/modal"
+import ConfirmDialog from "../../components/Modal/confirmDialog"
 import CreateUser from "./components/criarUsuarioModal"
 import EditUser from "./components/editarUsuarioModal"
 import Pagination from "../../components/paginacao/paginacao"
@@ -22,6 +23,9 @@ function Usuarios() {
   const [openCreate, setOpenCreate] = useState(false)
   const [openEdit, setOpenEdit] = useState(false)
   const [usuarioSelecionado, setUsuarioSelecionado] = useState(null)
+  const [mostrarModalExcluir, setMostrarModalExcluir] = useState(false)
+  const [usuarioParaExcluir, setUsuarioParaExcluir] = useState(null)
+  const [excluindoUsuario, setExcluindoUsuario] = useState(false)
 
   // Paginação
   const [currentPage, setCurrentPage] = useState(1)
@@ -93,19 +97,23 @@ function Usuarios() {
       return
     }
 
-    // Confirmação
-    const confirmDelete = window.confirm(
-      `Tem certeza que deseja excluir o usuário "${user.name}"?\n\nEsta ação não pode ser desfeita.`
-    )
+    // Abrir modal de confirmação
+    setUsuarioParaExcluir(user)
+    setMostrarModalExcluir(true)
+  }
 
-    if (!confirmDelete) return
-
+  const confirmarExclusao = async () => {
     try {
-      await usersAPI.delete(user.id)
+      setExcluindoUsuario(true)
+      await usersAPI.delete(usuarioParaExcluir.id)
       toast.success("Usuário excluído com sucesso!")
+      setMostrarModalExcluir(false)
+      setUsuarioParaExcluir(null)
       fetchUsuarios() // Recarregar lista
     } catch (error) {
       toast.error(error.response?.data?.error || "Erro ao excluir usuário")
+    } finally {
+      setExcluindoUsuario(false)
     }
   }
 
@@ -259,6 +267,22 @@ function Usuarios() {
           onUpdated={fetchUsuarios}
         />
       </Modal>
+
+      {/* Modal de confirmação de exclusão */}
+      <ConfirmDialog
+        isOpen={mostrarModalExcluir}
+        onClose={() => {
+          setMostrarModalExcluir(false)
+          setUsuarioParaExcluir(null)
+        }}
+        onConfirm={confirmarExclusao}
+        title="Confirmar Exclusão de Usuário"
+        message={`Tem certeza que deseja excluir o usuário "${usuarioParaExcluir?.name}"? Esta ação não pode ser desfeita e todos os dados associados a este usuário serão perdidos.`}
+        confirmText="Sim, excluir"
+        cancelText="Cancelar"
+        variant="delete"
+        isLoading={excluindoUsuario}
+      />
     </main>
   )
 }

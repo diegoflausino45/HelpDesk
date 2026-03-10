@@ -1,9 +1,10 @@
 import RouterApp from "./routes/routes"
 import { Toaster } from "react-hot-toast"
+import { ToastProvider } from "./contexts/ToastContext"
 
 function App() {
   return (
-    <>
+    <ToastProvider>
       <RouterApp />
       <Toaster
         position="top-right"
@@ -29,7 +30,7 @@ function App() {
           },
         }}
       />
-    </>
+    </ToastProvider>
   )
 }
 

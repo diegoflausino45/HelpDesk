@@ -12,6 +12,15 @@
   gap: var(--space-2xl);
 }
 
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* SIDEBAR */
 .sidebar {
   width: 280px;
@@ -116,7 +125,15 @@
   background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;  font-weight: var(--font-weight-bold);
+  background-clip: text;
+  font-weight: var(--font-weight-bold);
+}
+
+.formRow small {
+  font-size: var(--font-size-xs);
+  display: block;
+  margin-top: 4px;
+  color: var(--color-text-tertiary);
 }
 
 .contentHeader p {
@@ -212,6 +229,11 @@
   transition: all var(--transition-base);
 }
 
+.cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .cancel:hover {
   background: rgba(102, 126, 234, 0.08);
   border-color: var(--color-primary);
@@ -230,9 +252,14 @@
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
-.save:hover {
+.save:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* SETORES */
@@ -372,6 +399,135 @@
 .editContainer input:focus {
   outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Validações de Input */
+.inputWrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.inputWrapper input {
+  width: 100%;
+  padding: var(--space-md);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-base);
+  padding-right: 40px;
+}
+
+.inputWrapper input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.inputSuccess {
+  border-color: var(--color-success) !important;
+  background: linear-gradient(135deg, var(--color-bg-primary), rgba(34, 197, 94, 0.02)) !important;
+}
+
+.inputSuccess:focus {
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1) !important;
+}
+
+.inputError {
+  border-color: var(--color-error) !important;
+  background: linear-gradient(135deg, var(--color-bg-primary), rgba(239, 68, 68, 0.02)) !important;
+}
+
+.inputError:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.validationIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--font-size-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: slideInRight 0.2s ease-out;
+}
+
+.validationIconSuccess {
+  color: var(--color-success);
+  animation: slideInRight 0.2s ease-out;
+}
+
+.validationIconError {
+  color: var(--color-error);
+  animation: slideInRight 0.2s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.validationMessage {
+  margin-top: var(--space-xs);
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Melhorias no editContainer */
+.editContainer {
+  display: flex;
+  gap: var(--space-sm);
+  width: 100%;
+  align-items: flex-start;
+  position: relative;
+}
+
+.editContainer input {
+  flex: 1;
+  padding: var(--space-sm);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: all var(--transition-base);
+  padding-right: 32px;
+}
+
+.editContainer input.inputSuccess {
+  border-color: var(--color-success);
+  background: linear-gradient(135deg, var(--color-bg-primary), rgba(34, 197, 94, 0.02));
+}
+
+.editContainer input.inputError {
+  border-color: var(--color-error);
+  background: linear-gradient(135deg, var(--color-bg-primary), rgba(239, 68, 68, 0.02));
 }
 
 .saveBtn, .cancelBtn {
@@ -400,4 +556,28 @@
 
 .cancelBtn:hover {
   background: var(--color-gray);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: var(--space-lg);
+  }
+
+  .wrapper {
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .sidebar {
+    width: 100%;
+    position: static;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .actions button {
+    width: 100%;
+  }
 }

@@ -52,6 +52,8 @@ export const usersAPI = {
 export const sectorsAPI = {
   getAll: () => api.get('/sectors'),
   create: (data) => api.post('/sectors', data),
+  update: (id, data) => api.put(`/sectors/${id}`, data),
+  delete: (id) => api.delete(`/sectors/${id}`),
 };
 
 // Funções de API para Chamados
