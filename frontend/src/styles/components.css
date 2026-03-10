@@ -83,15 +83,57 @@
   padding: var(--space-xl);
   box-shadow: var(--shadow-lg);
   transition: var(--transition-base);
+  animation: fadeIn 0.3s ease;
 }
 
 .card:hover {
   box-shadow: var(--shadow-xl);
+  transform: translateY(-2px);
 }
 
 .card-compact {
   padding: var(--space-lg);
   box-shadow: var(--shadow-md);
+}
+
+/* ===== ANIMATION UTILITIES ===== */
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s ease;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.4s ease;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.4s ease;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.4s ease;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s ease;
+}
+
+.animate-delay-100 {
+  animation-delay: 0.1s;
+  animation-fill-mode: backwards;
+}
+
+.animate-delay-200 {
+  animation-delay: 0.2s;
+  animation-fill-mode: backwards;
+}
+
+.animate-delay-300 {
+  animation-delay: 0.3s;
+  animation-fill-mode: backwards;
 }
 
 /* ===== INPUTS ===== */

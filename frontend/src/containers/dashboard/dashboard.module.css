@@ -5,6 +5,7 @@
   box-shadow: var(--shadow-lg);
   margin-top: var(--space-lg);
   background: linear-gradient(135deg, var(--color-bg-light) 0%, rgba(102, 126, 234, 0.03) 100%);
+  animation: fadeIn 0.4s ease;
 }
 
 .kpis {
@@ -23,12 +24,30 @@
   gap: var(--space-lg);
   border: 1px solid var(--color-border);
   transition: all var(--transition-base);
+  animation: slideUp 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.05), transparent);
+  transition: left 0.5s ease;
 }
 
 .card:hover {
   border-color: var(--color-primary);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+.card:hover::before {
+  left: 100%;
 }
 
 .card span {
@@ -56,11 +75,30 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   transition: all var(--transition-base);
+  animation: slideUp 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.box::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 0;
+  background: var(--gradient-primary);
+  transition: height 0.3s ease;
 }
 
 .box:hover {
   border-color: var(--color-primary);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.box:hover::after {
+  height: 100%;
 }
 
 .box h3 {
@@ -85,6 +123,9 @@
   padding: var(--space-xl);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
+  animation: slideUp 0.4s ease;
+  animation-delay: 0.2s;
+  animation-fill-mode: backwards;
 }
 
 .table h3 {
@@ -117,6 +158,8 @@ tr:last-child td {
 
 tr:hover {
   background-color: var(--color-bg-secondary);
+  transform: scale(1.01);
+  transition: all var(--transition-base);
 }
 
 @media (max-width: 1024px) {

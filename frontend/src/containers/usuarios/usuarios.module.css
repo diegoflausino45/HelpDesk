@@ -5,13 +5,7 @@ padding: var(--space-3xl);
   box-shadow: var(--shadow-lg);
   margin-top: var(--space-lg);
   background: linear-gradient(135deg, var(--color-bg-light) 0%, rgba(102, 126, 234, 0.03) 100%);
-}
-
-/* Header */
-.pageHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  animation: fadeIn 0.4s ease;
   margin-bottom: var(--space-xl);
 }
 

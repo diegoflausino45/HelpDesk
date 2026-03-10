@@ -5,6 +5,7 @@ padding: var(--space-3xl);
   box-shadow: var(--shadow-lg);
   margin-top: var(--space-lg);
   background: linear-gradient(135deg, var(--color-bg-light) 0%, rgba(102, 126, 234, 0.03) 100%);
+  animation: fadeIn 0.4s ease;
 }
 
 .pageHeader {
@@ -34,13 +35,33 @@ padding: var(--space-3xl);
   text-decoration: none;
   font-size: var(--font-size-sm);
   transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.newTicket::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
 }
 
 .newTicket:hover {
   background-color: var(--color-primary-dark);
-  box-shadow: var(--shadow-red);
-  transform: translateY(-1px);
+  box-shadow: var(--shadow-red-lg);
+  transform: translateY(-2px) scale(1.02);
   color: var(--color-text-white);
+}
+
+.newTicket:hover::after {
+  width: 300px;
+  height: 300px;
 }
 
 /* Filtros */
@@ -105,6 +126,7 @@ html.dark .filterSelect {
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--color-border);
+  animation: fadeIn 0.4s ease;
 }
 
 .table th {
@@ -123,6 +145,8 @@ html.dark .filterSelect {
 
 .table tr:hover {
   background-color: var(--color-bg-secondary);
+  transform: scale(1.005);
+  transition: all var(--transition-fast);
 }
 
 /* Badges */
@@ -133,6 +157,13 @@ html.dark .filterSelect {
   font-weight: var(--font-weight-semibold);
   display: inline-flex;
   align-items: center;
+  transition: all var(--transition-base);
+  animation: scaleIn 0.2s ease;
+}
+
+.badge:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Status Badges */
@@ -261,12 +292,30 @@ html.dark .filterSelect {
   gap: var(--space-md);
   cursor: pointer;
   transition: all var(--transition-base);
+  animation: scaleIn 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 0;
+  background: var(--color-primary);
+  transition: height 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   border-color: var(--color-primary);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.card:hover::after {
+  height: 100%;
 }
 
 .cardHeader {

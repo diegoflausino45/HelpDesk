@@ -5,6 +5,7 @@
   box-shadow: var(--shadow-lg);
   margin-top: var(--space-lg);
   background: linear-gradient(135deg, var(--color-bg-light) 0%, rgba(102, 126, 234, 0.03) 100%);
+  animation: fadeIn 0.4s ease;
 }
 
 /* HEADER */
@@ -19,6 +20,13 @@
   box-shadow: var(--shadow-lg);
   margin-bottom: var(--space-xl);
   border: 1px solid rgba(102, 126, 234, 0.1);
+  animation: slideDown 0.4s ease;
+  transition: all var(--transition-base);
+}
+
+.profileHeader:hover {
+  box-shadow: var(--shadow-xl);
+  border-color: rgba(102, 126, 234, 0.2);
 }
 
 .left {

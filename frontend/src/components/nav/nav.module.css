@@ -22,16 +22,38 @@
   transition: all var(--transition-base);
   font-size: var(--font-size-sm);
   position: relative;
+  overflow: hidden;
+}
+
+.link::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--color-primary);
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
 }
 
 .link:hover {
   color: var(--color-text-primary);
   background: var(--color-bg-secondary);
+  transform: translateY(-1px);
+}
+
+.link:hover::before {
+  width: 80%;
 }
 
 .active {
   color: var(--color-primary);
   background: rgba(198, 40, 40, 0.08);
   font-weight: var(--font-weight-semibold);
+}
+
+.active::before {
+  width: 80%;
 }
 

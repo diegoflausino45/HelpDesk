@@ -5,6 +5,7 @@
   box-shadow: var(--shadow-lg);
   margin-top: var(--space-lg);
   background: linear-gradient(135deg, var(--color-bg-light) 0%, rgba(102, 126, 234, 0.03) 100%);
+  animation: fadeIn 0.4s ease;
 }
 
 .wrapper {

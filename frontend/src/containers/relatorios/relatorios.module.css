@@ -85,12 +85,48 @@
   flex-direction: column;
   gap: var(--space-sm);
   transition: all var(--transition-base);
+  animation: slideUp 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpiCard::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.kpiCard:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.kpiCard:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.kpiCard:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.kpiCard:nth-child(4) {
+  animation-delay: 0.2s;
 }
 
 .kpiCard:hover {
   border-color: var(--color-primary);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+.kpiCard:hover::after {
+  transform: scaleX(1);
 }
 
 .kpiCard span {
@@ -113,6 +149,9 @@
   margin-bottom: var(--space-2xl);
   box-shadow: var(--shadow-md);
   border: 1px solid var(--color-border);
+  animation: slideDown 0.4s ease;
+  animation-delay: 0.3s;
+  animation-fill-mode: backwards;
 }
 
 .filters h2 {
@@ -186,12 +225,33 @@ html.dark .filterSelect {
   box-shadow: var(--shadow-md);
   border: 1px solid var(--color-border);
   transition: all var(--transition-base);
+  animation: slideUp 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, var(--color-primary), var(--color-success), var(--color-warning));
+  opacity: 0;
+  border-radius: var(--radius-lg);
+  z-index: -1;
+  transition: opacity 0.3s ease;
 }
 
 .card:hover {
   box-shadow: var(--shadow-xl);
-  border-color: var(--color-primary);
-  transform: translateY(-2px);
+  border-color: transparent;
+  transform: translateY(-4px);
+}
+
+.card:hover::before {
+  opacity: 0.1;
 }
 
 .card h3 {
@@ -269,12 +329,14 @@ html.dark .filterSelect {
   min-height: 400px;
   gap: var(--space-lg);
   text-align: center;
+  animation: fadeIn 0.3s ease;
 }
 
 .loadingState p,
 .errorState p {
   color: var(--color-text-secondary);
   font-size: var(--font-size-lg);
+  animation: pulse 2s ease-in-out infinite;
 }
 
 .errorState button {
