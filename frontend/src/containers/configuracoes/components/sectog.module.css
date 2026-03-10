@@ -63,10 +63,41 @@
   background: rgba(102, 126, 234, 0.02);
   border-radius: var(--radius-lg);
   border: 1px solid rgba(102, 126, 234, 0.1);
+  transition: all var(--transition-base);
+}
+
+.toggle:hover:not(.toggleDisabled) {
+  background: rgba(102, 126, 234, 0.06);
+  border-color: rgba(102, 126, 234, 0.25);
+}
+
+.toggleDisabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .toggle input {
   display: none;
+}
+
+.toggleText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.toggleText span {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.toggleText small {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.4;
 }
 
 .slider {
@@ -76,6 +107,7 @@
   border-radius: var(--radius-full);
   position: relative;
   transition: all var(--transition-base);
+  flex-shrink: 0;
 }
 
 .slider::before {
