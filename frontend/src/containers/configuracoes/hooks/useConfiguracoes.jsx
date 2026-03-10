@@ -49,10 +49,17 @@ const useConfiguracoes = () => {
     usuarios: {
       tecnicosGerenciam: false,
       usuariosEncerram: false,
+      tecnicosCriam: false,
+      usuariosVeemTodos: false,
+      tecnicosAlteramPrioridade: false,
     },
     notificacoes: {
       emailCriarChamado: true,
       emailAtribuirChamado: false,
+      emailEncerrarChamado: true,
+      emailComentarChamado: false,
+      alertaPrioridadeAlta: true,
+      alertaChamadoSemTecnico: false,
     },
     seguranca: {
       tentativasLogin: 5,
