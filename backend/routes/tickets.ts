@@ -123,6 +123,16 @@ router.put('/:id', authenticate, [
       return res.status(403).json({ error: 'Forbidden' });
     }
 
+    if (userRole === 'user') {
+      if (status && status !== 'closed') {
+        return res.status(403).json({ error: 'Users can only close tickets' });
+      }
+
+      if (assignedToId !== undefined || priority) {
+        return res.status(403).json({ error: 'Users cannot update assignment or priority' });
+      }
+    }
+
     const updateData: any = {};
     if (title) updateData.title = title;
     if (description !== undefined) updateData.description = description;
