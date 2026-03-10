@@ -84,6 +84,7 @@
 .actions {
   display: flex;
   gap: var(--space-lg);
+  flex-wrap: wrap;
 }
 
 .primaryBtn {
@@ -96,6 +97,12 @@
   font-weight: var(--font-weight-semibold);
   transition: all var(--transition-base);
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .primaryBtn:hover {
@@ -117,6 +124,10 @@
 .outlineBtn:hover {
   background: rgba(102, 126, 234, 0.08);
   border-color: var(--color-primary);
+}
+
+.hiddenInput {
+  display: none;
 }
 
 /* TABS */
@@ -195,6 +206,21 @@
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
 }
 
+.field input:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.inputError {
+  border-color: var(--color-status-rejected) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.errorText {
+  color: var(--color-status-rejected);
+  font-size: var(--font-size-xs);
+}
+
 /* SECURITY */
 
 .securitySection {
@@ -221,6 +247,20 @@
   box-shadow: var(--shadow-lg);
 }
 
+.securityCard input {
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+
+.securityCard input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
 /* ACTIVITY */
 
 .activity {
@@ -242,4 +282,35 @@
 .activityItem:hover {
   background: rgba(102, 126, 234, 0.1);
   border-color: rgba(102, 126, 234, 0.2);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: var(--space-lg);
+  }
+
+  .left {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .actions button,
+  .actions label {
+    width: 100%;
+    text-align: center;
+  }
+
+  .tabs {
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .activityItem {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
 }

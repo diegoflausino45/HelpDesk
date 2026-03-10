@@ -157,6 +157,7 @@
 }
 
 .rotate {
+  transform: rotate(180deg);
   transition: transform var(--transition-base);
 }
 
