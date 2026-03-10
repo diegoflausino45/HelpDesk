@@ -1,6 +1,6 @@
 import styles from "./usuarios.module.css"
 import { useState, useEffect } from "react"
-import { FaEye, FaEdit } from "react-icons/fa"
+import { FaEye, FaEdit, FaTrash } from "react-icons/fa"
 import Modal from "../../components/Modal/modal"
 import CreateUser from "./components/criarUsuarioModal"
 import EditUser from "./components/editarUsuarioModal"
@@ -86,6 +86,40 @@ function Usuarios() {
     }
   }
 
+  const handleDeleteUser = async (user) => {
+    // Apenas Admin pode excluir
+    if (usuarioLogado.perfil !== "Admin") {
+      toast.error("Apenas administradores podem excluir usuários")
+      return
+    }
+
+    // Confirmação
+    const confirmDelete = window.confirm(
+      `Tem certeza que deseja excluir o usuário "${user.name}"?\n\nEsta ação não pode ser desfeita.`
+    )
+
+    if (!confirmDelete) return
+
+    try {
+      await usersAPI.delete(user.id)
+      toast.success("Usuário excluído com sucesso!")
+      fetchUsuarios() // Recarregar lista
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Erro ao excluir usuário")
+    }
+  }
+
+  const handleEditUser = (user) => {
+    // Apenas Admin pode editar
+    if (usuarioLogado.perfil !== "Admin") {
+      toast.error("Apenas administradores podem editar usuários")
+      return
+    }
+
+    setUsuarioSelecionado(user)
+    setOpenEdit(true)
+  }
+
   const usuariosFiltrados = usuarios.filter(u => {
     const texto =
       u.name.toLowerCase().includes(busca.toLowerCase()) ||
@@ -169,16 +203,23 @@ function Usuarios() {
                 <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                 <td className={styles.actions}>
 
-                  {(usuarioLogado.perfil === "Admin" ||
-                    (usuarioLogado.perfil === "Técnico" &&
-                      user.role === "user")) && (
+                  {usuarioLogado.perfil === "Admin" && (
                     <button
-                      onClick={() => {
-                        setUsuarioSelecionado(user)
-                        setOpenEdit(true)
-                      }}
+                      className={styles.editBtn}
+                      onClick={() => handleEditUser(user)}
+                      title="Editar usuário"
                     >
                       <FaEdit />
+                    </button>
+                  )}
+
+                  {usuarioLogado.perfil === "Admin" && (
+                    <button
+                      className={styles.deleteBtn}
+                      onClick={() => handleDeleteUser(user)}
+                      title="Excluir usuário"
+                    >
+                      <FaTrash />
                     </button>
                   )}
                 </td>

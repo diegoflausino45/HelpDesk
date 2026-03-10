@@ -188,6 +188,56 @@ html.dark .filterSelect {
   border-color: var(--color-primary);
 }
 
+/* Botão Editar */
+.editBtn {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-base);
+  min-width: 36px;
+  height: 36px;
+}
+
+.editBtn:hover {
+  background: var(--color-info);
+  color: var(--color-text-white);
+  border-color: var(--color-info);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+
+/* Botão Deletar */
+.deleteBtn {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-base);
+  min-width: 36px;
+  height: 36px;
+}
+
+.deleteBtn:hover {
+  background: var(--color-error);
+  color: var(--color-text-white);
+  border-color: var(--color-error);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
 @media (max-width: 1024px) {
   .table {
     font-size: var(--font-size-sm);
