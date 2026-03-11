@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import UserMenu from "./components/userMenu";
 import ThemeToggle from "../themeToggle/themeToggle";
 import CriarChamadoModal from "../../containers/chamados/components/criarChamado/criarChamadoModal";
+import NotificationCenter from "../NotificationCenter/notificationCenter";
 
 function Header() {
 
@@ -52,6 +53,7 @@ function Header() {
           </div>
 
           <div className={styles.headerActions}>
+            <NotificationCenter />
             <ThemeToggle />
             <UserMenu />
           </div>

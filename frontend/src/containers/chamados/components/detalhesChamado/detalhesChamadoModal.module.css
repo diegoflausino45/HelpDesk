@@ -129,3 +129,111 @@
   margin: 1em 0em;
 }
 
+.slaContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0 1rem;
+  flex-wrap: wrap;
+}
+
+.slaDeadline {
+  color: var(--color-text-tertiary);
+}
+
+.attachmentsBox {
+  margin-top: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 0.75rem;
+  background: var(--color-bg-secondary);
+}
+
+.attachmentsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.attachmentsHeader h4 {
+  margin: 0;
+}
+
+.uploadLabel {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--border-radius);
+  padding: 0.35rem 0.65rem;
+  cursor: pointer;
+  font-size: var(--font-size-xs);
+}
+
+.attachmentsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.attachmentsList li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  padding: 0.35rem 0;
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.attachmentsList li:last-child {
+  border-bottom: none;
+}
+
+.attachmentsList a {
+  color: var(--color-primary);
+  text-decoration: none;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachmentsList button {
+  border: none;
+  background: transparent;
+  color: var(--color-error);
+  cursor: pointer;
+  font-size: var(--font-size-xs);
+}
+
+.historyList {
+  max-height: 210px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.historyItem {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 0.7rem;
+  background: var(--color-bg-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.historyItem p {
+  margin: 0.3rem 0 0;
+}
+
+.historyItem small {
+  color: var(--color-text-tertiary);
+}
+

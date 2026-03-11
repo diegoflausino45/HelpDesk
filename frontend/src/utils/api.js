@@ -63,6 +63,7 @@ export const ticketsAPI = {
   create: (data) => api.post('/tickets', data),
   update: (id, data) => api.put(`/tickets/${id}`, data),
   delete: (id) => api.delete(`/tickets/${id}`),
+  getHistory: (id) => api.get(`/tickets/${id}/history`),
 };
 
 // Funções de API para Comentários
@@ -71,6 +72,36 @@ export const commentsAPI = {
   create: (data) => api.post('/comments', data),
   update: (id, data) => api.put(`/comments/${id}`, data),
   delete: (id) => api.delete(`/comments/${id}`),
+};
+
+// Funções de API para Anexos
+export const attachmentsAPI = {
+  uploadToTicket: (ticketId, file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post(`/attachments/ticket/${ticketId}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  uploadToComment: (commentId, file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post(`/attachments/comment/${commentId}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  getDownloadUrl: (id) => `${API_BASE_URL}/attachments/${id}/download`,
+  delete: (id) => api.delete(`/attachments/${id}`),
+};
+
+// Funções de API para Notificações
+export const notificationsAPI = {
+  getAll: () => api.get('/notifications'),
+  getUnreadCount: () => api.get('/notifications/unread-count'),
+  markRead: (id) => api.patch(`/notifications/${id}/read`),
+  markAllRead: () => api.patch('/notifications/read-all'),
+  delete: (id) => api.delete(`/notifications/${id}`),
+  deleteAll: () => api.delete('/notifications'),
 };
 
 // Health check

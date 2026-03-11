@@ -7,6 +7,7 @@ import { FaEye, FaList, FaThLarge, FaSearch, FaFilter, FaFlag, FaBuilding } from
 import Pagination from "../../components/paginacao/paginacao"
 import { ticketsAPI } from "../../utils/api"
 import { getUserPermissions } from "../../utils/settings"
+import SlaBadge from "../../components/SlaBadge/slaBadge"
 
 
 function Chamados() {
@@ -246,6 +247,7 @@ function Chamados() {
                     <th>Prioridade</th>
                     <th>Setor</th>
                     <th>Responsável</th>
+                    <th>SLA</th>
                     <th>Atualizado</th>
                     <th>Ações</th>
                 </tr>
@@ -276,6 +278,14 @@ function Chamados() {
                         </td>
                         <td>{chamado.createdBy?.sector?.name ?? 'Error'}</td>
                         <td>{chamado.createdBy?.name || 'N/A'}</td>
+                        <td>
+                          <SlaBadge
+                            slaDeadline={chamado.slaDeadline}
+                            slaStatus={chamado.slaStatus}
+                            slaViolated={chamado.slaViolated}
+                            ticketStatus={chamado.status}
+                          />
+                        </td>
                         <td>{new Date(chamado.createdAt).toLocaleDateString('pt-BR')}</td>
                         <td>
                             <Link onClick={() => {
@@ -344,6 +354,16 @@ function Chamados() {
                                         <div>
                                         <strong>Criado por</strong>
                                         <span>{chamado.createdBy?.name || 'N/A'}</span>
+                                        </div>
+
+                                        <div>
+                                        <strong>SLA</strong>
+                                        <SlaBadge
+                                          slaDeadline={chamado.slaDeadline}
+                                          slaStatus={chamado.slaStatus}
+                                          slaViolated={chamado.slaViolated}
+                                          ticketStatus={chamado.status}
+                                        />
                                         </div>
                                     </div>
 

@@ -9,6 +9,12 @@ padding: var(--space-3xl);
   margin-bottom: var(--space-xl);
 }
 
+.pageHeader{
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 1.5em;
+}
+
 .pageHeader h1 {
   font-size: var(--font-size-3xl);
   background: var(--gradient-primary);

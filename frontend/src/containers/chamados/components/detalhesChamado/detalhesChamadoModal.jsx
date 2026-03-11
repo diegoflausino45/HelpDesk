@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
 import Modal from "../../../../components/Modal/modal"
-import { ticketsAPI, commentsAPI } from "../../../../utils/api"
+import { ticketsAPI, commentsAPI, attachmentsAPI } from "../../../../utils/api"
 import toast from 'react-hot-toast'
 import styles from "./detalhesChamadoModal.module.css"
+import SlaBadge from "../../../../components/SlaBadge/slaBadge"
 
 function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes }) {
   const [detalhes, setDetalhes] = useState(null)
@@ -11,11 +12,15 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes 
   const [error, setError] = useState('')
   const [novoComentario, setNovoComentario] = useState('')
   const [postingComment, setPostingComment] = useState(false)
+  const [historico, setHistorico] = useState([])
+  const [uploadingTicketFile, setUploadingTicketFile] = useState(false)
+  const [uploadingCommentFile, setUploadingCommentFile] = useState(false)
 
   useEffect(() => {
     if (isOpen && chamado?.id) {
       loadDetalhes()
       loadComentarios()
+      loadHistorico()
     }
   }, [isOpen, chamado?.id])
 
@@ -44,23 +49,72 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes 
     }
   }
 
+  async function loadHistorico() {
+    if (!chamado?.id) return
+    try {
+      const response = await ticketsAPI.getHistory(chamado.id)
+      setHistorico(response.data)
+    } catch {
+      setHistorico([])
+    }
+  }
+
   async function handleAddComment(e) {
     e.preventDefault()
     if (!novoComentario.trim() || !detalhes?.id) return
 
     setPostingComment(true)
     try {
-      await commentsAPI.create({
+      const response = await commentsAPI.create({
         ticketId: detalhes.id,
         content: novoComentario.trim()
       })
+
+      // Upload de anexo opcional no comentário recém-criado
+      const fileInput = document.getElementById("commentFileInput")
+      const file = fileInput?.files?.[0]
+      if (file && response?.data?.id) {
+        setUploadingCommentFile(true)
+        await attachmentsAPI.uploadToComment(response.data.id, file)
+        fileInput.value = ""
+      }
+
       setNovoComentario('')
       loadComentarios() // Recarregar comentários
+      loadDetalhes()
       toast.success('Comentário adicionado')
     } catch (err) {
       toast.error(err.response?.data?.error || 'Erro ao adicionar comentário')
     } finally {
       setPostingComment(false)
+      setUploadingCommentFile(false)
+    }
+  }
+
+  async function handleTicketAttachmentUpload(event) {
+    const file = event.target.files?.[0]
+    if (!file || !ticket?.id) return
+
+    try {
+      setUploadingTicketFile(true)
+      await attachmentsAPI.uploadToTicket(ticket.id, file)
+      event.target.value = ""
+      await loadDetalhes()
+      toast.success("Anexo enviado")
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Erro ao enviar anexo")
+    } finally {
+      setUploadingTicketFile(false)
+    }
+  }
+
+  async function handleDeleteAttachment(attachmentId) {
+    try {
+      await attachmentsAPI.delete(attachmentId)
+      await loadDetalhes()
+      toast.success("Anexo removido")
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Erro ao remover anexo")
     }
   }
 
@@ -108,6 +162,21 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes 
         <h3>{ticket.title}</h3>
         <p>{ticket.description}</p>
 
+        <div className={styles.slaContainer}>
+          <strong>SLA:</strong>
+          <SlaBadge
+            slaDeadline={ticket.slaDeadline}
+            slaStatus={ticket.slaStatus}
+            slaViolated={ticket.slaViolated}
+            ticketStatus={ticket.status}
+          />
+          {ticket.slaDeadline && (
+            <small className={styles.slaDeadline}>
+              Prazo: {new Date(ticket.slaDeadline).toLocaleString('pt-BR')}
+            </small>
+          )}
+        </div>
+
         <div className={styles.meta}>
           <span className={styles.selectDiv}>
             <span>Status:</span>
@@ -135,6 +204,41 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes 
           <span>Atribuído a: <strong>{ticket.assignedTo?.name || 'N/A'}</strong></span>
           <span>Criado em: <strong>{new Date(ticket.createdAt).toLocaleString('pt-BR')}</strong></span>
           <span>Setor: <strong>{ticket.createdBy?.sector?.name ?? 'Error'}</strong></span>
+        </div>
+
+        <div className={styles.attachmentsBox}>
+          <div className={styles.attachmentsHeader}>
+            <h4>Anexos do chamado</h4>
+            <label className={styles.uploadLabel}>
+              {uploadingTicketFile ? 'Enviando...' : 'Adicionar anexo'}
+              <input
+                type="file"
+                onChange={handleTicketAttachmentUpload}
+                disabled={uploadingTicketFile}
+                hidden
+              />
+            </label>
+          </div>
+
+          {ticket.attachments?.length ? (
+            <ul className={styles.attachmentsList}>
+              {ticket.attachments.map((file) => (
+                <li key={file.id}>
+                  <a
+                    href={attachmentsAPI.getDownloadUrl(file.id)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {file.originalName}
+                  </a>
+                  <span>{(file.size / 1024).toFixed(1)} KB</span>
+                  <button onClick={() => handleDeleteAttachment(file.id)}>Excluir</button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={styles.noComments}>Nenhum anexo.</p>
+          )}
         </div>
       </div>
 
@@ -166,10 +270,34 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes 
           rows="3"
           required
         />
+        <input id="commentFileInput" type="file" />
         <button type="submit" disabled={postingComment}>
-          {postingComment ? 'Enviando...' : 'Comentar'}
+          {postingComment || uploadingCommentFile ? 'Enviando...' : 'Comentar'}
         </button>
       </form>
+
+      <hr className={styles.linha} />
+
+      <h4>Histórico de status</h4>
+      <div className={styles.historyList}>
+        {historico.length === 0 ? (
+          <p className={styles.noComments}>Nenhuma mudança registrada.</p>
+        ) : (
+          historico.map((item) => (
+            <div key={item.id} className={styles.historyItem}>
+              <div>
+                <strong>{item.user?.name || 'Usuário'}</strong>
+                <span> alterou de </span>
+                <strong>{item.fromStatus || '—'}</strong>
+                <span> para </span>
+                <strong>{item.toStatus}</strong>
+              </div>
+              {item.note && <p>{item.note}</p>}
+              <small>{new Date(item.createdAt).toLocaleString('pt-BR')}</small>
+            </div>
+          ))
+        )}
+      </div>
     </Modal>
   )
 }

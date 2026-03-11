@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -24,27 +21,37 @@ model User {
   updatedAt DateTime @updatedAt
 
   // relations
-  sector         Sector? @relation(fields: [sectorId], references: [id])
-  createdTickets Ticket[] @relation("CreatedBy")
-  assignedTickets Ticket[] @relation("AssignedTo")
-  comments       Comment[]
+  sector          Sector?        @relation(fields: [sectorId], references: [id])
+  createdTickets  Ticket[]       @relation("CreatedBy")
+  assignedTickets Ticket[]       @relation("AssignedTo")
+  comments        Comment[]
+  attachments     Attachment[]
+  ticketHistories TicketHistory[]
+  notifications   Notification[]
 }
 
 model Ticket {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String?
-  status      String   @default("open")
-  priority    String   @default("medium")
-  createdById Int
+  id           Int       @id @default(autoincrement())
+  title        String
+  description  String?
+  status       String    @default("open")
+  priority     String    @default("medium")
+  createdById  Int
   assignedToId Int?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  // SLA
+  slaDeadline  DateTime?
+  slaViolated  Boolean   @default(false)
+  slaStatus    String    @default("ok") // ok | warning | violated
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   // relations
-  createdBy   User     @relation("CreatedBy", fields: [createdById], references: [id])
-  assignedTo  User?    @relation("AssignedTo", fields: [assignedToId], references: [id])
-  comments    Comment[]
+  createdBy     User            @relation("CreatedBy", fields: [createdById], references: [id])
+  assignedTo    User?           @relation("AssignedTo", fields: [assignedToId], references: [id])
+  comments      Comment[]
+  attachments   Attachment[]
+  history       TicketHistory[]
+  notifications Notification[]
 }
 
 model Comment {
@@ -54,12 +61,59 @@ model Comment {
   userId    Int
   createdAt DateTime @default(now())
 
-  ticket    Ticket   @relation(fields: [ticketId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  ticket      Ticket       @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id])
+  attachments Attachment[]
 }
 
 model Sector {
   id   Int    @id @default(autoincrement())
   name String @unique
   users User[]
+}
+
+// Histórico de transições de status / workflow
+model TicketHistory {
+  id         Int      @id @default(autoincrement())
+  ticketId   Int
+  userId     Int
+  fromStatus String?
+  toStatus   String
+  note       String?
+  createdAt  DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+// Anexos de tickets e comentários
+model Attachment {
+  id           Int      @id @default(autoincrement())
+  filename     String   // nome salvo no disco
+  originalName String   // nome original do arquivo
+  mimetype     String
+  size         Int
+  ticketId     Int?
+  commentId    Int?
+  uploadedById Int
+  createdAt    DateTime @default(now())
+
+  ticket     Ticket?  @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  comment    Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  uploadedBy User     @relation(fields: [uploadedById], references: [id])
+}
+
+// Notificações in-app
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  type      String   // ticket_created | ticket_updated | status_changed | comment_added | sla_warning | sla_violated | assigned
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  ticketId  Int?
+  createdAt DateTime @default(now())
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ticket Ticket? @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 }

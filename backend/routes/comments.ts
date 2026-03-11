@@ -2,6 +2,7 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import { prisma } from '../libs/prisma.js';
 import { authenticate } from '../middlewares/auth.js';
+import { notifyTicketStakeholders } from '../libs/notifications.js';
 
 const router = express.Router();
 
@@ -70,8 +71,21 @@ router.post('/', authenticate, [
         ticketId: parseInt(ticketId),
         userId,
       },
-      include: { user: { select: { id: true, name: true } } },
+      include: {
+        user: { select: { id: true, name: true } },
+        attachments: true,
+      },
     });
+
+    // Notificar envolvidos sobre novo comentário
+    await notifyTicketStakeholders(
+      parseInt(ticketId),
+      userId,
+      'comment_added',
+      `Chamado #${ticketId} — novo comentário`,
+      content.length > 100 ? content.slice(0, 100) + '…' : content,
+    );
+
     res.status(201).json(comment);
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
