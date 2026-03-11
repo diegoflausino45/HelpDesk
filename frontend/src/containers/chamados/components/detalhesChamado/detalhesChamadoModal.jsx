@@ -6,6 +6,15 @@ import styles from "./detalhesChamadoModal.module.css"
 import SlaBadge from "../../../../components/SlaBadge/slaBadge"
 
 function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes }) {
+  const translateStatus = (status) => {
+    const map = {
+      open: 'Aberto',
+      'in-progress': 'Em andamento',
+      closed: 'Fechado',
+    }
+    return map[status] || status
+  }
+
   const [detalhes, setDetalhes] = useState(null)
   const [comentarios, setComentarios] = useState([])
   const [loading, setLoading] = useState(false)
@@ -288,9 +297,9 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes 
               <div>
                 <strong>{item.user?.name || 'Usuário'}</strong>
                 <span> alterou de </span>
-                <strong>{item.fromStatus || '—'}</strong>
+                <strong>{item.fromStatus ? translateStatus(item.fromStatus) : 'Criação'}</strong>
                 <span> para </span>
-                <strong>{item.toStatus}</strong>
+                <strong>{translateStatus(item.toStatus)}</strong>
               </div>
               {item.note && <p>{item.note}</p>}
               <small>{new Date(item.createdAt).toLocaleString('pt-BR')}</small>

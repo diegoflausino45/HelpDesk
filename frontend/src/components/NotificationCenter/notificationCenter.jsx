@@ -97,7 +97,12 @@ function NotificationCenter() {
   function handleNavigate(notif) {
     if (!notif.read) handleMarkRead(notif.id)
     setOpen(false)
-    if (notif.ticketId) navigate("/chamados")
+    if (notif.ticketId) {
+      navigate("/chamados", { state: { openTicketId: notif.ticketId } })
+      return
+    }
+
+    navigate("/chamados")
   }
 
   const timeAgo = (dateStr) => {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import styles from "./chamados.module.css"
-import { Link } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import CriarChamadoModal from "./components/criarChamado/criarChamadoModal"
 import DetalhesChamadoModal from "./components/detalhesChamado/detalhesChamadoModal"
 import { FaEye, FaList, FaThLarge, FaSearch, FaFilter, FaFlag, FaBuilding } from "react-icons/fa"
@@ -17,6 +17,7 @@ function Chamados() {
     const [viewMode, setViewMode] = useState("list")
     const [statusFilter, setStatusFilter] = useState("")
     const [priorityFilter, setPriorityFilter] = useState("")
+    const [slaFilter, setSlaFilter] = useState("")
     const [setorFilter, setSetorFilter] = useState("")
     const [searchTerm, setSearchTerm] = useState("")
     const [setoresDisponiveis, setSetoresDisponiveis] = useState([])
@@ -24,6 +25,8 @@ function Chamados() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
     const [permissoes, setPermissoes] = useState(() => getUserPermissions())
+    const location = useLocation()
+    const navigate = useNavigate()
 
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 5
@@ -34,6 +37,19 @@ function Chamados() {
     useEffect(() => {
       loadChamados()
     }, [])
+
+    useEffect(() => {
+      const openTicketId = location.state?.openTicketId
+      if (!openTicketId || chamados.length === 0) return
+
+      const ticket = chamados.find((item) => item.id === Number(openTicketId))
+      if (ticket) {
+        setSelectedChamado(ticket)
+        setOpenDetails(true)
+      }
+
+      navigate(location.pathname, { replace: true, state: {} })
+    }, [location.state, location.pathname, chamados, navigate])
 
     useEffect(() => {
       const refreshPermissoes = () => setPermissoes(getUserPermissions())
@@ -78,23 +94,25 @@ function Chamados() {
   const filteredChamados = chamados.filter(chamado => {
     const matchesStatus = !statusFilter || chamado.status === statusFilter
     const matchesPriority = !priorityFilter || chamado.priority === priorityFilter
+    const matchesSla = !slaFilter || chamado.slaStatus === slaFilter
     const matchesSetor = !setorFilter || chamado.createdBy?.sector?.name === setorFilter
     const matchesSearch = !searchTerm ||
       chamado.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       chamado.id == Number(searchTerm)
 
-    return matchesStatus && matchesPriority && matchesSearch && matchesSetor
+    return matchesStatus && matchesPriority && matchesSla && matchesSearch && matchesSetor
   })
 
   const ultimosChamados = [...filteredChamados]
 .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
   const paginatedChamados = ultimosChamados.slice(startIndex, endIndex)
   const totalPages = Math.ceil(filteredChamados.length / itemsPerPage)
-  const hasActiveFilters = Boolean(statusFilter || priorityFilter || setorFilter || searchTerm)
+  const hasActiveFilters = Boolean(statusFilter || priorityFilter || slaFilter || setorFilter || searchTerm)
 
   function limparFiltros() {
     setStatusFilter("")
     setPriorityFilter("")
+    setSlaFilter("")
     setSetorFilter("")
     setSearchTerm("")
     setCurrentPage(1)
@@ -181,6 +199,24 @@ function Chamados() {
                 {setoresDisponiveis.map((setor) => (
                   <option key={setor} value={setor}>{setor}</option>
                 ))}
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.filterField}>
+            <label htmlFor="slaFilter">SLA</label>
+            <div className={styles.inputWithIcon}>
+              <span className={styles.fieldIcon}><FaFilter /></span>
+              <select
+                id="slaFilter"
+                className={styles.filterSelect}
+                value={slaFilter}
+                onChange={(e) => setSlaFilter(e.target.value)}
+              >
+                <option value="">Todos</option>
+                <option value="ok">No prazo</option>
+                <option value="warning">Em risco</option>
+                <option value="violated">Violado</option>
               </select>
             </div>
           </div>
