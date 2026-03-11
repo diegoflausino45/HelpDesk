@@ -17,7 +17,7 @@ function PeriodChart({data}) {
         <Line
           type="monotone"
           dataKey="chamados"
-          stroke="#c62828"
+          stroke="var(--color-primary)"
           strokeWidth={3}
         />
       </LineChart>

@@ -24,7 +24,7 @@ function StatusChart({open, inProgress, isClosed}) {
         <XAxis dataKey="status" />
         <YAxis />
         <Tooltip />
-        <Bar dataKey="total" fill="#c62828" radius={[6, 6, 0, 0]} />
+        <Bar dataKey="total" fill="var(--color-primary)" radius={[6, 6, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   )

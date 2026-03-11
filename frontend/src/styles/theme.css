@@ -1,39 +1,39 @@
 /**
  * Design System - Tema Moderno Minimalista
- * Paleta: Vermelho e Branco Elegante
+ * Paleta: Azul Petróleo e Ciano Profissional
  * 
  * IMPORTANTE: Light mode é o default (:root)
  *            Dark mode é ativado com classe .dark (html.dark)
  */
 
 :root {
-  /* ===== CORES - PALETA VERMELHO & BRANCO (LIGHT MODE) ===== */
+  /* ===== CORES - PALETA AZUL PETRÓLEO & CIANO (LIGHT MODE) ===== */
   
-  /* Primária - Vermelho Elegante */
-  --color-primary: #d32f2f;
-  --color-primary-dark: #c62828;
-  --color-primary-darker: #b71c1c;
-  --color-primary-light: #ef5350;
+  /* Primária - Azul Petróleo */
+  --color-primary: #0f4c81;
+  --color-primary-dark: #0c3e6b;
+  --color-primary-darker: #0a3256;
+  --color-primary-light: #2b6ea8;
   
   /* Status do Chamado */
-  --color-status-open: #d32f2f;
-  --color-status-open-bg: rgba(211, 47, 47, 0.06);
+  --color-status-open: #e65151;
+  --color-status-open-bg: rgba(230, 81, 81, 0.08);
   --color-status-progress: #ff6f00;
   --color-status-progress-bg: rgba(255, 111, 0, 0.06);
   --color-status-resolved: #2e7d32;
   --color-status-resolved-bg: rgba(46, 125, 50, 0.06);
   
   /* Prioridades */
-  --color-priority-high: #d32f2f;
-  --color-priority-high-bg: rgba(211, 47, 47, 0.06);
+  --color-priority-high: #e65151;
+  --color-priority-high-bg: rgba(230, 81, 81, 0.08);
   --color-priority-medium: #ff6f00;
   --color-priority-medium-bg: rgba(255, 111, 0, 0.06);
   --color-priority-low: #2e7d32;
   --color-priority-low-bg: rgba(46, 125, 50, 0.06);
   
   /* Perfis de Usuário */
-  --color-perfil-admin: #d32f2f;
-  --color-perfil-admin-bg: rgba(211, 47, 47, 0.06);
+  --color-perfil-admin: #0f4c81;
+  --color-perfil-admin-bg: rgba(15, 76, 129, 0.1);
   --color-perfil-tecnico: #ff6f00;
   --color-perfil-tecnico-bg: rgba(255, 111, 0, 0.06);
   --color-perfil-usuario: #2e7d32;
@@ -59,8 +59,8 @@
   --color-border-subtle: #f5f5f5;
   
   /* Estados */
-  --color-error: #d32f2f;
-  --color-error-bg: rgba(211, 47, 47, 0.06);
+  --color-error: #e65151;
+  --color-error-bg: rgba(230, 81, 81, 0.08);
   --color-success: #2e7d32;
   --color-success-bg: rgba(46, 125, 50, 0.06);
   --color-success-dark: #1b5e20;
@@ -124,17 +124,17 @@
   --shadow-2xl: 0 20px 60px 0 rgba(0, 0, 0, 0.18);
   
   /* Sombras coloridas com vermelho */
-  --shadow-red: 0 4px 12px rgba(211, 47, 47, 0.15);
-  --shadow-red-lg: 0 12px 40px rgba(211, 47, 47, 0.2);
+  --shadow-red: 0 4px 12px rgba(15, 76, 129, 0.18);
+  --shadow-red-lg: 0 12px 40px rgba(15, 76, 129, 0.24);
   --shadow-success: 0 4px 12px rgba(72, 187, 120, 0.3);
   --shadow-success-lg: 0 8px 25px rgba(72, 187, 120, 0.4);
   --shadow-error: 0 4px 15px rgba(245, 101, 101, 0.3);
   --shadow-error-lg: 0 8px 25px rgba(245, 101, 101, 0.4);
   
-  /* ===== GRADIENTES - Vermelho e Branco ===== */
-  --gradient-primary: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+  /* ===== GRADIENTES - Azul e Branco ===== */
+  --gradient-primary: linear-gradient(135deg, #0f4c81 0%, #0c3e6b 100%);
   --gradient-primary-light: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
-  --gradient-secondary: linear-gradient(135deg, #ef5350 0%, #d32f2f 100%);
+  --gradient-secondary: linear-gradient(135deg, #2b6ea8 0%, #0f4c81 100%);
   --gradient-success: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
   --gradient-error: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
   
@@ -167,12 +167,18 @@
   
   /* ===== UTILITÁRIOS ===== */
   --transition-all: all var(--transition-base);
-  --outline-focus: 0 0 0 3px rgba(211, 47, 47, 0.1);
-  --outline-focus-ring: 0 0 0 3px rgba(211, 47, 47, 0.2);
+  --outline-focus: 0 0 0 3px rgba(15, 76, 129, 0.12);
+  --outline-focus-ring: 0 0 0 3px rgba(15, 76, 129, 0.24);
 }
 
 /* ===== DARK MODE - MODO ESCURO ELEGANTE ===== */
 html.dark {
+  /* Primária no dark para contraste */
+  --color-primary: #4ea8de;
+  --color-primary-dark: #2b8cc7;
+  --color-primary-darker: #1f6f9f;
+  --color-primary-light: #7cc4ea;
+
   /* Backgrounds - Escuros Sofisticados */
   --color-bg-light: #0f1419;
   --color-bg-primary: #1a1f2e;
@@ -192,7 +198,7 @@ html.dark {
   --color-border-light: #252d3d;
   --color-border-subtle: #1a1f2e;
   
-  /* Status com Vermelho em Foco */
+  /* Status no dark */
   --color-status-open: #ff6b6b;
   --color-status-open-bg: rgba(255, 107, 107, 0.12);
   --color-status-progress: #ffa94d;
@@ -209,8 +215,8 @@ html.dark {
   --color-priority-low-bg: rgba(81, 207, 102, 0.12);
   
   /* Perfis em Dark Mode */
-  --color-perfil-admin: #d32f2f;
-  --color-perfil-admin-bg: rgba(211, 47, 47, 0.12);
+  --color-perfil-admin: #4ea8de;
+  --color-perfil-admin-bg: rgba(78, 168, 222, 0.18);
   --color-perfil-tecnico: #ffa94d;
   --color-perfil-tecnico-bg: rgba(255, 164, 77, 0.12);
   --color-perfil-usuario: #51cf66;
@@ -232,7 +238,7 @@ html.dark {
   --shadow-xl: 0 12px 40px 0 rgba(0, 0, 0, 0.65);
   --shadow-2xl: 0 20px 60px 0 rgba(0, 0, 0, 0.7);
   
-  /* Sombras do Vermelho em Dark Mode */
-  --shadow-red: 0 4px 12px rgba(211, 47, 47, 0.25);
-  --shadow-red-lg: 0 12px 40px rgba(211, 47, 47, 0.3);
+  /* Sombras da cor primária em Dark Mode */
+  --shadow-red: 0 4px 12px rgba(78, 168, 222, 0.25);
+  --shadow-red-lg: 0 12px 40px rgba(78, 168, 222, 0.3);
 }
