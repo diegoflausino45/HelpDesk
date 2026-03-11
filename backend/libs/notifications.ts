@@ -1,22 +1,28 @@
 import { prisma } from './prisma.js';
 
+// Tipos de notificação suportados pelo sistema
 type NotifType =
-  | 'ticket_created'
-  | 'ticket_updated'
-  | 'status_changed'
-  | 'comment_added'
-  | 'sla_warning'
-  | 'sla_violated'
-  | 'assigned';
+  | 'ticket_created'    // Chamado criado
+  | 'ticket_updated'    // Chamado atualizado (novo anexo, edição, etc.)
+  | 'status_changed'    // Mudança de status do chamado
+  | 'comment_added'     // Novo comentário no chamado
+  | 'sla_warning'       // SLA próximo do vencimento (<20% restante)
+  | 'sla_violated'      // SLA violado (prazo excedido)
+  | 'assigned';         // Chamado atribuído ao usuário
 
 interface CreateNotifOptions {
   userId: number;
   type: NotifType;
   title: string;
   message: string;
-  ticketId?: number;
+  ticketId?: number; // Opcional — vincula a notificação a um chamado específico
 }
 
+/**
+ * Cria uma notificação no banco para um usuário específico.
+ * Erros são silenciados — notificações são não-críticas e não devem
+ * interromper o fluxo principal da aplicação.
+ */
 export async function createNotification(opts: CreateNotifOptions) {
   try {
     await prisma.notification.create({

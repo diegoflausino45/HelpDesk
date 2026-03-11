@@ -4,7 +4,9 @@ import { authenticate } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-// GET /api/notifications — lista notificações do usuário autenticado
+// ─── GET /api/notifications ─────────────────────────────────────────────────
+// Lista as últimas 50 notificações do usuário autenticado, mais recentes primeiro.
+// Inclui informações básicas do chamado vinculado (se houver).
 router.get('/', authenticate, async (req, res) => {
   const userId = (req as any).user.id;
 
@@ -23,7 +25,9 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-// GET /api/notifications/unread-count — conta não lidas
+// ─── GET /api/notifications/unread-count ────────────────────────────────────
+// Retorna somente a contagem de notificações não lidas.
+// Usado pelo badge do sino no header para evitar carregar dados completos.
 router.get('/unread-count', authenticate, async (req, res) => {
   const userId = (req as any).user.id;
   try {
@@ -34,7 +38,9 @@ router.get('/unread-count', authenticate, async (req, res) => {
   }
 });
 
-// PATCH /api/notifications/:id/read — marcar uma como lida
+// ─── PATCH /api/notifications/:id/read ──────────────────────────────────────
+// Marca uma notificação específica como lida.
+// Verifica que a notificação pertence ao usuário antes de atualizar.
 router.patch('/:id/read', authenticate, async (req, res) => {
   const userId = (req as any).user.id;
   const { id } = req.params;
@@ -50,7 +56,8 @@ router.patch('/:id/read', authenticate, async (req, res) => {
   }
 });
 
-// PATCH /api/notifications/read-all — marcar todas como lidas
+// ─── PATCH /api/notifications/read-all ──────────────────────────────────────
+// Marca todas as notificações do usuário como lidas de uma vez.
 router.patch('/read-all', authenticate, async (req, res) => {
   const userId = (req as any).user.id;
   try {
@@ -61,7 +68,8 @@ router.patch('/read-all', authenticate, async (req, res) => {
   }
 });
 
-// DELETE /api/notifications/:id — remover notificação
+// ─── DELETE /api/notifications/:id ──────────────────────────────────────────
+// Remove uma notificação específica do usuário autenticado.
 router.delete('/:id', authenticate, async (req, res) => {
   const userId = (req as any).user.id;
   const { id } = req.params;
@@ -77,7 +85,8 @@ router.delete('/:id', authenticate, async (req, res) => {
   }
 });
 
-// DELETE /api/notifications — limpar todas
+// ─── DELETE /api/notifications ──────────────────────────────────────────────
+// Remove todas as notificações do usuário ("limpar tudo").
 router.delete('/', authenticate, async (req, res) => {
   const userId = (req as any).user.id;
   try {

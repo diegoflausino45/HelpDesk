@@ -1,3 +1,11 @@
+/**
+ * criarUsuarioModal.jsx — Formulário de criação de usuário.
+ *
+ * Responsabilidades:
+ *   - Carregar setores para seleção
+ *   - Validar campos obrigatórios e formatos
+ *   - Enviar payload para o componente pai via `onCreate`
+ */
 import { useState, useEffect } from "react"
 import {
   validateEmail,
@@ -8,6 +16,7 @@ import { sectorsAPI } from "../../../utils/api"
 import styles from "./usuarioModal.module.css"
 
 function CreateUser({ onClose, onCreate }) {
+  // Estado local do formulário
   const [form, setForm] = useState({
     nome: "",
     email: "",
@@ -34,6 +43,7 @@ function CreateUser({ onClose, onCreate }) {
 
   function handleChange(e) {
     const { name, value } = e.target
+    // Atualiza somente o campo alterado
     setForm({ ...form, [name]: value })
     // Limpar erro do campo ao usuário começar a digitar
     if (erros[name]) {
@@ -44,6 +54,7 @@ function CreateUser({ onClose, onCreate }) {
   function handleSubmit(e) {
     e.preventDefault()
 
+    // Acumulador de erros por campo
     const errosValidacao = {}
 
     const validacaoNome = validateNomeUsuario(form.nome)
@@ -71,6 +82,7 @@ function CreateUser({ onClose, onCreate }) {
       return
     }
 
+    // Delega persistência ao componente pai
     onCreate(form)
     onClose()
   }

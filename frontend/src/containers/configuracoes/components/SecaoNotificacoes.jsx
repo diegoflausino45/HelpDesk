@@ -1,6 +1,15 @@
+/**
+ * SecaoNotificacoes.jsx — Configuração de eventos, canais e horários de envio.
+ *
+ * Inclui:
+ *   - toggles de notificação por evento
+ *   - canal padrão, frequência e remetente
+ *   - janela de horário silencioso com validação cruzada
+ */
 import styles from '../configuracoes.module.css';
 
 const SecaoNotificacoes = ({ dados, onAtualizar, carregando, errosValidacao = {} }) => {
+  // Alterna valores booleanos da seção "notificacoes"
   const handleMudanca = (campo) => {
     onAtualizar('notificacoes', {
       ...dados,
@@ -8,6 +17,7 @@ const SecaoNotificacoes = ({ dados, onAtualizar, carregando, errosValidacao = {}
     });
   };
 
+  // Atualiza valores textuais/seleções da seção
   const handleMudancaValor = (campo, valor) => {
     onAtualizar('notificacoes', {
       ...dados,

@@ -1,3 +1,12 @@
+/**
+ * header.jsx — Cabeçalho fixo da aplicação.
+ *
+ * Comportamento:
+ *   - Oculta ao rolar para baixo > 80px (classe styles.hide)
+ *   - Reaparece ao rolar para cima (classe styles.show)
+ *   - Contém: botão "Novo chamado", logo, NotificationCenter, ThemeToggle e UserMenu
+ *   - Renderiza Nav logo abaixo e o modal CriarChamadoModal de forma global
+ */
 import styles from "./header.module.css";
 import Nav from "../nav/nav";
 import { FaPlus, FaHeadset } from "react-icons/fa"
@@ -10,19 +19,20 @@ import NotificationCenter from "../NotificationCenter/notificationCenter";
 
 function Header() {
 
+  // Controla visibilidade do header baseada na direção do scroll
   const [showHeader, setShowHeader] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
-  const [openCreate, setOpenCreate] = useState(false)
+  const [lastScrollY, setLastScrollY] = useState(0)  // posição anterior do scroll
+  const [openCreate, setOpenCreate] = useState(false) // exibe modal de criar chamado
 
   useEffect(() => {
     function handleScroll() {
       const currentScrollY = window.scrollY
 
+      // Oculta quando rola para baixo além do threshold de 80px
       if (currentScrollY > lastScrollY && currentScrollY > 80) {
-        // rolando pra baixo
         setShowHeader(false)
       } else {
-        // rolando pra cima
+        // Exibe ao rolar para cima ou quando scroll está próximo do topo
         setShowHeader(true)
       }
 

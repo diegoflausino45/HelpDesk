@@ -1,9 +1,21 @@
+/**
+ * notificationCenter.jsx — Central de notificações do usuário.
+ *
+ * Recursos:
+ *   - Badge com total não lido
+ *   - Polling de unread count a cada 30s
+ *   - Listagem completa ao abrir painel
+ *   - Marcar uma/todas como lidas
+ *   - Excluir uma/todas
+ *   - Navegação contextual para chamado relacionado (quando ticketId existir)
+ */
 import { useState, useEffect, useRef, useCallback } from "react"
 import { FaBell, FaCheck, FaCheckDouble, FaTimes, FaTrash } from "react-icons/fa"
 import { notificationsAPI } from "../../utils/api"
 import { useNavigate } from "react-router-dom"
 import styles from "./notificationCenter.module.css"
 
+// Ícones por tipo de notificação para leitura rápida no painel
 const TYPE_ICON = {
   ticket_created: "🎫",
   ticket_updated: "✏️",
@@ -15,6 +27,7 @@ const TYPE_ICON = {
 }
 
 function NotificationCenter() {
+  // Estado do painel e da coleção de notificações
   const [open, setOpen] = useState(false)
   const [notifications, setNotifications] = useState([])
   const [unread, setUnread] = useState(0)
@@ -22,6 +35,7 @@ function NotificationCenter() {
   const panelRef = useRef(null)
   const navigate = useNavigate()
 
+  // Busca apenas o contador de não lidas (leve, ideal para polling)
   const fetchCount = useCallback(async () => {
     try {
       const res = await notificationsAPI.getUnreadCount()
@@ -29,6 +43,7 @@ function NotificationCenter() {
     } catch { /* silencioso */ }
   }, [])
 
+  // Busca a lista completa para renderizar o painel
   const fetchAll = useCallback(async () => {
     setLoading(true)
     try {
@@ -58,6 +73,7 @@ function NotificationCenter() {
 
   function handleOpen() {
     setOpen(prev => !prev)
+    // Só busca lista completa quando abrindo o painel
     if (!open) fetchAll()
   }
 
@@ -94,6 +110,7 @@ function NotificationCenter() {
     } catch { /* silencioso */ }
   }
 
+  // Navega para a página de chamados; se houver ticketId, abre os detalhes desse chamado
   function handleNavigate(notif) {
     if (!notif.read) handleMarkRead(notif.id)
     setOpen(false)
@@ -105,6 +122,7 @@ function NotificationCenter() {
     navigate("/chamados")
   }
 
+  // Formata data relativa curta (agora, Xm, Xh, Xd)
   const timeAgo = (dateStr) => {
     const diff = Date.now() - new Date(dateStr)
     const m = Math.floor(diff / 60000)
@@ -115,12 +133,17 @@ function NotificationCenter() {
     return `${Math.floor(h / 24)}d`
   }
 
+  // Prioridade visual para não lidas: SLA violado > SLA warning > demais
   const notificationPriority = (notif) => {
     if (notif.type === "sla_violated") return 0
     if (notif.type === "sla_warning") return 1
     return 2
   }
 
+  // Ordenação:
+  //   1) não lidas primeiro
+  //   2) entre não lidas, prioridade de tipo (SLA crítico no topo)
+  //   3) data decrescente
   const sortedNotifications = [...notifications].sort((a, b) => {
     if (a.read !== b.read) return a.read ? 1 : -1
 

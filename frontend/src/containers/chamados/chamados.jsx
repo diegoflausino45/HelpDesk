@@ -1,3 +1,13 @@
+/**
+ * chamados.jsx — Página principal de gerenciamento de chamados.
+ *
+ * Funcionalidades:
+ *   - Listagem com dois modos de visualização: tabela (list) e grade (grid)
+ *   - Filtros combinados: status, prioridade, SLA, setor e busca textual/por ID
+ *   - Paginação client-side (5 itens por página)
+ *   - Abertura de modal de criação e de detalhes de chamado
+ *   - Suporte a deep-link via location.state.openTicketId (navegação vinda de notificações)
+ */
 import { useState, useEffect } from "react"
 import styles from "./chamados.module.css"
 import { Link, useLocation, useNavigate } from "react-router-dom"
@@ -11,33 +21,45 @@ import SlaBadge from "../../components/SlaBadge/slaBadge"
 
 
 function Chamados() {
-    const [openCreate, setOpenCreate] = useState(false)
-    const [openDetails, setOpenDetails] = useState(false)
-    const [selectedChamado, setSelectedChamado] = useState(null)
-    const [viewMode, setViewMode] = useState("list")
+    // ─── Estados de controle de modais ───────────────────────────────────────
+    const [openCreate, setOpenCreate] = useState(false)     // exibe modal de criar chamado
+    const [openDetails, setOpenDetails] = useState(false)   // exibe modal de detalhes
+    const [selectedChamado, setSelectedChamado] = useState(null) // chamado selecionado para detalhes
+
+    // ─── Modo de visualização da listagem ────────────────────────────────────
+    const [viewMode, setViewMode] = useState("list")         // 'list' | 'grid'
+
+    // ─── Filtros ativos ──────────────────────────────────────────────────────
     const [statusFilter, setStatusFilter] = useState("")
     const [priorityFilter, setPriorityFilter] = useState("")
     const [slaFilter, setSlaFilter] = useState("")
     const [setorFilter, setSetorFilter] = useState("")
     const [searchTerm, setSearchTerm] = useState("")
     const [setoresDisponiveis, setSetoresDisponiveis] = useState([])
+
+    // ─── Dados e estado de carregamento ──────────────────────────────────────
     const [chamados, setChamados] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
+
+    // Permissões do usuário — usadas para controlar ações disponíveis no modal
     const [permissoes, setPermissoes] = useState(() => getUserPermissions())
     const location = useLocation()
     const navigate = useNavigate()
 
+    // ─── Paginação client-side ───────────────────────────────────────────────
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 5
     const startIndex = (currentPage - 1) * itemsPerPage
     const endIndex = startIndex + itemsPerPage
 
-    // Carregar chamados da API
+    // Carrega a lista completa de chamados ao montar
     useEffect(() => {
       loadChamados()
     }, [])
 
+    // Deep-link: abre automaticamente o modal de detalhes se vier openTicketId no state
+    // Exemplo: navegação a partir do clique em uma notificação
     useEffect(() => {
       const openTicketId = location.state?.openTicketId
       if (!openTicketId || chamados.length === 0) return
@@ -48,9 +70,11 @@ function Chamados() {
         setOpenDetails(true)
       }
 
+      // Limpa o state da rota para evitar reabrir no próximo render
       navigate(location.pathname, { replace: true, state: {} })
     }, [location.state, location.pathname, chamados, navigate])
 
+    // Atualiza permissões quando as configurações mudam (outra aba ou evento interno)
     useEffect(() => {
       const refreshPermissoes = () => setPermissoes(getUserPermissions())
       window.addEventListener("storage", refreshPermissoes)
@@ -72,30 +96,31 @@ function Chamados() {
       }
     }
 
-    // Recarregar chamados após criar um novo
+    // Recarrega a lista e fecha o modal após criar um chamado com sucesso
     function handleChamadoCreated() {
       loadChamados()
       setOpenCreate(false)
     }
 
-    // Carregar setores do localStorage
+    // Carrega setores para o filtro — prioriza localStorage, cai em lista padrão
     useEffect(() => {
       const setoresSalvos = localStorage.getItem("setores")
       if (setoresSalvos) {
         setSetoresDisponiveis(JSON.parse(setoresSalvos))
       } else {
-        // Setores padrão se não houver no localStorage
+        // Fallback com setores fixos quando não há dado no localStorage
         const setoresPadrao = ["TI", "Administrativo", "RH", "Financeiro", "Manutenção", "Produção", "Engenharia", "Qualidade", "Direção"]
         setSetoresDisponiveis(setoresPadrao)
       }
     }, [])
 
-  // Filtrar chamados
+  // ─── Filtragem combinada — todos os critérios devem ser satisfeitos (AND) ──
   const filteredChamados = chamados.filter(chamado => {
     const matchesStatus = !statusFilter || chamado.status === statusFilter
     const matchesPriority = !priorityFilter || chamado.priority === priorityFilter
     const matchesSla = !slaFilter || chamado.slaStatus === slaFilter
     const matchesSetor = !setorFilter || chamado.createdBy?.sector?.name === setorFilter
+    // Busca por título (substring case-insensitive) OU por ID exato
     const matchesSearch = !searchTerm ||
       chamado.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       chamado.id == Number(searchTerm)
@@ -103,12 +128,16 @@ function Chamados() {
     return matchesStatus && matchesPriority && matchesSla && matchesSearch && matchesSetor
   })
 
+  // Ordena por data de criação (mais antigo primeiro) e fatia para a página atual
   const ultimosChamados = [...filteredChamados]
-.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
   const paginatedChamados = ultimosChamados.slice(startIndex, endIndex)
   const totalPages = Math.ceil(filteredChamados.length / itemsPerPage)
+
+  // Indica se algum filtro está ativo (para exibir botão "Limpar filtros")
   const hasActiveFilters = Boolean(statusFilter || priorityFilter || slaFilter || setorFilter || searchTerm)
 
+  /** Reseta todos os filtros e volta para a primeira página. */
   function limparFiltros() {
     setStatusFilter("")
     setPriorityFilter("")
@@ -118,6 +147,7 @@ function Chamados() {
     setCurrentPage(1)
   }
 
+  // Estados de carregamento antes de renderizar o layout
   if (loading) {
     return <div className={styles.loading}>Carregando chamados...</div>
   }

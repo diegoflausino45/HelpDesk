@@ -1,3 +1,6 @@
+/**
+ * secao.jsx — Wrapper visual simples para blocos de configuração.
+ */
 import styles from "./sectog.module.css"
 
 function Secao({ title, children }) {

@@ -7,6 +7,9 @@ import {
   ResponsiveContainer
 } from "recharts"
 
+/**
+ * periodChart.jsx — Gráfico de linha de chamados por dia/período.
+ */
 function PeriodChart({data}) {
   return (
     <ResponsiveContainer width="100%" height={250}>

@@ -1,9 +1,19 @@
+/**
+ * modal.jsx — Componente base de modal reutilizável.
+ *
+ * Recursos:
+ *   - fecha ao clicar no overlay
+ *   - fecha ao pressionar ESC
+ *   - bloqueia scroll do body enquanto aberto
+ *   - suporta `variant` e `size` para estilos contextuais
+ */
 import { useEffect } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import styles from "./modal.module.css"
 
 function Modal({ isOpen, onClose, title, children, footer, variant = 'default', size = 'medium' }) {
   useEffect(() => {
+    // Evita scroll da página por trás do modal
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -15,6 +25,7 @@ function Modal({ isOpen, onClose, title, children, footer, variant = 'default', 
   }, [isOpen]);
 
   useEffect(() => {
+    // Atalho de acessibilidade para fechamento
     const handleEscape = (e) => {
       if (e.key === 'Escape' && isOpen) {
         onClose();

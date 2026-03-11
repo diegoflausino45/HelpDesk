@@ -1,3 +1,11 @@
+/**
+ * editarUsuarioModal.jsx — Formulário de edição de usuário existente.
+ *
+ * Regras principais:
+ *   - Recarrega o formulário quando `usuario` muda
+ *   - Só exibe seleção de perfil para usuário logado Admin
+ *   - Valida nome, email e setor antes do update
+ */
 import { useState, useEffect } from "react"
 import { usersAPI, sectorsAPI } from "../../../utils/api"
 import {
@@ -10,6 +18,7 @@ import styles from "./usuarioModal.module.css"
 
 function EditUser({ usuario, usuarioLogado, onClose, onUpdated }) {
 
+  // Estado local sincronizado com o usuário selecionado
   const [form, setForm] = useState({
     name: usuario?.name || "",
     email: usuario?.email || "",
@@ -22,6 +31,7 @@ function EditUser({ usuario, usuarioLogado, onClose, onUpdated }) {
   const [setoresDisponiveis, setSetoresDisponiveis] = useState([])
 
   useEffect(() => {
+    // Busca setores para o select de setor
     loadSectors()
   }, [])
 
@@ -50,6 +60,7 @@ function EditUser({ usuario, usuarioLogado, onClose, onUpdated }) {
   function handleChange(e) {
     const { name, value } = e.target
 
+    // Merge parcial para preservar os demais campos
     setForm(prev => ({
       ...prev,
       [name]: value
@@ -63,6 +74,7 @@ function EditUser({ usuario, usuarioLogado, onClose, onUpdated }) {
   async function handleSubmit(e) {
     e.preventDefault()
 
+    // Validação local antes da chamada de API
     const errosValidacao = {}
 
     const validacaoNome = validateNomeUsuario(form.name)
@@ -85,7 +97,7 @@ function EditUser({ usuario, usuarioLogado, onClose, onUpdated }) {
     if (Object.keys(errosValidacao).length > 0) return
 
     try {
-
+      // Atualiza somente os campos editáveis
       await usersAPI.update(usuario.id, {
         name: form.name,
         email: form.email,

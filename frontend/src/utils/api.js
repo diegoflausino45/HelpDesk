@@ -2,7 +2,9 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:3000/api';
 
-// Criar instância do Axios com configurações padrão
+// ─── Instância base do Axios ─────────────────────────────────────────────────────
+// Configuração centralizada: base URL e content-type padrão.
+// Todos os módulos da app usam esta instância em vez do axios diretamente.
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -10,7 +12,9 @@ const api = axios.create({
   },
 });
 
-// Interceptor para adicionar token JWT automaticamente
+// ─── Interceptor de requisição ──────────────────────────────────────────────────
+// Injeta automaticamente o token JWT armazenado no localStorage
+// em todas as requisições autenticadas, sem precisar passar header manualmente.
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -19,7 +23,9 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor para tratar erros de resposta
+// ─── Interceptor de resposta ──────────────────────────────────────────────────
+// Trata erro 401 globalmente: limpa storage e redireciona para /auth.
+// Evita que cada componente precise tratar token expirado individualmente.
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -33,13 +39,17 @@ api.interceptors.response.use(
   }
 );
 
-// Funções de API para Auth
+// ─── Módulos de API por domínio ──────────────────────────────────────────────────
+// Cada objeto agrupa os endpoints relacionados e exporta funções semânticas
+// para que os componentes não precisem conhecer URLs ou métodos HTTP.
+
+// Autenticação (login / registro)
 export const authAPI = {
   register: (data) => api.post('/auth/register', data),
   login: (data) => api.post('/auth/login', data),
 };
 
-// Funções de API para Usuários
+// Gerenciamento de usuários
 export const usersAPI = {
   getAll: () => api.get('/users'),
   getById: (id) => api.get(`/users/${id}`),
@@ -48,7 +58,7 @@ export const usersAPI = {
   delete: (id) => api.delete(`/users/${id}`),
 };
 
-// Funções de API para Setores
+// Setores da organização
 export const sectorsAPI = {
   getAll: () => api.get('/sectors'),
   create: (data) => api.post('/sectors', data),
@@ -56,17 +66,17 @@ export const sectorsAPI = {
   delete: (id) => api.delete(`/sectors/${id}`),
 };
 
-// Funções de API para Chamados
+// Chamados de suporte
 export const ticketsAPI = {
   getAll: () => api.get('/tickets'),
   getById: (id) => api.get(`/tickets/${id}`),
   create: (data) => api.post('/tickets', data),
   update: (id, data) => api.put(`/tickets/${id}`, data),
   delete: (id) => api.delete(`/tickets/${id}`),
-  getHistory: (id) => api.get(`/tickets/${id}/history`),
+  getHistory: (id) => api.get(`/tickets/${id}/history`), // Trilha de auditoria de status
 };
 
-// Funções de API para Comentários
+// Comentários em chamados
 export const commentsAPI = {
   getByTicket: (ticketId) => api.get(`/comments/ticket/${ticketId}`),
   create: (data) => api.post('/comments', data),
@@ -74,8 +84,9 @@ export const commentsAPI = {
   delete: (id) => api.delete(`/comments/${id}`),
 };
 
-// Funções de API para Anexos
+// Anexos de chamados e comentários
 export const attachmentsAPI = {
+  // Upload via multipart/form-data (encapsula FormData automaticamente)
   uploadToTicket: (ticketId, file) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -90,11 +101,12 @@ export const attachmentsAPI = {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },
+  // URL de download direto (abre no browser ou dispara download)
   getDownloadUrl: (id) => `${API_BASE_URL}/attachments/${id}/download`,
   delete: (id) => api.delete(`/attachments/${id}`),
 };
 
-// Funções de API para Notificações
+// Central de notificações
 export const notificationsAPI = {
   getAll: () => api.get('/notifications'),
   getUnreadCount: () => api.get('/notifications/unread-count'),
@@ -104,7 +116,7 @@ export const notificationsAPI = {
   deleteAll: () => api.delete('/notifications'),
 };
 
-// Health check
+// Verificar disponibilidade do servidor
 export const healthAPI = {
   check: () => api.get('/health'),
 };

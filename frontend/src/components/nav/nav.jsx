@@ -1,3 +1,13 @@
+/**
+ * nav.jsx — Barra de navegação lateral/inferior.
+ *
+ * Renderiza os links de navegação disponíveis conforme as permissões do usuário:
+ *   - Dashboard e Chamados: visíveis para todos os autenticados
+ *   - Usuários: requer canManageUsers (admin ou técnico com flag habilitada)
+ *   - Configurações: requer isAdmin
+ *
+ * Permissões são atualizadas via eventos customizados para evitar re-render global.
+ */
 import styles from "./nav.module.css";
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -10,9 +20,11 @@ import {
 import { getUserPermissions } from "../../utils/settings";
 
 function Nav() {
+  // Permissões inicializadas de forma lazy para não bloquear a primeira renderização
   const [permissoes, setPermissoes] = useState(() => getUserPermissions())
 
   useEffect(() => {
+    // Recalcula permissões quando config ou usuário mudam (suporte a multi-aba)
     const refreshPermissoes = () => setPermissoes(getUserPermissions())
     window.addEventListener("storage", refreshPermissoes)
     window.addEventListener("config-updated", refreshPermissoes)
@@ -25,6 +37,7 @@ function Nav() {
     }
   }, [])
 
+  // Aliases semânticos para facilitar a leitura do JSX abaixo
   const canAccessUsers = permissoes.canManageUsers
   const canAccessSettings = permissoes.isAdmin
 

@@ -1,3 +1,12 @@
+/**
+ * relatorios.jsx — Painel analítico de chamados.
+ *
+ * Entregas da tela:
+ *   - filtros por período, setor e responsável
+ *   - KPIs resumidos (total, em atendimento, tempo médio, taxa de resolução)
+ *   - gráficos por setor e por status
+ *   - exportação de dados em PDF e Excel
+ */
 import styles from "./relatorios.module.css"
 import { useMemo, useState, useEffect } from "react"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid } from "recharts"
@@ -7,12 +16,14 @@ import autoTable from "jspdf-autotable"
 import * as XLSX from "xlsx"
 import { ticketsAPI, sectorsAPI, usersAPI } from "../../utils/api"
 
+// Cores semânticas para exibição dos status no gráfico de pizza
 const STATUS_COLORS = {
   Aberto: "var(--color-status-open)",
   "Em atendimento": "var(--color-status-progress)",
   Resolvido: "var(--color-status-resolved)",
 }
 
+// Tradução de status técnico da API para rótulo amigável
 const STATUS_MAP = {
   open: "Aberto",
   "in-progress": "Em atendimento",
@@ -37,14 +48,17 @@ function CustomTooltip({ active, payload, label }) {
   )
 }
 
+// Fallback defensivo para status não mapeado
 const getStatusColor = (status) => STATUS_COLORS[status] || "var(--color-info)"
 
 function Relatorios() {
+  // Estados de filtros
   const [dataInicio, setDataInicio] = useState("")
   const [dataFim, setDataFim] = useState("")
   const [setor, setSetor] = useState("")
   const [responsavel, setResponsavel] = useState("")
 
+  // Estados de dados/carregamento
   const [chamados, setChamados] = useState([])
   const [setores, setSetores] = useState([])
   const [usuarios, setUsuarios] = useState([])
@@ -52,6 +66,7 @@ function Relatorios() {
   const [error, setError] = useState("")
 
   useEffect(() => {
+    // Carrega dados iniciais para filtros, KPIs e gráficos
     carregarDados()
   }, [])
 
@@ -60,6 +75,7 @@ function Relatorios() {
       setLoading(true)
       setError("")
 
+      // Busca em paralelo para reduzir tempo de carregamento
       const [ticketsRes, sectorsRes, usersRes] = await Promise.all([
         ticketsAPI.getAll(),
         sectorsAPI.getAll(),
@@ -77,7 +93,7 @@ function Relatorios() {
     }
   }
 
-  /* 🔎 Filtros */
+  // ─── Filtros aplicados sobre os chamados ───────────────────────────────────
   const dadosFiltrados = useMemo(() => {
     return chamados.filter(c => {
       const dataChamado = new Date(c.createdAt).toISOString().split('T')[0]
@@ -93,7 +109,7 @@ function Relatorios() {
     })
   }, [chamados, dataInicio, dataFim, setor, responsavel])
 
-  /* 📊 Gráficos */
+  // ─── Dados derivados para gráficos ─────────────────────────────────────────
   const porSetor = useMemo(() => {
     const map = {}
     dadosFiltrados.forEach(c => {
@@ -114,6 +130,7 @@ function Relatorios() {
 
   const totalChamados = dadosFiltrados.length
   
+  // Tempo médio calculado em horas (createdAt -> updatedAt)
   const tempoMedio = useMemo(() => {
     if (totalChamados === 0) return "0.0"
     
@@ -141,7 +158,7 @@ function Relatorios() {
     setResponsavel("")
   }
 
-  /* 📄 PDF sem gráficos */
+  // Exporta listagem filtrada para PDF tabular
   function exportPDF() {
     const doc = new jsPDF()
 
@@ -166,7 +183,7 @@ function Relatorios() {
     doc.save("relatorio_chamados.pdf")
   }
 
-  /* 📊 Excel */
+  // Exporta listagem filtrada para Excel
   function exportExcel() {
     const dados = dadosFiltrados.map(c => ({
       ID: c.id,

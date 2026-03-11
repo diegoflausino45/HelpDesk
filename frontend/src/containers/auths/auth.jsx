@@ -1,3 +1,12 @@
+/**
+ * auth.jsx — Página de autenticação (login e registro).
+ *
+ * Alterna entre dois modos pelo flag `isLogin`:
+ *   - Login: envia email + senha, armazena token e redireciona para '/'
+ *   - Registro: cria conta e em seguida faz login automático
+ *
+ * O layout divide a tela em duas colunas: branding (esquerda) + formulário (direita).
+ */
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import styles from "./auth.module.css"
@@ -6,7 +15,10 @@ import { authAPI } from "../../utils/api"
 import toast from "react-hot-toast"
 
 function Auth() {
+  // Alterna entre os modos login (true) e registro (false)
   const [isLogin, setIsLogin] = useState(true)
+
+  // Campos do formulário unificado (campos extras só aparecem no modo registro)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -31,22 +43,22 @@ function Auth() {
 
     try {
       if (isLogin) {
-        // Login
+        // ─── Fluxo de login ────────────────────────────────────────────────────
         const response = await authAPI.login({
           email: formData.email,
           password: formData.password
         })
 
-        // Salvar token e dados do usuário
+        // Persiste sessão no localStorage para leitura pelos guards de rota
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('user', JSON.stringify(response.data.user))
 
         toast.success('Login realizado')
 
-        // Redirecionar para dashboard
         navigate('/')
       } else {
-        // Registro
+        // ─── Fluxo de registro ─────────────────────────────────────────────────
+        // Validação client-side antes de enviar — evita requisição desnecessária
         if (formData.password !== formData.confirmPassword) {
           setError('As senhas não coincidem')
           return
@@ -58,7 +70,7 @@ function Auth() {
           password: formData.password
         })
 
-        // Após registro, fazer login automático
+        // Após criar conta, autentica automaticamente para melhorar a UX
         const loginResponse = await authAPI.login({
           email: formData.email,
           password: formData.password

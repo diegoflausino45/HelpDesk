@@ -1,7 +1,16 @@
+/**
+ * confirmDialog.jsx — Modal padronizado de confirmação.
+ *
+ * Encapsula o `Modal` base com:
+ *   - ícone por tipo de ação (delete/edit/warning/info)
+ *   - botões de confirmar/cancelar
+ *   - estado de carregamento para operações assíncronas
+ */
 import { FaExclamationTriangle, FaTrash, FaEdit, FaInfoCircle } from 'react-icons/fa';
 import Modal from './modal';
 import styles from './confirmDialog.module.css';
 
+// Ícone semântico por variante de confirmação
 const icons = {
   danger: FaExclamationTriangle,
   warning: FaExclamationTriangle,
@@ -24,6 +33,7 @@ function ConfirmDialog({
   const Icon = icons[variant] || FaInfoCircle;
 
   const handleConfirm = () => {
+    // Mantido separado para facilitar instrumentação futura (analytics/telemetria)
     onConfirm();
   };
 

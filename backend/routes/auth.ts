@@ -5,9 +5,13 @@ import { body, validationResult } from 'express-validator';
 import { prisma } from '../libs/prisma.js';
 
 const router = express.Router();
+// Chave usada para assinar tokens JWT — deve ser a mesma do middleware auth
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-// Register
+// ─── POST /api/auth/register ────────────────────────────────────────────────
+// Cria um novo usuário no sistema.
+// Verifica duplicidade de e-mail, aplica hash bcrypt na senha (salt 10)
+// e retorna o usuário criado junto com o JWT de sessão.
 router.post('/register', [
   body('name').notEmpty().withMessage('Name is required'),
   body('email').isEmail().withMessage('Valid email is required'),
@@ -21,6 +25,7 @@ router.post('/register', [
   const { name, email, password, sectorId } = req.body;
 
   try {
+    // Verifica e-mail duplicado antes de criar
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ error: 'User already exists' });
@@ -31,6 +36,7 @@ router.post('/register', [
       data: { name, email, password: hashedPassword, sectorId: sectorId ? parseInt(sectorId) : null },
     });
 
+    // Token sem expiração explicit a — gerenciado via inspecc
     const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET);
     res.status(201).json({ user: { id: user.id, name: user.name, email: user.email, role: user.role }, token });
   } catch (error) {
@@ -38,7 +44,10 @@ router.post('/register', [
   }
 });
 
-// Login
+// ─── POST /api/auth/login ───────────────────────────────────────────────────
+// Autentica um usuário via e-mail e senha.
+// Compara a senha fornecida com o hash armazenado (bcrypt.compare)
+// e retorna JWT em caso de sucesso.
 router.post('/login', [
   body('email').isEmail().withMessage('Valid email is required'),
   body('password').notEmpty().withMessage('Password is required'),
@@ -53,6 +62,7 @@ router.post('/login', [
   try {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
+      // Retorna mensagem genérica para não vazar se e-mail existe ou não
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 

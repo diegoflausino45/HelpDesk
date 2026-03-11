@@ -5,7 +5,9 @@ import { authenticate, authorize } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-// Get all sectors
+// ─── GET /api/sectors ───────────────────────────────────────────────────────
+// Retorna todos os setores. Acessível a qualquer usuário autenticado
+// (usado para popular selects de filtro, criação de usuários, etc.).
 router.get('/', authenticate, async (req, res) => {
   try {
     const sectors = await prisma.sector.findMany({
@@ -17,7 +19,9 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-// Create sector (admin only)
+// ─── POST /api/sectors ──────────────────────────────────────────────────────
+// Cria um novo setor. Restrito a admins.
+// Verifica duplicidade de nome antes de persistir.
 router.post('/', authenticate, authorize(['admin']), [
   body('name').notEmpty().withMessage('Name is required'),
 ], async (req, res) => {
@@ -29,6 +33,7 @@ router.post('/', authenticate, authorize(['admin']), [
   const { name } = req.body;
 
   try {
+    // Evita setores duplicados (nome único no banco)
     const existingSector = await prisma.sector.findUnique({ where: { name } });
     if (existingSector) {
       return res.status(400).json({ error: 'Sector already exists' });

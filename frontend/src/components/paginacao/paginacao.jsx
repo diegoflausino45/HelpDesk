@@ -1,3 +1,14 @@
+/**
+ * paginacao.jsx — Componente de paginação genérico.
+ *
+ * Props:
+ *   totalItems   {number} — total de itens na lista (antes de fatiar)
+ *   itemsPerPage {number} — quantos itens por página
+ *   currentPage  {number} — página ativa (1-based)
+ *   onPageChange {fn}     — callback chamado com o novo número de página
+ *
+ * Retorna null automaticamente quando há apenas 1 página (sem renderização desnecessária).
+ */
 import styles from "./paginacao.module.css"
 
 function Pagination({
@@ -8,6 +19,7 @@ function Pagination({
 }) {
   const totalPages = Math.ceil(totalItems / itemsPerPage)
 
+  // Não renderiza o componente de paginação quando há apenas uma página
   if (totalPages <= 1) return null
 
   return (

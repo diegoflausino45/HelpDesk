@@ -11,35 +11,39 @@ import { getUserPermissions } from "../../utils/settings"
 import toast from "react-hot-toast"
 
 function Usuarios() {
+  // Estados de filtros da listagem
   const [busca, setBusca] = useState("")
   const [perfil, setPerfil] = useState("")
-  const [status, setStatus] = useState("")
   const [setorFilter, setSetorFilter] = useState("")
   const [setoresDisponiveis, setSetoresDisponiveis] = useState([])
 
-
+  // Estados de dados e carregamento
   const [usuarios, setUsuarios] = useState([])
   const [loading, setLoading] = useState(true)
 
+  // Estados de modais e fluxo de edição/exclusão
   const [openCreate, setOpenCreate] = useState(false)
   const [openEdit, setOpenEdit] = useState(false)
   const [usuarioSelecionado, setUsuarioSelecionado] = useState(null)
   const [mostrarModalExcluir, setMostrarModalExcluir] = useState(false)
   const [usuarioParaExcluir, setUsuarioParaExcluir] = useState(null)
   const [excluindoUsuario, setExcluindoUsuario] = useState(false)
+
+  // Permissões do usuário logado (sincronizadas com storage/configuração)
   const [permissoes, setPermissoes] = useState(() => getUserPermissions())
 
-  // Paginação
+  // Estados de paginação
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
 
+  // Perfil simplificado para regras de UI no modal de edição
   const usuarioLogado = {
     perfil: permissoes.isAdmin ? "Admin" : (permissoes.isTechnician ? "Técnico" : "Usuário"),
   }
 
-  // Função helper para traduzir roles
+  // Traduz a role vinda da API para um texto amigável na tabela
   const translateRole = (role) => {
     const roles = {
       'admin': 'Admin',
@@ -50,6 +54,8 @@ function Usuarios() {
   }
 
   useEffect(() => {
+    // Mantém permissões atualizadas quando houver mudança local
+    // (outra aba alterando storage / tela de configurações alterando regras)
     const refreshPermissoes = () => setPermissoes(getUserPermissions())
     window.addEventListener("storage", refreshPermissoes)
     window.addEventListener("config-updated", refreshPermissoes)
@@ -60,15 +66,18 @@ function Usuarios() {
   }, [])
 
   useEffect(() => {
+    // Evita chamadas de API desnecessárias quando o usuário não tem acesso
     if (!permissoes.canManageUsers) {
       setLoading(false)
       return
     }
 
+    // Carrega lista de usuários e setores no primeiro acesso permitido
     fetchUsuarios()
     fetchSetores()
   }, [permissoes.canManageUsers])
 
+  // Busca setores para popular o filtro e formulários
   const fetchSetores = async () => {
     try {
       const response = await sectorsAPI.getAll()
@@ -78,6 +87,7 @@ function Usuarios() {
     }
   }
 
+  // Busca usuários para listagem principal
   const fetchUsuarios = async () => {
     try {
       const response = await usersAPI.getAll()
@@ -89,6 +99,7 @@ function Usuarios() {
     }
   }
 
+  // Cria usuário no backend e atualiza a tabela após sucesso
   const handleCreateUser = async (userData) => {
     try {
       const data = {
@@ -107,17 +118,19 @@ function Usuarios() {
     }
   }
 
+  // Inicia fluxo de exclusão (com confirmação)
   const handleDeleteUser = async (user) => {
     if (!permissoes.canManageUsers) {
       toast.error("Você não tem permissão para excluir usuários")
       return
     }
 
-    // Abrir modal de confirmação
+    // Abre modal para confirmação explícita antes de excluir
     setUsuarioParaExcluir(user)
     setMostrarModalExcluir(true)
   }
 
+  // Confirma a exclusão, executa na API e recarrega a lista
   const confirmarExclusao = async () => {
     try {
       setExcluindoUsuario(true)
@@ -133,6 +146,7 @@ function Usuarios() {
     }
   }
 
+  // Inicia fluxo de edição do usuário selecionado
   const handleEditUser = (user) => {
     if (!permissoes.canManageUsers) {
       toast.error("Você não tem permissão para editar usuários")
@@ -143,6 +157,10 @@ function Usuarios() {
     setOpenEdit(true)
   }
 
+  // Filtragem combinada por texto, perfil e setor
+  // Regras:
+  // - Texto procura em nome OU email
+  // - Perfil e setor só filtram quando possuem valor selecionado
   const usuariosFiltrados = usuarios.filter(u => {
     const texto =
       u.name.toLowerCase().includes(busca.toLowerCase()) ||
@@ -150,15 +168,17 @@ function Usuarios() {
 
     const setorOk = !setorFilter || u.sector?.name === setorFilter
     const perfilOk = !perfil || u.role === perfil
-    // const statusOk = !status || u.status === status  // Remover pois não há status no banco
 
-    return texto && perfilOk && setorOk// && statusOk
+    return texto && perfilOk && setorOk
   })
 
-  // Aplicar paginação
+  // Paginação aplicada sobre o resultado já filtrado
   const paginatedUsuarios = usuariosFiltrados.slice(startIndex, endIndex)
+
+  // Controla UI de "Limpar filtros" e indicador de filtros ativos
   const hasActiveFilters = Boolean(busca || perfil || setorFilter)
 
+  // Reseta filtros e volta para a primeira página
   const limparFiltros = () => {
     setBusca("")
     setPerfil("")
@@ -166,6 +186,7 @@ function Usuarios() {
     setCurrentPage(1)
   }
 
+  // Guarda de acesso: bloqueia conteúdo para perfis sem permissão
   if (!permissoes.canManageUsers) {
     return (
       <main className={styles.container}>
@@ -177,6 +198,7 @@ function Usuarios() {
     )
   }
 
+  // Regra de limite de usuários ativos (configurável; fallback 500)
   const limiteUsuariosAtingido = usuarios.length >= (permissoes.config.usuarios.maxUsuariosAtivos || 500)
 
   return (

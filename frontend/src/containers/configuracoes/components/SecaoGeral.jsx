@@ -1,6 +1,14 @@
+/**
+ * SecaoGeral.jsx — Configurações gerais da aplicação.
+ *
+ * Campos:
+ *   - Nome da organização (com feedback de validação)
+ *   - Idioma padrão
+ */
 import styles from '../configuracoes.module.css';
 
 const SecaoGeral = ({ dados, onAtualizar, carregando, errosValidacao = {} }) => {
+  // Atualiza campo específico da seção "geral"
   const handleMudanca = (campo, valor) => {
     onAtualizar('geral', {
       ...dados,

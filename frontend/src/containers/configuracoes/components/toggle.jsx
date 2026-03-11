@@ -1,3 +1,6 @@
+/**
+ * toggle.jsx — Componente visual de toggle reutilizável (checkbox estilizado).
+ */
 import styles from "./sectog.module.css"
 
 function Toggle({ label }) {

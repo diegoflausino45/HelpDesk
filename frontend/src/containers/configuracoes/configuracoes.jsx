@@ -1,3 +1,12 @@
+/**
+ * configuracoes.jsx — Painel administrativo de configurações da aplicação.
+ *
+ * Estrutura:
+ *   - Sidebar com abas de configuração
+ *   - Área de conteúdo com seção ativa
+ *   - Ações globais de salvar/cancelar
+ *   - Modal de confirmação para descarte de alterações
+ */
 import { useState, useEffect } from "react"
 import styles from "./configuracoes.module.css"
 import { 
@@ -18,7 +27,9 @@ import SecaoUsuarios from "./components/SecaoUsuarios"
 import SecaoSeguranca from "./components/SecaoSeguranca"
 
 function Configuracoes() {
+  // Aba atualmente selecionada na sidebar
   const [abaAtiva, setAbaAtiva] = useState("geral")
+  // Controla modal de confirmação para descartar alterações pendentes
   const [mostrarModalDescartar, setMostrarModalDescartar] = useState(false)
   const { 
     configuracoes, 
@@ -35,6 +46,7 @@ function Configuracoes() {
   } = useConfiguracoes()
   const { addToast } = useToast()
 
+  // Metadados do menu lateral (id da aba, rótulo, descrição e ícone)
   const menu = [
     { id: "geral", label: "Geral", desc: "Preferências do sistema", icon: <FaCogs /> },
     { id: "setores", label: "Setores", desc: "Departamentos da empresa", icon: <FaBuilding /> },
@@ -53,6 +65,7 @@ function Configuracoes() {
   }
 
   const handleCancelar = () => {
+    // Só abre confirmação quando houver mudanças não salvas
     if (alteracoesPendentes) {
       setMostrarModalDescartar(true)
     }

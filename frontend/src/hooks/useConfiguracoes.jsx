@@ -1,6 +1,14 @@
+/**
+ * useConfiguracoes.jsx (raiz) — Hook de configurações compartilhadas.
+ *
+ * Observação: existe também uma versão específica em
+ * `containers/configuracoes/hooks/useConfiguracoes.jsx`.
+ * Este arquivo mantém a API compatível para usos em outros contextos.
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { sectorsAPI } from '../utils/api';
 
+// Regras de validação para campos de configuração
 const VALIDACOES = {
   organizacao: (valor) => {
     if (!valor || valor.trim().length === 0) {
@@ -40,6 +48,7 @@ const VALIDACOES = {
 };
 
 const useConfiguracoes = () => {
+  // Estado principal de configurações
   const [configuracoes, setConfiguracoes] = useState({
     geral: {
       organizacao: 'HelpDesk Enterprise',
@@ -118,6 +127,7 @@ const useConfiguracoes = () => {
     }
   };
 
+  /** Valida seção e retorna objeto de erros por campo. */
   const validar = useCallback((secao, dados) => {
     const erros = {};
 
@@ -142,6 +152,7 @@ const useConfiguracoes = () => {
     return erros;
   }, []);
 
+  /** Atualiza seção no estado após validação local. */
   const atualizarConfiguracao = useCallback((secao, dados) => {
     const erros = validar(secao, dados);
     
@@ -167,6 +178,7 @@ const useConfiguracoes = () => {
     return true;
   }, [validar]);
 
+  /** Adiciona setor no backend e sincroniza no estado local. */
   const adicionarSetor = useCallback(async (nomeSetor) => {
     const erroValidacao = VALIDACOES.nomeSetor(nomeSetor);
     if (erroValidacao) {
@@ -195,6 +207,7 @@ const useConfiguracoes = () => {
     }
   }, [configuracoes.setores]);
 
+  /** Remove setor no estado local (aguardando endpoint dedicado no backend). */
   const removerSetor = useCallback(async (nomeSetor) => {
     if (configuracoes.setores.length <= 1) {
       throw new Error('Você deve ter pelo menos um setor');
@@ -208,6 +221,7 @@ const useConfiguracoes = () => {
     setAlteracoesPendentes(true);
   }, [configuracoes.setores.length]);
 
+  /** Valida seções e persiste em localStorage. */
   const salvarConfiguracoes = useCallback(async () => {
     try {
       setCarregando(true);
@@ -236,6 +250,7 @@ const useConfiguracoes = () => {
     }
   }, [configuracoes, validar]);
 
+  /** Descarta alterações e recarrega configuração persistida. */
   const cancelarAlteracoes = useCallback(() => {
     carregarConfiguracoes();
     setAlteracoesPendentes(false);

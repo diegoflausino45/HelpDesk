@@ -1,3 +1,16 @@
+/**
+ * perfil.jsx — Página de perfil do usuário autenticado.
+ *
+ * Estrutura em abas:
+ *   - Informações: editar nome, email, telefone (cargo/setor somente leitura)
+ *   - Segurança: troca de senha (valida senha atual via login API antes de salvar)
+ *   - Atividades: histórico de ações do usuário (persistido no localStorage)
+ *
+ * Persistência local por userId:
+ *   profile_phone_{id}, profile_avatar_{id}, profile_activity_{id}, profile_last_access_{id}
+ *
+ * Detecta mudanças não salvas e pede confirmação antes de trocar de aba ou cancelar edição.
+ */
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import ConfirmDialog from "../../components/Modal/confirmDialog"
@@ -9,17 +22,21 @@ import styles from "./perfil.module.css"
 
 export default function Perfil() {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState("dados")
-  const [loadingProfile, setLoadingProfile] = useState(true)
-  const [editMode, setEditMode] = useState(false)
-  const [savingProfile, setSavingProfile] = useState(false)
-  const [updatingPassword, setUpdatingPassword] = useState(false)
-  const [errors, setErrors] = useState({})
-  const [pendingTab, setPendingTab] = useState(null)
-  const [activity, setActivity] = useState([])
 
+  // ─── Controle de abas e estados da UI ──────────────────────────────────────
+  const [activeTab, setActiveTab] = useState("dados")        // aba visível no momento
+  const [loadingProfile, setLoadingProfile] = useState(true)
+  const [editMode, setEditMode] = useState(false)             // habilita inputs do formulário
+  const [savingProfile, setSavingProfile] = useState(false)  // spinner no botão salvar
+  const [updatingPassword, setUpdatingPassword] = useState(false)
+  const [errors, setErrors] = useState({})                   // erros de validação por campo
+  const [pendingTab, setPendingTab] = useState(null)          // aba alvo quando há mudanças não salvas
+  const [activity, setActivity] = useState([])               // log de atividades do usuário
+
+  // Hook de modal de confirmação reutilizável (salvar / descartar mudanças)
   const { isOpen, data, isLoading, openModal, closeModal, startLoading, stopLoading } = useConfirmModal()
 
+  // ─── Dados do perfil (exibidos e editáveis) ─────────────────────────────────
   const [profileData, setProfileData] = useState({
     id: null,
     nome: "",
@@ -32,24 +49,29 @@ export default function Perfil() {
     avatar: "https://avatars.githubusercontent.com/u/70244105?v=4"
   })
 
+  // Snapshot do último estado salvo — usado para detectar mudanças não salvas (deep compare)
   const [savedProfileData, setSavedProfileData] = useState(profileData)
 
+  // ─── Campos do formulário de senha ──────────────────────────────────────────
   const [passwordData, setPasswordData] = useState({
     senhaAtual: "",
     novaSenha: "",
     confirmarNovaSenha: ""
   })
 
+  // Mapa de role da API para rótulo exibido ao usuário
   const roleLabels = {
     admin: "Administrador",
     technician: "Técnico",
     user: "Usuário"
   }
 
+  // Detecta se o formulário tem mudanças em relação ao último save
   const hasUnsavedChanges = useMemo(() => {
     return JSON.stringify(profileData) !== JSON.stringify(savedProfileData)
   }, [profileData, savedProfileData])
 
+  // Usuário logado do localStorage — memoizado pois não muda durante a sessão
   const currentUser = useMemo(() => {
     try {
       return JSON.parse(localStorage.getItem("user") || "null")
@@ -58,6 +80,7 @@ export default function Perfil() {
     }
   }, [])
 
+  /** Gera as chaves do localStorage com namespace por userId para evitar conflitos. */
   const getStorageKeys = (userId) => ({
     phone: `profile_phone_${userId}`,
     avatar: `profile_avatar_${userId}`,
@@ -65,6 +88,7 @@ export default function Perfil() {
     lastAccess: `profile_last_access_${userId}`
   })
 
+  /** Formata qualquer valor de data/ISO para string localizada pt-BR. */
   const formatDateTime = (value) => {
     if (!value) return "-"
     const date = typeof value === "string" ? new Date(value) : value
@@ -74,6 +98,7 @@ export default function Perfil() {
     })
   }
 
+  /** Detecta o navegador pelo user agent para exibir na seção de acesso. */
   const detectDevice = () => {
     const agent = navigator.userAgent
     const platform = navigator.platform || "Desktop"
@@ -85,6 +110,7 @@ export default function Perfil() {
     return `${platform} • Navegador`
   }
 
+  /** Adiciona um evento no histórico local e persiste (máx. 15 entradas). */
   const addActivity = (description) => {
     if (!currentUser?.id) return
 
@@ -118,6 +144,7 @@ export default function Perfil() {
         const response = await usersAPI.getById(currentUser.id)
         const apiUser = response.data
 
+        // Mescla dados da API com dados persistidos localmente
         const persistedPhone = localStorage.getItem(keys.phone) || ""
         const persistedAvatar = localStorage.getItem(keys.avatar)
         const persistedActivity = JSON.parse(localStorage.getItem(keys.activity) || "[]")
@@ -156,6 +183,7 @@ export default function Perfil() {
   const handleFieldChange = (event) => {
     const { name, value } = event.target
     setProfileData((prev) => ({ ...prev, [name]: value }))
+    // Limpa o erro do campo ao digitar para feedback imediato
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
     }
@@ -177,6 +205,7 @@ export default function Perfil() {
     return Object.keys(nextErrors).length === 0
   }
 
+  /** Valida, chama a API e sincroniza o estado local após salvar com sucesso. */
   const saveProfile = async () => {
     if (!validateProfile()) {
       toast.error("Corrija os campos inválidos para continuar")
@@ -219,6 +248,7 @@ export default function Perfil() {
     }
   }
 
+  /** Lê o arquivo de imagem selecionado e persiste como base64 no localStorage. */
   const handleAvatarUpload = (event) => {
     const file = event.target.files?.[0]
     if (!file || !currentUser?.id) return
@@ -247,6 +277,7 @@ export default function Perfil() {
     reader.readAsDataURL(file)
   }
 
+  /** Troca de aba — intercepta quando há mudanças não salvas para confirmar descarte. */
   const handleTabChange = (tab) => {
     if (tab === activeTab) return
 
@@ -259,6 +290,7 @@ export default function Perfil() {
     setActiveTab(tab)
   }
 
+  /** Cancela o modo de edição — pede confirmação se houver mudanças não salvas. */
   const handleCancelEdit = () => {
     if (!hasUnsavedChanges) {
       setEditMode(false)
@@ -273,6 +305,10 @@ export default function Perfil() {
     setPasswordData((prev) => ({ ...prev, [name]: value }))
   }
 
+  /**
+   * Atualiza a senha: valida via login (verifica senha atual) e então faz PATCH.
+   * Estratégia: re-autenticar com a senha atual antes de aplicar a nova.
+   */
   const updatePassword = async () => {
     const { senhaAtual, novaSenha, confirmarNovaSenha } = passwordData
 
@@ -311,6 +347,7 @@ export default function Perfil() {
     }
   }
 
+  /** Dispatcher de ações do modal de confirmação conforme `data.type`. */
   const handleConfirmAction = async () => {
     if (!data?.type) return
 

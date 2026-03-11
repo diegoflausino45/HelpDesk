@@ -6,7 +6,9 @@ import { notifyTicketStakeholders } from '../libs/notifications.js';
 
 const router = express.Router();
 
-// Get comments for a ticket
+// ─── GET /api/comments/ticket/:ticketId ───────────────────────────────────────────
+// Retorna todos os comentários de um chamado, ordenados por data crescente.
+// Verifica se o usuário tem acesso ao chamado antes de listar.
 router.get('/ticket/:ticketId', authenticate, async (req, res) => {
   const { ticketId } = req.params;
   const userId = (req as any).user.id;
@@ -37,7 +39,8 @@ router.get('/ticket/:ticketId', authenticate, async (req, res) => {
   }
 });
 
-// Create comment
+// ─── POST /api/comments ───────────────────────────────────────────────────────────────
+// Cria um comentário em um chamado e notifica os envolvidos (exceto o autor).
 router.post('/', authenticate, [
   body('ticketId').isInt().withMessage('Valid ticket ID is required'),
   body('content').notEmpty().withMessage('Content is required'),
@@ -92,7 +95,8 @@ router.post('/', authenticate, [
   }
 });
 
-// Update comment
+// ─── PUT /api/comments/:id ───────────────────────────────────────────────────────────────
+// Edita o conteúdo de um comentário. Apenas o autor ou admin podem editar.
 router.put('/:id', authenticate, [
   body('content').notEmpty().withMessage('Content is required'),
 ], async (req, res) => {
@@ -131,7 +135,8 @@ router.put('/:id', authenticate, [
   }
 });
 
-// Delete comment
+// ─── DELETE /api/comments/:id ──────────────────────────────────────────────────────────────
+// Remove um comentário. Apenas o autor ou admin podem deletar.
 router.delete('/:id', authenticate, async (req, res) => {
   const { id } = req.params;
   const userId = (req as any).user.id;

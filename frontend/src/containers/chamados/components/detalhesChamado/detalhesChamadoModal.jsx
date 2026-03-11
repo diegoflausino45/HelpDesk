@@ -1,3 +1,11 @@
+/**
+ * detalhesChamadoModal.jsx — Modal detalhado de um chamado.
+ *
+ * Recursos:
+ *   - Carrega detalhes, comentários e histórico
+ *   - Permite alterar status conforme regras de permissão
+ *   - Permite adicionar comentários e anexos (chamado/comentário)
+ */
 import { useState, useEffect } from "react"
 import Modal from "../../../../components/Modal/modal"
 import { ticketsAPI, commentsAPI, attachmentsAPI } from "../../../../utils/api"
@@ -6,6 +14,7 @@ import styles from "./detalhesChamadoModal.module.css"
 import SlaBadge from "../../../../components/SlaBadge/slaBadge"
 
 function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes }) {
+  // Traduz status técnico da API para rótulo amigável no histórico
   const translateStatus = (status) => {
     const map = {
       open: 'Aberto',
@@ -15,6 +24,7 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes 
     return map[status] || status
   }
 
+  // Estado de dados e controle de operação
   const [detalhes, setDetalhes] = useState(null)
   const [comentarios, setComentarios] = useState([])
   const [loading, setLoading] = useState(false)
@@ -26,6 +36,7 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes 
   const [uploadingCommentFile, setUploadingCommentFile] = useState(false)
 
   useEffect(() => {
+    // Quando modal abre para um chamado válido, busca todos os dados necessários
     if (isOpen && chamado?.id) {
       loadDetalhes()
       loadComentarios()
@@ -54,7 +65,7 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes 
       const response = await commentsAPI.getByTicket(chamado.id)
       setComentarios(response.data)
     } catch (err) {
-      // Erro silencioso - usuário verá lista vazia
+      // Erro silencioso: mantém UX funcional mostrando lista vazia
     }
   }
 
@@ -79,7 +90,7 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes 
         content: novoComentario.trim()
       })
 
-      // Upload de anexo opcional no comentário recém-criado
+      // Upload opcional de anexo associado ao comentário recém-criado
       const fileInput = document.getElementById("commentFileInput")
       const file = fileInput?.files?.[0]
       if (file && response?.data?.id) {
@@ -89,7 +100,7 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes 
       }
 
       setNovoComentario('')
-      loadComentarios() // Recarregar comentários
+      loadComentarios() // Recarrega comentários após inserção
       loadDetalhes()
       toast.success('Comentário adicionado')
     } catch (err) {
@@ -130,6 +141,7 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes 
   async function handleStatusChange(newStatus) {
     if (!detalhes?.id) return
 
+    // Regras de permissão para mudança de status
     const isOwner = detalhes.createdBy?.id === permissoes?.user?.id
     const podeAlterarStatus = permissoes?.isAdmin || permissoes?.isTechnician || (isOwner && permissoes?.canCloseOwnTickets)
 
@@ -153,6 +165,7 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes 
     }
   }
 
+  // Usa detalhes completos quando carregados; fallback para dado resumido recebido por prop
   const ticket = detalhes || chamado
   const isOwner = ticket?.createdBy?.id === permissoes?.user?.id
   const podeAlterarStatus = permissoes?.isAdmin || permissoes?.isTechnician || (isOwner && permissoes?.canCloseOwnTickets)

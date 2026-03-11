@@ -1,3 +1,11 @@
+/**
+ * userMenu.jsx — Dropdown do usuário no header.
+ *
+ * Exibe avatar/nome/perfil e ações de navegação:
+ *   - Meu Perfil
+ *   - Configurações
+ *   - Sair (logout)
+ */
 import { Link, useNavigate } from "react-router-dom"
 import { FaChevronDown } from "react-icons/fa"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -15,6 +23,7 @@ function UserMenu() {
     avatar: "https://avatars.githubusercontent.com/u/70244105?v=4"
   })
 
+  // Converte role técnica para rótulo amigável
   const roleLabel = useMemo(() => {
     const roles = {
       admin: "Administrador",
@@ -24,6 +33,7 @@ function UserMenu() {
     return roles[userData.role] || "Usuário"
   }, [userData.role])
 
+  // Lê usuário do localStorage e sincroniza avatar persistido do perfil
   const loadUserData = useCallback(() => {
     try {
       const user = JSON.parse(localStorage.getItem("user") || "null")
@@ -46,6 +56,7 @@ function UserMenu() {
   }, [navigate])
 
   useEffect(() => {
+    // Sincroniza mudanças de usuário entre componentes/abas
     loadUserData()
 
     const handleStorage = () => loadUserData()
@@ -60,6 +71,7 @@ function UserMenu() {
   }, [loadUserData])
 
   useEffect(() => {
+    // Fecha dropdown ao clicar fora
     const handleOutsideClick = (event) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
         setOpen(false)
@@ -76,6 +88,7 @@ function UserMenu() {
   }
 
   function handleLogout() {
+    // Limpa sessão local e redireciona para autenticação
     localStorage.removeItem("token")
     localStorage.removeItem("user")
     toast.success("Sessão encerrada")

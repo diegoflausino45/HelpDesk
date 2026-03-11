@@ -1,6 +1,14 @@
+/**
+ * SecaoUsuarios.jsx — Preferências de usuários e permissões operacionais.
+ *
+ * Divide os controles em:
+ *   - permissões/toggles de operação
+ *   - políticas de acesso (papel padrão e limites numéricos)
+ */
 import styles from '../configuracoes.module.css';
 
 const SecaoUsuarios = ({ dados, onAtualizar, carregando, errosValidacao = {} }) => {
+  // Alterna campos booleanos da seção "usuarios"
   const handleMudanca = (campo) => {
     onAtualizar('usuarios', {
       ...dados,
@@ -8,6 +16,7 @@ const SecaoUsuarios = ({ dados, onAtualizar, carregando, errosValidacao = {} }) 
     });
   };
 
+  // Atualiza campos de valor (select/number)
   const handleMudancaValor = (campo, valor) => {
     onAtualizar('usuarios', {
       ...dados,

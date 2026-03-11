@@ -1,3 +1,11 @@
+/**
+ * criarChamadoModal.jsx — Modal de abertura de novo chamado.
+ *
+ * Fluxo:
+ *   1) valida campos obrigatórios
+ *   2) envia payload para API
+ *   3) limpa formulário e notifica componente pai via `onCreated`
+ */
 import { useState } from "react"
 import Modal from "../../../../components/Modal/modal"
 import {
@@ -10,6 +18,7 @@ import toast from 'react-hot-toast'
 import styles from "./criarChamadoModal.module.css"
 
 function CriarChamadoModal({ isOpen, onClose, onCreated }) {
+  // Estados controlados do formulário
   const [titulo, setTitulo] = useState("")
   const [descricao, setDescricao] = useState("")
   const [categoria, setCategoria] = useState("")
@@ -20,7 +29,7 @@ function CriarChamadoModal({ isOpen, onClose, onCreated }) {
   function handleSubmit(e) {
     e.preventDefault()
 
-    // Validar todos os campos
+    // Validação local de todos os campos antes de enviar
     const errosValidacao = {}
 
     const validacaoTitulo = validateTituloChamado(titulo)
@@ -45,7 +54,7 @@ function CriarChamadoModal({ isOpen, onClose, onCreated }) {
       return
     }
 
-    // Enviar para API
+    // Sem erros: segue para criação na API
     createTicket()
   }
 
@@ -60,14 +69,14 @@ function CriarChamadoModal({ isOpen, onClose, onCreated }) {
 
       toast.success('Chamado criado com sucesso')
 
-      // Limpar formulário
+      // Limpa formulário para próximo uso
       setTitulo("")
       setDescricao("")
       setCategoria("")
       setPrioridade("medium")
       setErros({})
 
-      // Fechar modal e notificar pai
+      // Fecha modal e sinaliza recarga da listagem no componente pai
       onClose()
       if (onCreated) onCreated()
     } catch (err) {

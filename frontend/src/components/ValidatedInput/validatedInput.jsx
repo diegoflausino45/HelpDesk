@@ -1,6 +1,10 @@
 /**
- * Input component com validação integrada
- * Reutilizável em toda a aplicação
+ * validatedInput.jsx — Componentes de formulário com validação visual integrada.
+ *
+ * Exporta:
+ *   - ValidatedInput
+ *   - ValidatedSelect
+ *   - ValidatedTextarea
  */
 
 import styles from "./validatedInput.module.css"
@@ -19,6 +23,7 @@ export function ValidatedInput({
   disabled = false,
   className = "",
 }) {
+  // Input textual com feedback de erro e contador de caracteres
   return (
     <div className={styles.formGroup}>
       {label && (
@@ -69,6 +74,7 @@ export function ValidatedSelect({
   disabled = false,
   className = "",
 }) {
+  // Select com semântica de acessibilidade e mensagem de erro opcional
   return (
     <div className={styles.formGroup}>
       {label && (
@@ -117,6 +123,7 @@ export function ValidatedTextarea({
   disabled = false,
   className = "",
 }) {
+  // Textarea com suporte a contador de caracteres e validação visual
   return (
     <div className={styles.formGroup}>
       {label && (

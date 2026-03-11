@@ -1,3 +1,11 @@
+/**
+ * themeToggle.jsx — Alternador de tema claro/escuro.
+ *
+ * Estratégia:
+ *   - Persiste escolha em localStorage ('theme')
+ *   - Adiciona/remove classe `dark` no elemento <html>
+ *   - Força refresh de variáveis CSS removendo/reaplicando transition rapidamente
+ */
 import { useState, useEffect } from "react";
 import { FaMoon, FaSun } from "react-icons/fa";
 import styles from "./themeToggle.module.css";

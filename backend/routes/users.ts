@@ -6,12 +6,17 @@ import { authenticate, AuthRequest } from '../middlewares/auth.js';
 
 const router = express.Router();
 
+// Papéis com permissão de gerenciar usuários
 const MANAGEMENT_ROLES = ['admin', 'technician'];
 
+// Helpers de permissão para evitar repetição inline
 const canManageUsers = (role?: string) => MANAGEMENT_ROLES.includes(role || '');
 const isAdmin = (role?: string) => role === 'admin';
 
-// Create user (admin / technician)
+// ─── POST /api/users ────────────────────────────────────────────────────────
+// Cria um novo usuário. Apenas admin/técnico podem criar.
+// Técnicos só podem criar usuários com role 'user';
+// somente admins podem definir roles arbitrárias.
 router.post('/', authenticate, [
   body('name').notEmpty().withMessage('Name is required'),
   body('email').isEmail().withMessage('Valid email is required'),
@@ -57,13 +62,15 @@ router.post('/', authenticate, [
   }
 });
 
-// Get all users (admin / technician)
+// ─── GET /api/users ───────────────────────────────────────────────────────────
+// Lista usuários. Técnicos não vêem admins; admins vêem todos.
 router.get('/', authenticate, async (req: AuthRequest, res) => {
   if (!canManageUsers(req.user?.role)) {
     return res.status(403).json({ error: 'Forbidden' });
   }
 
   try {
+    // Técnicos não podem ver admins na listagem
     const where = isAdmin(req.user?.role) ? {} : { role: { not: 'admin' } };
 
     const users = await prisma.user.findMany({
@@ -86,7 +93,9 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
   }
 });
 
-// Get user by ID
+// ─── GET /api/users/:id ───────────────────────────────────────────────────────
+// Retorna um usuário específico.
+// Regra: qualquer usuário pode ver o próprio perfil; gestores vêem qualquer um.
 router.get('/:id', authenticate, async (req: AuthRequest, res) => {
   const { id } = req.params;
   const targetUserId = parseInt(id);
@@ -128,7 +137,13 @@ router.get('/:id', authenticate, async (req: AuthRequest, res) => {
   }
 });
 
-// Update user
+// ─── PUT /api/users/:id ───────────────────────────────────────────────────────
+// Atualiza dados de um usuário.
+// Regras de permissão:
+//   - Qualquer usuário pode editar o próprio perfil
+//   - Gestores (admin/técnico) podem editar outros, exceto admins (só admin altera admin)
+//   - Somente admin pode trocar role
+//   - Somente admin pode trocar senha de outro usuário
 router.put('/:id', authenticate, [
   body('name').optional().notEmpty().withMessage('Name cannot be empty'),
   body('email').optional().isEmail().withMessage('Valid email is required'),
@@ -151,8 +166,8 @@ router.put('/:id', authenticate, [
     return res.status(401).json({ error: 'Access denied. No token provided.' });
   }
 
-  const editingSelf = targetUserId === userId;
-  const managingOtherUser = !editingSelf;
+const editingSelf = targetUserId === userId; // Usuário editando o próprio perfil
+    const managingOtherUser = !editingSelf;       // Gestor alterando outro usuário
 
   if (managingOtherUser && !canManageUsers(userRole)) {
     return res.status(403).json({ error: 'Forbidden' });
@@ -207,7 +222,9 @@ router.put('/:id', authenticate, [
   }
 });
 
-// Delete user (admin / technician)
+// ─── DELETE /api/users/:id ───────────────────────────────────────────────────────
+// Remove um usuário. Apenas gestores. Não permite auto-exclusão.
+// Técnicos não podem excluir admins.
 router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
   const { id } = req.params;
   const targetUserId = parseInt(id);
@@ -229,6 +246,7 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
     }
 
     if (requesterId === targetUserId) {
+      // Impede que o usuário exclua sua própria conta
       return res.status(400).json({ error: 'You cannot delete your own account' });
     }
 

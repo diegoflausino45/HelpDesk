@@ -7,7 +7,8 @@ import { notifyTicketStakeholders, createNotification } from '../libs/notificati
 
 const router = express.Router();
 
-// Helper: include completo para queries de ticket
+// Projection padrão usada em todas as queries de ticket.
+// Centralizada aqui para evitar duplicação e facilitar adição de novos joins.
 const TICKET_INCLUDE = {
   createdBy: { select: { id: true, name: true, sector: { select: { id: true, name: true } } } },
   assignedTo: { select: { id: true, name: true } },
@@ -25,7 +26,10 @@ const TICKET_INCLUDE = {
   },
 };
 
-// Get all tickets
+// ─── GET /api/tickets ───────────────────────────────────────────────────────────
+// Retorna chamados visíveis para o usuário autenticado:
+//   - Admin/técnico: todos os chamados
+//   - Usuário comum: apenas os que criou ou estão atribuídos a ele
 router.get('/', authenticate, async (req, res) => {
   const userId = (req as any).user.id;
   const userRole = (req as any).user.role;
@@ -47,7 +51,9 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-// Get ticket by ID
+// ─── GET /api/tickets/:id ─────────────────────────────────────────────────────────
+// Retorna um chamado pelo ID com todos os relacionamentos.
+// Usuários comuns só podem ver chamados próprios ou atribuídos a eles.
 router.get('/:id', authenticate, async (req, res) => {
   const { id } = req.params;
   const userId = (req as any).user.id;
@@ -73,7 +79,11 @@ router.get('/:id', authenticate, async (req, res) => {
   }
 });
 
-// Create ticket
+// ─── POST /api/tickets ──────────────────────────────────────────────────────────
+// Cria um novo chamado:
+//   1. Calcula o deadline de SLA com base na prioridade
+//   2. Registra entrada inicial no histórico ("Chamado criado")
+//   3. Notifica o técnico atribuído (se houver)
 router.post('/', authenticate, [
   body('title').notEmpty().withMessage('Title is required'),
   body('description').optional(),
@@ -133,7 +143,11 @@ router.post('/', authenticate, [
   }
 });
 
-// Update ticket
+// ─── PUT /api/tickets/:id ─────────────────────────────────────────────────────────
+// Atualiza um chamado. Aplica:
+//   - Workflow de transição de status (ex.: closed → open, mas não closed → in-progress)
+//   - RBAC: usuários comuns só podem encerrar chamados, sem alterar atribuição/prioridade
+//   - Recalcula SLA e gera histórico/notificações nas mudanças relevantes
 router.put('/:id', authenticate, [
   body('title').optional().notEmpty().withMessage('Title cannot be empty'),
   body('description').optional(),
@@ -156,7 +170,7 @@ router.put('/:id', authenticate, [
       return res.status(404).json({ error: 'Ticket not found' });
     }
 
-    // Regras de transição de status (workflow)
+    // Matriz de transições de status permitidas (workflow do chamado)
     const WORKFLOW_RULES: Record<string, string[]> = {
       open: ['in-progress', 'closed'],
       'in-progress': ['open', 'closed'],
@@ -246,7 +260,8 @@ router.put('/:id', authenticate, [
   }
 });
 
-// Delete ticket (admin only)
+// ─── DELETE /api/tickets/:id ────────────────────────────────────────────────────────
+// Remove um chamado. Restrito a admins.
 router.delete('/:id', authenticate, authorize(['admin']), async (req, res) => {
   const { id } = req.params;
   try {
@@ -257,7 +272,9 @@ router.delete('/:id', authenticate, authorize(['admin']), async (req, res) => {
   }
 });
 
-// GET histórico do ticket
+// ─── GET /api/tickets/:id/history ───────────────────────────────────────────────────
+// Retorna a trilha de auditoria do chamado (transições de status e notas),
+// ordenada do mais recente para o mais antigo.
 router.get('/:id/history', authenticate, async (req, res) => {
   const { id } = req.params;
   try {

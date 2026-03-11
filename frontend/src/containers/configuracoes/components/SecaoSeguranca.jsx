@@ -1,6 +1,14 @@
+/**
+ * SecaoSeguranca.jsx — Políticas de senha e proteção de conta.
+ *
+ * Organiza controles de:
+ *   - robustez/validade de senha
+ *   - tentativas de login, bloqueio e 2FA
+ */
 import styles from '../configuracoes.module.css';
 
 const SecaoSeguranca = ({ dados, onAtualizar, carregando, errosValidacao = {} }) => {
+  // Atualiza campos numéricos convertendo para inteiro
   const handleMudanca = (campo, valor) => {
     onAtualizar('seguranca', {
       ...dados,
@@ -8,6 +16,7 @@ const SecaoSeguranca = ({ dados, onAtualizar, carregando, errosValidacao = {} })
     });
   };
 
+  // Alterna toggles booleanos da seção
   const handleToggle = (campo) => {
     onAtualizar('seguranca', {
       ...dados,

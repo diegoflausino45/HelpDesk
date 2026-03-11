@@ -1,12 +1,20 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 
+// Chave secreta para assinar/verificar tokens JWT (nunca expor em produção)
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
+// Extende o tipo Request do Express para carregar o usuário autenticado
 export interface AuthRequest extends Request {
   user?: { id: number; role: string };
 }
 
+/**
+ * Middleware de autenticação
+ * Verifica o token JWT do header Authorization (Bearer <token>).
+ * Em caso de sucesso, popula req.user com { id, role } e chama next().
+ * Em caso de falha, retorna 401.
+ */
 export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
 
@@ -15,6 +23,7 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
   }
 
   try {
+    // Decodifica e valida a assinatura do token
     const decoded = jwt.verify(token, JWT_SECRET) as { id: number; role: string };
     req.user = decoded;
     next();
@@ -23,6 +32,11 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
   }
 };
 
+/**
+ * Middleware de autorização baseado em papéis (RBAC simples).
+ * Deve ser usado após `authenticate`.
+ * @param roles Lista de papéis permitidos (ex.: ['admin', 'technician'])
+ */
 export const authorize = (roles: string[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user || !roles.includes(req.user.role)) {

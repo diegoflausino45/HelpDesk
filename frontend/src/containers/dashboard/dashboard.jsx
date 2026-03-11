@@ -1,3 +1,12 @@
+/**
+ * dashboard.jsx — Página inicial com visão geral dos chamados.
+ *
+ * Exibe:
+ *   - KPIs (total, abertos, em andamento, resolvidos)
+ *   - Gráfico de barras por status (StatusChart)
+ *   - Gráfico de linha por período na semana atual (PeriodChart)
+ *   - Tabela dos 5 chamados mais recentes
+ */
 import { useState, useEffect } from "react"
 import styles from "./dashboard.module.css"
 import { FiUsers, FiClock, FiCheckCircle, FiAlertCircle } from "react-icons/fi"
@@ -6,10 +15,12 @@ import PeriodChart from "./components/periodChart"
 import { ticketsAPI } from "../../utils/api"
 
 function Dashboard() {
+  // Lista completa de chamados carregada da API
   const [tickets, setTickets] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  // Carrega chamados ao montar o componente
   useEffect(() => {
     loadTickets()
   }, [])
@@ -25,48 +36,53 @@ function Dashboard() {
     }
   }
 
-// Base: Segunda a Sábado
-const diasSemana = [
-  { dia: "Seg", chamados: 0 },
-  { dia: "Ter", chamados: 0 },
-  { dia: "Qua", chamados: 0 },
-  { dia: "Qui", chamados: 0 },
-  { dia: "Sex", chamados: 0 },
-  { dia: "Sab", chamados: 0 }
-]
+  // ─── Cálculo dos dados para o gráfico de período ────────────────────────
+  // Base: Segunda a Sábado (sem domingo — carga de trabalho útil)
+  const diasSemana = [
+    { dia: "Seg", chamados: 0 },
+    { dia: "Ter", chamados: 0 },
+    { dia: "Qua", chamados: 0 },
+    { dia: "Qui", chamados: 0 },
+    { dia: "Sex", chamados: 0 },
+    { dia: "Sab", chamados: 0 }
+  ]
 
-// Clonar array base
-const chamadosPorDia = diasSemana.map(d => ({ ...d }))
+  // Clona o array para não mutar a referência original a cada render
+  const chamadosPorDia = diasSemana.map(d => ({ ...d }))
 
-const hoje = new Date()
+  const hoje = new Date()
 
-// Início da semana (segunda-feira)
-const inicioSemana = new Date(hoje)
-const diaAtual = hoje.getDay()
+  // Determina o início da semana atual (segunda-feira à meia-noite)
+  const inicioSemana = new Date(hoje)
+  const diaAtual = hoje.getDay()
 
-// Ajuste para começar na segunda
-const diferencaParaSegunda = diaAtual === 0 ? 6 : diaAtual - 1
-inicioSemana.setDate(hoje.getDate() - diferencaParaSegunda)
-inicioSemana.setHours(0, 0, 0, 0)
+  // getDay(): 0=Domingo, 1=Segunda ... 6=Sábado
+  // Ajuste: se for domingo, retrocede 6 dias; caso contrário, retrocede (dia-1)
+  const diferencaParaSegunda = diaAtual === 0 ? 6 : diaAtual - 1
+  inicioSemana.setDate(hoje.getDate() - diferencaParaSegunda)
+  inicioSemana.setHours(0, 0, 0, 0)
 
-tickets.forEach(ticket => {
-  const dataTicket = new Date(ticket.createdAt)
+  // Distribui cada ticket no dia correto da semana
+  tickets.forEach(ticket => {
+    const dataTicket = new Date(ticket.createdAt)
 
-  if (dataTicket >= inicioSemana) {
-    const dia = dataTicket.getDay()
+    if (dataTicket >= inicioSemana) {
+      const dia = dataTicket.getDay()
 
-    // Ignorar domingo (0)
-    if (dia >= 1 && dia <= 6) {
-      chamadosPorDia[dia - 1].chamados += 1
+      // Ignora domingo (0) — não há coluna para ele
+      if (dia >= 1 && dia <= 6) {
+        chamadosPorDia[dia - 1].chamados += 1
+      }
     }
-  }
-})
-  // Calcular KPIs
+  })
+
+  // ─── KPIs calculados sobre a lista completa ──────────────────────────────
   const totalTickets = tickets.length
   const openTickets = tickets.filter(t => t.status === 'open').length
   const inProgressTickets = tickets.filter(t => t.status === 'in-progress').length
   const closedTickets = tickets.filter(t => t.status === 'closed').length
 
+  // Estados de carregamento antes de renderizar o layout principal
   if (loading) {
     return <div className={styles.loading}>Carregando...</div>
   }
@@ -75,6 +91,7 @@ tickets.forEach(ticket => {
     return <div className={styles.error}>{error}</div>
   }
 
+  // Os 5 chamados mais recentes para a tabela de destaque
   const ultimosChamados = [...tickets]
   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
   .slice(0, 5)

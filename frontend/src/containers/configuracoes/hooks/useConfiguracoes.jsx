@@ -1,6 +1,16 @@
+/**
+ * useConfiguracoes.jsx — Hook central para estado e persistência de configurações.
+ *
+ * Responsabilidades:
+ *   - carregar configurações (setores via API + demais campos via localStorage)
+ *   - validar alterações por seção
+ *   - expor ações de atualizar/salvar/cancelar
+ *   - gerenciar CRUD de setores no estado
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { sectorsAPI } from '../../../utils/api';
 
+// Regras de validação por campo/seção
 const VALIDACOES = {
   organizacao: (valor) => {
     if (!valor || valor.trim().length === 0) {
@@ -87,6 +97,7 @@ const VALIDACOES = {
 };
 
 const useConfiguracoes = () => {
+  // Baseline usado quando não há configuração salva
   const configuracoesPadrao = {
     geral: {
       organizacao: 'HelpDesk Enterprise',
@@ -130,6 +141,7 @@ const useConfiguracoes = () => {
     },
   };
 
+  // Estado principal do formulário de configurações
   const [configuracoes, setConfiguracoes] = useState({
     ...configuracoesPadrao,
   });
@@ -150,7 +162,7 @@ const useConfiguracoes = () => {
       setErro(null);
       setErrosValidacao({});
       
-      // Carregar setores do backend
+      // Setores são fonte de verdade no backend
       const response = await sectorsAPI.getAll();
       const setoresDoBackend = Array.isArray(response.data) 
         ? response.data.map(setor => (typeof setor === 'string' ? setor : setor.name))
@@ -161,7 +173,7 @@ const useConfiguracoes = () => {
         setores: setoresDoBackend,
       }));
 
-      // Carregar outras configurações do localStorage (por enquanto)
+      // Demais configurações seguem no localStorage por enquanto
       const configSalvas = localStorage.getItem('configuracoes');
       if (configSalvas) {
         try {
@@ -199,7 +211,7 @@ const useConfiguracoes = () => {
     } catch (err) {
       console.error('Erro ao carregar configurações:', err);
       setErro('Erro ao carregar configurações. Usando valores padrão.');
-      // Fallback para localStorage
+      // Fallback para localStorage em caso de indisponibilidade do backend
       const configSalvas = localStorage.getItem('configuracoes');
       if (configSalvas) {
         try {
@@ -213,6 +225,9 @@ const useConfiguracoes = () => {
     }
   };
 
+  /**
+   * Valida uma seção específica e retorna um objeto de erros por campo.
+   */
   const validar = useCallback((secao, dados) => {
     const erros = {};
 
@@ -272,6 +287,10 @@ const useConfiguracoes = () => {
     return erros;
   }, [configuracoes.notificacoes.horarioSilenciosoFim, configuracoes.notificacoes.horarioSilenciosoInicio]);
 
+  /**
+   * Atualiza dados de uma seção com validação prévia.
+   * Retorna booleano indicando sucesso da atualização.
+   */
   const atualizarConfiguracao = useCallback((secao, dados) => {
     const erros = validar(secao, dados);
     
@@ -297,6 +316,7 @@ const useConfiguracoes = () => {
     return true;
   }, [validar]);
 
+  /** Adiciona setor no backend e sincroniza no estado local. */
   const adicionarSetor = useCallback(async (nomeSetor) => {
     const erroValidacao = VALIDACOES.nomeSetor(nomeSetor);
     if (erroValidacao) {
@@ -325,6 +345,7 @@ const useConfiguracoes = () => {
     }
   }, [configuracoes.setores]);
 
+  /** Remove setor no estado (update backend pendente de suporte por ID/nome). */
   const removerSetor = useCallback(async (nomeSetor) => {
     if (configuracoes.setores.length <= 1) {
       throw new Error('Você deve ter pelo menos um setor');
@@ -345,6 +366,7 @@ const useConfiguracoes = () => {
     }
   }, [configuracoes.setores.length]);
 
+  /** Edita nome do setor no estado (update backend ainda não implementado). */
   const editarSetor = useCallback(async (setorAnterior, novoNome) => {
     if (!novoNome.trim()) {
       throw new Error('Nome do setor não pode estar vazio');
@@ -373,6 +395,10 @@ const useConfiguracoes = () => {
     }
   }, [configuracoes.setores]);
 
+  /**
+   * Valida todas as seções e persiste no localStorage.
+   * Também dispara evento `config-updated` para sincronizar permissões/rotas.
+   */
   const salvarConfiguracoes = useCallback(async () => {
     try {
       setCarregando(true);
@@ -414,6 +440,7 @@ const useConfiguracoes = () => {
     }
   }, [configuracoes, validar]);
 
+  /** Reverte alterações recarregando configuração persistida. */
   const cancelarAlteracoes = useCallback(() => {
     carregarConfiguracoes();
     setAlteracoesPendentes(false);

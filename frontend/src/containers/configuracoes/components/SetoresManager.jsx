@@ -1,3 +1,11 @@
+/**
+ * SetoresManager.jsx — CRUD local de setores no painel de configurações.
+ *
+ * Funcionalidades:
+ *   - adicionar setor com validação
+ *   - editar nome do setor com confirmação
+ *   - remover setor com confirmação e regra de mínimo de 1 setor
+ */
 import { useState } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaCheck, FaTimes, FaExclamation } from 'react-icons/fa';
 import { useToast } from '../../../contexts/ToastContext';
@@ -5,6 +13,7 @@ import ConfirmDialog from '../../../components/Modal/confirmDialog';
 import styles from '../configuracoes.module.css';
 
 const SetoresManager = ({ setores, onAdicionarSetor, onRemoverSetor, onEditarSetor, carregando }) => {
+  // Estados de formulário e fluxo de edição/remoção
   const [novoSetor, setNovoSetor] = useState('');
   const [editandoSetor, setEditandoSetor] = useState(null);
   const [setorEditado, setSetorEditado] = useState('');
@@ -16,7 +25,7 @@ const SetoresManager = ({ setores, onAdicionarSetor, onRemoverSetor, onEditarSet
   const [removendoSetor, setRemovendoSetor] = useState(false);
   const { addToast } = useToast();
 
-  // Validações para novo setor
+  // Validações para novo setor (nome, caracteres e duplicidade)
   const validarNovoSetor = (valor) => {
     if (!valor.trim()) return { valido: false, mensagem: '' };
     if (valor.length > 50) return { valido: false, mensagem: 'Máximo de 50 caracteres' };
