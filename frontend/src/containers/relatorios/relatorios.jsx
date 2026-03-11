@@ -7,7 +7,11 @@ import autoTable from "jspdf-autotable"
 import * as XLSX from "xlsx"
 import { ticketsAPI, sectorsAPI, usersAPI } from "../../utils/api"
 
-const COLORS = ["var(--color-primary)", "var(--color-warning)", "var(--color-success)", "var(--color-info)"]
+const STATUS_COLORS = {
+  Aberto: "var(--color-status-open)",
+  "Em atendimento": "var(--color-status-progress)",
+  Resolvido: "var(--color-status-resolved)",
+}
 
 const STATUS_MAP = {
   open: "Aberto",
@@ -32,6 +36,8 @@ function CustomTooltip({ active, payload, label }) {
     </div>
   )
 }
+
+const getStatusColor = (status) => STATUS_COLORS[status] || "var(--color-info)"
 
 function Relatorios() {
   const [dataInicio, setDataInicio] = useState("")
@@ -327,17 +333,17 @@ function Relatorios() {
           <ResponsiveContainer width="100%" height={260}>
             <PieChart>
               <Pie data={porStatus} dataKey="total" nameKey="status" label outerRadius={92} innerRadius={48} paddingAngle={3}>
-                {porStatus.map((_, i) => (
-                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                {porStatus.map((item) => (
+                  <Cell key={item.status} fill={getStatusColor(item.status)} />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
             </PieChart>
           </ResponsiveContainer>
           <div className={styles.legend}>
-            {porStatus.map((item, i) => (
+            {porStatus.map((item) => (
               <span key={item.status} className={styles.legendItem}>
-                <span className={styles.legendDot} style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                <span className={styles.legendDot} style={{ backgroundColor: getStatusColor(item.status) }} />
                 {item.status}
               </span>
             ))}

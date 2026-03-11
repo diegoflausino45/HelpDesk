@@ -1,6 +1,7 @@
 import {
   BarChart,
   Bar,
+  Cell,
   XAxis,
   YAxis,
   Tooltip,
@@ -10,6 +11,12 @@ import {
 
 
 function StatusChart({open, inProgress, isClosed}) {
+  const statusColors = {
+    Abertos: "var(--color-status-open)",
+    "Em andamento": "var(--color-status-progress)",
+    Resolvidos: "var(--color-status-resolved)",
+    Atrasados: "var(--color-error)",
+  }
 
   const data = [
   { status: "Abertos", total: open },
@@ -24,7 +31,11 @@ function StatusChart({open, inProgress, isClosed}) {
         <XAxis dataKey="status" />
         <YAxis />
         <Tooltip />
-        <Bar dataKey="total" fill="var(--color-primary)" radius={[6, 6, 0, 0]} />
+        <Bar dataKey="total" radius={[6, 6, 0, 0]}>
+          {data.map((entry) => (
+            <Cell key={entry.status} fill={statusColors[entry.status] || "var(--color-primary)"} />
+          ))}
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   )
