@@ -130,6 +130,23 @@
 .item.unread { background: var(--color-primary-bg-subtle, #eff6ff); }
 .item.unread:hover { background: var(--color-primary-bg-hover, #dbeafe); }
 
+.item.slaWarning {
+  border-left: 3px solid var(--color-warning, #d97706);
+}
+
+.item.slaViolated {
+  border-left: 3px solid var(--color-error, #dc2626);
+  background: var(--color-error-bg, #fef2f2);
+}
+
+.item.slaViolated .title {
+  color: var(--color-error, #b91c1c);
+}
+
+.item.slaViolated:hover {
+  background: var(--color-error-bg-hover, #fee2e2);
+}
+
 .typeIcon {
   font-size: 1.1rem;
   flex-shrink: 0;

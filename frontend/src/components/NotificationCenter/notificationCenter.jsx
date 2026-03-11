@@ -115,6 +115,23 @@ function NotificationCenter() {
     return `${Math.floor(h / 24)}d`
   }
 
+  const notificationPriority = (notif) => {
+    if (notif.type === "sla_violated") return 0
+    if (notif.type === "sla_warning") return 1
+    return 2
+  }
+
+  const sortedNotifications = [...notifications].sort((a, b) => {
+    if (a.read !== b.read) return a.read ? 1 : -1
+
+    if (!a.read && !b.read) {
+      const priorityDiff = notificationPriority(a) - notificationPriority(b)
+      if (priorityDiff !== 0) return priorityDiff
+    }
+
+    return new Date(b.createdAt) - new Date(a.createdAt)
+  })
+
   return (
     <div className={styles.wrapper} ref={panelRef}>
       {/* Ícone do sino */}
@@ -165,10 +182,10 @@ function NotificationCenter() {
             {!loading && notifications.length === 0 && (
               <p className={styles.empty}>Nenhuma notificação</p>
             )}
-            {!loading && notifications.map(notif => (
+            {!loading && sortedNotifications.map(notif => (
               <div
                 key={notif.id}
-                className={`${styles.item} ${notif.read ? styles.read : styles.unread}`}
+                className={`${styles.item} ${notif.read ? styles.read : styles.unread} ${notif.type === "sla_violated" ? styles.slaViolated : ""} ${notif.type === "sla_warning" ? styles.slaWarning : ""}`}
                 onClick={() => handleNavigate(notif)}
                 role="button"
                 tabIndex={0}
