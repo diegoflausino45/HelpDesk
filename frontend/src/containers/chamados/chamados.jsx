@@ -89,6 +89,15 @@ function Chamados() {
 .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
   const paginatedChamados = ultimosChamados.slice(startIndex, endIndex)
   const totalPages = Math.ceil(filteredChamados.length / itemsPerPage)
+  const hasActiveFilters = Boolean(statusFilter || priorityFilter || setorFilter || searchTerm)
+
+  function limparFiltros() {
+    setStatusFilter("")
+    setPriorityFilter("")
+    setSetorFilter("")
+    setSearchTerm("")
+    setCurrentPage(1)
+  }
 
   if (loading) {
     return <div className={styles.loading}>Carregando chamados...</div>
@@ -117,66 +126,96 @@ function Chamados() {
 
       {/* Filtros */}
       <section className={styles.filters}>
-              <div className={styles.filters}>
-                  <select
-                    className={styles.filterSelect}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                  >
-                    <option value="">Status</option>
-                    <option value="open">Aberto</option>
-                    <option value="in-progress">Em atendimento</option>
-                    <option value="closed">Resolvido</option>
-                  </select>
-
-                  <select
-                    className={styles.filterSelect}
-                    onChange={(e) => setPriorityFilter(e.target.value)}
-                  >
-                    <option value="">Prioridade</option>
-                    <option value="high">Alta</option>
-                    <option value="medium">Média</option>
-                    <option value="low">Baixa</option>
-                  </select>
-
-                  <select className={styles.filterSelect} onChange={(e) => setSetorFilter(e.target.value)}>
-                    <option value="">Setor</option>
-                    {setoresDisponiveis.map((setor) => (
-                      <option key={setor} value={setor}>{setor}</option>
-                    ))}
-                  </select>
 
 
+        <div className={styles.filtersGrid}>
+          <div className={styles.filterField}>
+            <label htmlFor="statusFilter">Status</label>
+            <select
+              id="statusFilter"
+              className={styles.filterSelect}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">Todos</option>
+              <option value="open">Aberto</option>
+              <option value="in-progress">Em atendimento</option>
+              <option value="closed">Resolvido</option>
+            </select>
+          </div>
 
-                  <input
-                    type="text"
-                    placeholder="Buscar por título ou ID"
-                    value={searchTerm}
-                    maxLength="100"
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+          <div className={styles.filterField}>
+            <label htmlFor="priorityFilter">Prioridade</label>
+            <select
+              id="priorityFilter"
+              className={styles.filterSelect}
+              value={priorityFilter}
+              onChange={(e) => setPriorityFilter(e.target.value)}
+            >
+              <option value="">Todas</option>
+              <option value="high">Alta</option>
+              <option value="medium">Média</option>
+              <option value="low">Baixa</option>
+            </select>
+          </div>
 
-              </div>
+          <div className={styles.filterField}>
+            <label htmlFor="setorFilter">Setor</label>
+            <select
+              id="setorFilter"
+              className={styles.filterSelect}
+              value={setorFilter}
+              onChange={(e) => setSetorFilter(e.target.value)}
+            >
+              <option value="">Todos</option>
+              {setoresDisponiveis.map((setor) => (
+                <option key={setor} value={setor}>{setor}</option>
+              ))}
+            </select>
+          </div>
 
-              <div className={styles.headerActions}>
-                  <button
-                      className={`${styles.viewToggle} ${viewMode === "list" ? styles.active : ""}`}
-                      onClick={() => setViewMode("list")}
-                  >
-                      <FaList />
-                  </button>
+          <div className={`${styles.filterField} ${styles.searchField}`}>
+            <label htmlFor="searchTerm">Busca rápida</label>
+            <input
+              id="searchTerm"
+              type="text"
+              placeholder="Buscar por título ou ID"
+              value={searchTerm}
+              maxLength="100"
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+                <div className={styles.filtersTop}>
 
-                  <button
-                      className={`${styles.viewToggle} ${viewMode === "grid" ? styles.active : ""}`}
-                      onClick={() => setViewMode("grid")}
-                  >
-                      <FaThLarge />
-                  </button>
 
-              </div>
-        
+          <div className={styles.headerActions}>
+            {hasActiveFilters && (
+              <button className={styles.clearFilters} onClick={limparFiltros}>
+                Limpar filtros
+              </button>
+            )}
 
+            <button
+              className={`${styles.viewToggle} ${viewMode === "list" ? styles.active : ""}`}
+              onClick={() => setViewMode("list")}
+              title="Visualização em lista"
+            >
+              <FaList />
+            </button>
+
+            <button
+              className={`${styles.viewToggle} ${viewMode === "grid" ? styles.active : ""}`}
+              onClick={() => setViewMode("grid")}
+              title="Visualização em grade"
+            >
+              <FaThLarge />
+            </button>
+          </div>
+        </div>
 
       </section>
+
 
     {/* Tabela */}
     {viewMode === "list" && (
