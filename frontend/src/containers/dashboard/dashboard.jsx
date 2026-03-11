@@ -150,14 +150,14 @@ tickets.forEach(ticket => {
                 <td>#{ticket.id}</td>
                 <td>{ticket.title}</td>
                 <td>
-                  <span className={`${styles.status} ${styles[ticket.status]}`}>
+                  <span className={`${styles.badge} ${styles[ticket.status.replace("-", "").toLowerCase()]}`}>
                     {ticket.status === 'open' ? 'Aberto' :
                      ticket.status === 'in-progress' ? 'Em andamento' :
                      ticket.status === 'closed' ? 'Fechado' : ticket.status}
                   </span>
                 </td>
                 <td>
-                  <span className={`${styles.priority} ${styles[ticket.priority]}`}>
+                  <span className={`${styles.badge} ${styles[ticket.priority]}`}>
                     {ticket.priority === 'low' ? 'Baixa' :
                      ticket.priority === 'medium' ? 'Média' :
                      ticket.priority === 'high' ? 'Alta' : ticket.priority}

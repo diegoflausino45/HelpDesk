@@ -119,13 +119,15 @@
 }
 
 .table {
+  margin-top: var(--space-xl);
   background: var(--color-bg-primary);
   padding: var(--space-xl);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
-  animation: slideUp 0.4s ease;
+  animation: fadeIn 0.4s ease;
   animation-delay: 0.2s;
   animation-fill-mode: backwards;
+  overflow: hidden;
 }
 
 .table h3 {
@@ -134,32 +136,32 @@
   font-weight: var(--font-weight-semibold);
 }
 
-table {
+.table table {
   width: 100%;
   border-collapse: collapse;
 }
 
-th,
-td {
+.table th,
+.table td {
   padding: var(--space-lg);
   border-bottom: 1px solid var(--color-border);
   text-align: left;
 }
 
-th {
+.table th {
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   background-color: var(--color-bg-secondary);
 }
 
-tr:last-child td {
+.table tr:last-child td {
   border-bottom: none;
 }
 
-tr:hover {
+.table tr:hover {
   background-color: var(--color-bg-secondary);
-  transform: scale(1.01);
-  transition: all var(--transition-base);
+  transform: scale(1.005);
+  transition: all var(--transition-fast);
 }
 
 @media (max-width: 1024px) {
@@ -198,51 +200,50 @@ tr:hover {
   }
 }
 
-/* Status badges */
-.status {
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--border-radius);
+/* Badges padronizados */
+.badge {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
   font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  text-transform: uppercase;
+  font-weight: var(--font-weight-semibold);
+  display: inline-flex;
+  align-items: center;
+  transition: all var(--transition-base);
 }
 
-.status.open {
-  background: var(--color-status-open-bg);
+.badge:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-sm);
+}
+
+.closed {
+  background-color: var(--color-status-open-bg);
   color: var(--color-status-open);
 }
 
-.status.in-progress {
-  background: var(--color-status-progress-bg);
+.inprogress {
+  background-color: var(--color-status-progress-bg);
   color: var(--color-status-progress);
 }
 
-.status.closed {
-  background: var(--color-status-resolved-bg);
+.open {
+  background-color: var(--color-status-resolved-bg);
   color: var(--color-status-resolved);
 }
 
-/* Priority badges */
-.priority {
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--border-radius);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
+.high {
+  background-color: var(--color-priority-high-bg);
+  color: var(--color-priority-high);
 }
 
-.priority.low {
-  background: var(--color-priority-low-bg);
-  color: var(--color-priority-low);
-}
-
-.priority.medium {
-  background: var(--color-priority-medium-bg);
+.medium {
+  background-color: var(--color-priority-medium-bg);
   color: var(--color-priority-medium);
 }
 
-.priority.high {
-  background: var(--color-priority-high-bg);
-  color: var(--color-priority-high);
+.low {
+  background-color: var(--color-priority-low-bg);
+  color: var(--color-priority-low);
 }
 
 /* Loading and error states */
