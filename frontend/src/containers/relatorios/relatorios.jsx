@@ -1,6 +1,7 @@
 import styles from "./relatorios.module.css"
 import { useMemo, useState, useEffect } from "react"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid } from "recharts"
+import { FaCalendarAlt, FaBuilding, FaUser, FaFilter } from "react-icons/fa"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import * as XLSX from "xlsx"
@@ -125,6 +126,14 @@ function Relatorios() {
   const totalResolvidos = dadosFiltrados.filter(item => item.status === "closed").length
   const taxaResolucao = totalChamados > 0 ? Math.round((totalResolvidos / totalChamados) * 100) : 0
   const emAtendimento = dadosFiltrados.filter(item => item.status === "in-progress").length
+  const hasActiveFilters = Boolean(dataInicio || dataFim || setor || responsavel)
+
+  function limparFiltros() {
+    setDataInicio("")
+    setDataFim("")
+    setSetor("")
+    setResponsavel("")
+  }
 
   /* 📄 PDF sem gráficos */
   function exportPDF() {
@@ -224,38 +233,62 @@ function Relatorios() {
 
       {/* Filtros */}
       <section className={styles.filters}>
-        <h2>Filtros do relatório</h2>
+        <div className={styles.filtersHeader}>
+          <h2>Filtros do relatório</h2>
+          {hasActiveFilters && (
+            <button className={styles.clearFilters} onClick={limparFiltros}>
+              Limpar filtros
+            </button>
+          )}
+        </div>
 
         <div className={styles.filterGrid}>
         <div className={styles.field}>
           <label>Data início</label>
-          <input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} />
+          <div className={styles.inputWithIcon}>
+            <span className={styles.fieldIcon}><FaCalendarAlt /></span>
+            <input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} />
+          </div>
         </div>
 
         <div className={styles.field}>
           <label>Data fim</label>
-          <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} />
+          <div className={styles.inputWithIcon}>
+            <span className={styles.fieldIcon}><FaCalendarAlt /></span>
+            <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} />
+          </div>
         </div>
 
         <div className={styles.field}>
           <label>Setor</label>
-          <select className={styles.filterSelect} value={setor} onChange={e => setSetor(e.target.value)}>
-            <option value="">Todos os setores</option>
-            {setores.map(s => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
+          <div className={styles.inputWithIcon}>
+            <span className={styles.fieldIcon}><FaBuilding /></span>
+            <select className={styles.filterSelect} value={setor} onChange={e => setSetor(e.target.value)}>
+              <option value="">Todos os setores</option>
+              {setores.map(s => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className={styles.field}>
           <label>Responsável</label>
-          <select className={styles.filterSelect} value={responsavel} onChange={e => setResponsavel(e.target.value)}>
-            <option value="">Todos os responsáveis</option>
-            {usuarios.map(u => (
-              <option key={u.id} value={u.id}>{u.name}</option>
-            ))}
-          </select>
+          <div className={styles.inputWithIcon}>
+            <span className={styles.fieldIcon}><FaUser /></span>
+            <select className={styles.filterSelect} value={responsavel} onChange={e => setResponsavel(e.target.value)}>
+              <option value="">Todos os responsáveis</option>
+              {usuarios.map(u => (
+                <option key={u.id} value={u.id}>{u.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
+        </div>
+
+        <div className={styles.filtersSummary}>
+          <span><FaFilter /> {dadosFiltrados.length} chamado(s) após filtros</span>
+          {hasActiveFilters && <span>Filtros ativos aplicados</span>}
         </div>
       </section>
 
@@ -264,12 +297,7 @@ function Relatorios() {
         {dadosFiltrados.length === 0 ? (
           <div className={styles.emptyState}>
             <p>Nenhum chamado encontrado com os filtros aplicados.</p>
-            <button onClick={() => {
-              setDataInicio("")
-              setDataFim("")
-              setSetor("")
-              setResponsavel("")
-            }}>Limpar filtros</button>
+            <button onClick={limparFiltros}>Limpar filtros</button>
           </div>
         ) : (
           <>

@@ -3,7 +3,7 @@ import styles from "./chamados.module.css"
 import { Link } from "react-router-dom"
 import CriarChamadoModal from "./components/criarChamado/criarChamadoModal"
 import DetalhesChamadoModal from "./components/detalhesChamado/detalhesChamadoModal"
-import { FaEye, FaList, FaThLarge } from "react-icons/fa"
+import { FaEye, FaList, FaThLarge, FaSearch, FaFilter, FaFlag, FaBuilding } from "react-icons/fa"
 import Pagination from "../../components/paginacao/paginacao"
 import { ticketsAPI } from "../../utils/api"
 import { getUserPermissions } from "../../utils/settings"
@@ -128,67 +128,84 @@ function Chamados() {
       <section className={styles.filters}>
 
 
+
         <div className={styles.filtersGrid}>
           <div className={styles.filterField}>
             <label htmlFor="statusFilter">Status</label>
-            <select
-              id="statusFilter"
-              className={styles.filterSelect}
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="">Todos</option>
-              <option value="open">Aberto</option>
-              <option value="in-progress">Em atendimento</option>
-              <option value="closed">Resolvido</option>
-            </select>
+            <div className={styles.inputWithIcon}>
+              <span className={styles.fieldIcon}><FaFilter /></span>
+              <select
+                id="statusFilter"
+                className={styles.filterSelect}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="">Todos</option>
+                <option value="open">Aberto</option>
+                <option value="in-progress">Em atendimento</option>
+                <option value="closed">Resolvido</option>
+              </select>
+            </div>
           </div>
 
           <div className={styles.filterField}>
             <label htmlFor="priorityFilter">Prioridade</label>
-            <select
-              id="priorityFilter"
-              className={styles.filterSelect}
-              value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value)}
-            >
-              <option value="">Todas</option>
-              <option value="high">Alta</option>
-              <option value="medium">Média</option>
-              <option value="low">Baixa</option>
-            </select>
+            <div className={styles.inputWithIcon}>
+              <span className={styles.fieldIcon}><FaFlag /></span>
+              <select
+                id="priorityFilter"
+                className={styles.filterSelect}
+                value={priorityFilter}
+                onChange={(e) => setPriorityFilter(e.target.value)}
+              >
+                <option value="">Todas</option>
+                <option value="high">Alta</option>
+                <option value="medium">Média</option>
+                <option value="low">Baixa</option>
+              </select>
+            </div>
           </div>
 
           <div className={styles.filterField}>
             <label htmlFor="setorFilter">Setor</label>
-            <select
-              id="setorFilter"
-              className={styles.filterSelect}
-              value={setorFilter}
-              onChange={(e) => setSetorFilter(e.target.value)}
-            >
-              <option value="">Todos</option>
-              {setoresDisponiveis.map((setor) => (
-                <option key={setor} value={setor}>{setor}</option>
-              ))}
-            </select>
+            <div className={styles.inputWithIcon}>
+              <span className={styles.fieldIcon}><FaBuilding /></span>
+              <select
+                id="setorFilter"
+                className={styles.filterSelect}
+                value={setorFilter}
+                onChange={(e) => setSetorFilter(e.target.value)}
+              >
+                <option value="">Todos</option>
+                {setoresDisponiveis.map((setor) => (
+                  <option key={setor} value={setor}>{setor}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className={`${styles.filterField} ${styles.searchField}`}>
             <label htmlFor="searchTerm">Busca rápida</label>
-            <input
-              id="searchTerm"
-              type="text"
-              placeholder="Buscar por título ou ID"
-              value={searchTerm}
-              maxLength="100"
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            <div className={styles.inputWithIcon}>
+              <span className={styles.fieldIcon}><FaSearch /></span>
+              <input
+                id="searchTerm"
+                type="text"
+                placeholder="Buscar por título ou ID"
+                value={searchTerm}
+                maxLength="100"
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
         </div>
+
+
                 <div className={styles.filtersTop}>
-
-
+                  <div className={styles.filtersSummary}>
+          <span>{filteredChamados.length} chamado(s) encontrado(s)</span>
+          {hasActiveFilters && <span>Filtros ativos aplicados</span>}
+        </div>
           <div className={styles.headerActions}>
             {hasActiveFilters && (
               <button className={styles.clearFilters} onClick={limparFiltros}>
@@ -212,6 +229,7 @@ function Chamados() {
               <FaThLarge />
             </button>
           </div>
+        
         </div>
 
       </section>

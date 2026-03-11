@@ -80,7 +80,9 @@ padding: var(--space-3xl);
 .filtersTop {
   display: flex;
   align-items: flex-start;
-  justify-content: flex-end;
+  justify-content: space-between;
+    border-top: 1px solid rgba(102, 126, 234, 0.1);
+
   gap: var(--space-lg);
   flex-wrap: wrap;
 }
@@ -116,9 +118,36 @@ padding: var(--space-3xl);
   color: var(--color-text-secondary);
 }
 
+.inputWithIcon {
+  position: relative;
+}
+
+.fieldIcon {
+  position: absolute;
+  left: var(--space-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+  pointer-events: none;
+  transition: color var(--transition-base);
+  z-index: 2;
+}
+
+.inputWithIcon input,
+.inputWithIcon select {
+  position: relative;
+  z-index: 1;
+}
+
+.inputWithIcon:focus-within .fieldIcon {
+  color: var(--color-primary);
+}
+
 .filters select,
 .filters input {
   padding: var(--space-md) var(--space-lg);
+  padding-left: calc(var(--space-xl) + 6px);
   border: 1px solid rgba(102, 126, 234, 0.18);
   border-radius: var(--radius-lg);
   background-color: var(--color-bg-primary);
@@ -128,6 +157,10 @@ padding: var(--space-3xl);
   font-size: var(--font-size-sm);
   min-height: 48px;
   box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.searchField .inputWithIcon input {
+  padding-left: calc(var(--space-2xl) + 10px);
 }
 
 .filterSelect {
@@ -179,7 +212,6 @@ html.dark .filterSelect {
   gap: var(--space-md);
   flex-wrap: wrap;
   padding-top: var(--space-md);
-  border-top: 1px solid rgba(102, 126, 234, 0.1);
   color: var(--color-text-tertiary);
   font-size: var(--font-size-sm);
 }
@@ -288,6 +320,7 @@ html.dark .filterSelect {
   display: flex;
   gap: var(--space-md);
   align-items: center;
+  padding-top: 1em;
 }
 
 .viewToggle {

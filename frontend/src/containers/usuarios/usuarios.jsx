@@ -1,6 +1,6 @@
 import styles from "./usuarios.module.css"
 import { useState, useEffect } from "react"
-import { FaEye, FaEdit, FaTrash } from "react-icons/fa"
+import { FaEdit, FaTrash, FaSearch, FaUser, FaBuilding } from "react-icons/fa"
 import Modal from "../../components/Modal/modal"
 import ConfirmDialog from "../../components/Modal/confirmDialog"
 import CreateUser from "./components/criarUsuarioModal"
@@ -157,6 +157,14 @@ function Usuarios() {
 
   // Aplicar paginação
   const paginatedUsuarios = usuariosFiltrados.slice(startIndex, endIndex)
+  const hasActiveFilters = Boolean(busca || perfil || setorFilter)
+
+  const limparFiltros = () => {
+    setBusca("")
+    setPerfil("")
+    setSetorFilter("")
+    setCurrentPage(1)
+  }
 
   if (!permissoes.canManageUsers) {
     return (
@@ -190,34 +198,69 @@ function Usuarios() {
       </section>
 
       {limiteUsuariosAtingido && (
-        <section className={styles.filters}>
+        <section className={styles.warningBanner}>
           <p>Limite de usuários ativos atingido ({usuarios.length}/{permissoes.config.usuarios.maxUsuariosAtivos}).</p>
         </section>
       )}
 
       {/* Filtros */}
       <section className={styles.filters}>
-        <input
-          type="text"
-          placeholder="Buscar por nome ou email"
-          value={busca}
-          maxLength="100"
-          onChange={e => setBusca(e.target.value)}
-        />
+        <div className={styles.filtersHeader}>
+          <h3 className={styles.filtersTitle}>Filtros inteligentes</h3>
+          {hasActiveFilters && (
+            <button className={styles.clearFilters} onClick={limparFiltros}>
+              Limpar filtros
+            </button>
+          )}
+        </div>
 
-        <select className={styles.filterSelect} value={perfil} onChange={e => setPerfil(e.target.value)}>
-          <option value="">Perfil</option>
-          <option value="admin">Admin</option>
-          <option value="technician">Técnico</option>
-          <option value="user">Usuário</option>
-        </select>
+        <div className={styles.filtersGrid}>
+          <div className={`${styles.filterField} ${styles.searchField}`}>
+            <label htmlFor="buscaUsuario">Busca rápida</label>
+            <div className={styles.inputWithIcon}>
+              <span className={styles.fieldIcon}><FaSearch /></span>
+              <input
+                id="buscaUsuario"
+                type="text"
+                placeholder="Buscar por nome ou email"
+                value={busca}
+                maxLength="100"
+                onChange={e => setBusca(e.target.value)}
+              />
+            </div>
+          </div>
 
-        <select className={styles.filterSelect} value={setorFilter} onChange={(e) => setSetorFilter(e.target.value)}>
-          <option value="">Setor</option>
-          {setoresDisponiveis.map((setor) => (
-            <option key={setor.id} value={setor.name}>{setor.name}</option>
-          ))}
-        </select>
+          <div className={styles.filterField}>
+            <label htmlFor="perfilUsuario">Perfil</label>
+            <div className={styles.inputWithIcon}>
+              <span className={styles.fieldIcon}><FaUser /></span>
+              <select id="perfilUsuario" className={styles.filterSelect} value={perfil} onChange={e => setPerfil(e.target.value)}>
+                <option value="">Todos</option>
+                <option value="admin">Admin</option>
+                <option value="technician">Técnico</option>
+                <option value="user">Usuário</option>
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.filterField}>
+            <label htmlFor="setorUsuario">Setor</label>
+            <div className={styles.inputWithIcon}>
+              <span className={styles.fieldIcon}><FaBuilding /></span>
+              <select id="setorUsuario" className={styles.filterSelect} value={setorFilter} onChange={(e) => setSetorFilter(e.target.value)}>
+                <option value="">Todos</option>
+                {setoresDisponiveis.map((setor) => (
+                  <option key={setor.id} value={setor.name}>{setor.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.filtersSummary}>
+          <span>{usuariosFiltrados.length} usuário(s) encontrado(s)</span>
+          {hasActiveFilters && <span>Filtros ativos aplicados</span>}
+        </div>
       </section>
 
       {/* Tabela */}
