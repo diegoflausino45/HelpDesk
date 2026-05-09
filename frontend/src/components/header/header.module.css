@@ -107,7 +107,7 @@
 }
 
 .user:hover {
-  width: 200px;
+  width: 240px;
   background: var(--color-bg-secondary);
   padding: var(--space-sm) var(--space-lg);
   color: var(--color-text-primary);
@@ -156,6 +156,14 @@
   color: var(--color-text-tertiary);
 }
 
+.userSector {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .rotate {
   transform: rotate(180deg);
   transition: transform var(--transition-base);
@@ -172,6 +180,25 @@
   min-width: 180px;
   overflow: hidden;
   z-index: 100;
+}
+
+.dropdownProfile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.dropdownProfile strong {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.dropdownProfile span {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
 }
 
 .dropdown a,

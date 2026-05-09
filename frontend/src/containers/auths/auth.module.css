@@ -111,7 +111,8 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.inputGroup input {
+.inputGroup input,
+.inputGroup select {
   padding: var(--space-md) var(--space-lg);
   border-radius: var(--radius-md);
   border: 1px solid rgba(102, 126, 234, 0.2);
@@ -121,7 +122,8 @@
   transition: all var(--transition-base);
 }
 
-.inputGroup input:focus {
+.inputGroup input:focus,
+.inputGroup select:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);

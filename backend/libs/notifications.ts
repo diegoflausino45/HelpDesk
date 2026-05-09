@@ -64,3 +64,29 @@ export async function notifyTicketStakeholders(
     await createNotification({ userId, type, title, message, ticketId });
   }
 }
+
+/**
+ * Notifica todos os administradores sobre a criação de um novo chamado,
+ * exceto o próprio autor da ação.
+ */
+export async function notifyAdminsNewTicket(
+  ticketId: number,
+  actorId: number,
+  title: string,
+  message: string,
+) {
+  const admins = await prisma.user.findMany({
+    where: { role: 'admin', id: { not: actorId } },
+    select: { id: true },
+  });
+
+  for (const admin of admins) {
+    await createNotification({
+      userId: admin.id,
+      type: 'ticket_created',
+      title,
+      message,
+      ticketId,
+    });
+  }
+}

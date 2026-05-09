@@ -3,7 +3,7 @@ import { body, validationResult } from 'express-validator';
 import { prisma } from '../libs/prisma.js';
 import { authenticate, authorize } from '../middlewares/auth.js';
 import { calcSlaDeadline, calcSlaStatus } from '../libs/sla.js';
-import { notifyTicketStakeholders, createNotification } from '../libs/notifications.js';
+import { notifyTicketStakeholders, createNotification, notifyAdminsNewTicket } from '../libs/notifications.js';
 
 const router = express.Router();
 
@@ -137,6 +137,13 @@ router.post('/', authenticate, [
       });
     }
 
+    await notifyAdminsNewTicket(
+      ticket.id,
+      userId,
+      `Novo chamado #${ticket.id}`,
+      `${ticket.title}`,
+    );
+
     res.status(201).json(ticket);
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
@@ -165,7 +172,13 @@ router.put('/:id', authenticate, [
   const userRole = (req as any).user.role;
 
   try {
-    const ticket = await prisma.ticket.findUnique({ where: { id: parseInt(id) } });
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        createdBy: { select: { id: true, role: true } },
+        assignedTo: { select: { id: true, role: true } },
+      },
+    });
     if (!ticket) {
       return res.status(404).json({ error: 'Ticket not found' });
     }
@@ -232,14 +245,35 @@ router.put('/:id', authenticate, [
         },
       });
 
-      // Notificar envolvidos sobre mudança de status
-      await notifyTicketStakeholders(
-        parseInt(id),
-        userId,
-        'status_changed',
-        `Chamado #${id} — status atualizado`,
-        `Status alterado de "${ticket.status}" para "${status}"`,
-      );
+      const isMilestoneStatus = status === 'in-progress' || status === 'closed';
+
+      // Para marcos principais, notifica apenas usuários comuns envolvidos no chamado.
+      if (isMilestoneStatus) {
+        const recipients = new Set<number>();
+        if (ticket.createdBy?.role === 'user') recipients.add(ticket.createdBy.id);
+        if (ticket.assignedTo?.role === 'user') recipients.add(ticket.assignedTo.id);
+        recipients.delete(userId);
+
+        const statusLabel = status === 'in-progress' ? 'em andamento' : 'finalizado';
+        for (const recipientId of recipients) {
+          await createNotification({
+            userId: recipientId,
+            type: 'status_changed',
+            title: `Chamado #${id} ${statusLabel}`,
+            message: `O chamado "${updatedTicket.title}" está ${statusLabel}.`,
+            ticketId: parseInt(id),
+          });
+        }
+      } else {
+        // Mantém a regra genérica para demais transições de status.
+        await notifyTicketStakeholders(
+          parseInt(id),
+          userId,
+          'status_changed',
+          `Chamado #${id} — status atualizado`,
+          `Status alterado de "${ticket.status}" para "${status}"`,
+        );
+      }
     }
 
     // Notificar novo atribuído

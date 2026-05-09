@@ -34,11 +34,19 @@ router.post('/register', [
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: { name, email, password: hashedPassword, sectorId: sectorId ? parseInt(sectorId) : null },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        sectorId: true,
+        sector: { select: { id: true, name: true } },
+      },
     });
 
     // Token sem expiração explicit a — gerenciado via inspecc
     const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET);
-    res.status(201).json({ user: { id: user.id, name: user.name, email: user.email, role: user.role }, token });
+    res.status(201).json({ user, token });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }
@@ -60,7 +68,10 @@ router.post('/login', [
   const { email, password } = req.body;
 
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { sector: { select: { id: true, name: true } } },
+    });
     if (!user) {
       // Retorna mensagem genérica para não vazar se e-mail existe ou não
       return res.status(400).json({ error: 'Invalid credentials' });
@@ -72,7 +83,17 @@ router.post('/login', [
     }
 
     const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET);
-    res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role }, token });
+    res.json({
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        sectorId: user.sectorId,
+        sector: user.sector,
+      },
+      token,
+    });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }

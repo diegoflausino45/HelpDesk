@@ -23,7 +23,7 @@ import NotFound from "../containers/notFound/notFound"
 
 // Componentes de infraestrutura de UI
 import Header from "../components/header/header"
-import ScrollToTop from "../components/scrollToTop/scrolltoTop"
+import ScrollToTop from "../components/scrollToTop/scrollToTop"
 import { getCurrentUser, getUserPermissions } from "../utils/settings"
 
 /**

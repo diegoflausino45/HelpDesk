@@ -7,11 +7,11 @@
  *
  * O layout divide a tela em duas colunas: branding (esquerda) + formulário (direita).
  */
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import styles from "./auth.module.css"
 import ThemeToggle from "../../components/themeToggle/themeToggle"
-import { authAPI } from "../../utils/api"
+import { authAPI, sectorsAPI } from "../../utils/api"
 import toast from "react-hot-toast"
 
 function Auth() {
@@ -23,11 +23,26 @@ function Auth() {
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    sectorId: ''
   })
+  const [setoresDisponiveis, setSetoresDisponiveis] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
+
+  useEffect(() => {
+    async function loadSetores() {
+      try {
+        const response = await sectorsAPI.getAll()
+        setSetoresDisponiveis(response.data)
+      } catch {
+        setSetoresDisponiveis([])
+      }
+    }
+
+    loadSetores()
+  }, [])
 
   function handleInputChange(e) {
     setFormData({
@@ -52,6 +67,7 @@ function Auth() {
         // Persiste sessão no localStorage para leitura pelos guards de rota
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('user', JSON.stringify(response.data.user))
+        window.dispatchEvent(new Event('user-updated'))
 
         toast.success('Login realizado')
 
@@ -64,10 +80,16 @@ function Auth() {
           return
         }
 
-        const response = await authAPI.register({
+        if (!formData.sectorId) {
+          setError('Selecione um setor')
+          return
+        }
+
+        await authAPI.register({
           name: formData.name,
           email: formData.email,
-          password: formData.password
+          password: formData.password,
+          sectorId: formData.sectorId
         })
 
         // Após criar conta, autentica automaticamente para melhorar a UX
@@ -78,6 +100,7 @@ function Auth() {
 
         localStorage.setItem('token', loginResponse.data.token)
         localStorage.setItem('user', JSON.stringify(loginResponse.data.user))
+        window.dispatchEvent(new Event('user-updated'))
 
         toast.success('Conta criada e logado')
 
@@ -165,6 +188,25 @@ function Auth() {
                   onChange={handleInputChange}
                   required={!isLogin}
                 />
+              </div>
+            )}
+
+            {!isLogin && (
+              <div className={styles.inputGroup}>
+                <label>Setor</label>
+                <select
+                  name="sectorId"
+                  value={formData.sectorId}
+                  onChange={handleInputChange}
+                  required={!isLogin}
+                >
+                  <option value="">Selecione um setor</option>
+                  {setoresDisponiveis.map((setor) => (
+                    <option key={setor.id} value={setor.id}>
+                      {setor.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             )}
 

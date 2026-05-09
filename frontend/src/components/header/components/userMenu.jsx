@@ -20,6 +20,7 @@ function UserMenu() {
     id: null,
     name: "Usuário",
     role: "user",
+    sector: null,
     avatar: "https://avatars.githubusercontent.com/u/70244105?v=4"
   })
 
@@ -48,6 +49,7 @@ function UserMenu() {
         id: user.id,
         name: user.name || "Usuário",
         role: user.role || "user",
+        sector: user.sector?.name || null,
         avatar: avatar || "https://avatars.githubusercontent.com/u/70244105?v=4"
       })
     } catch {
@@ -110,6 +112,7 @@ function UserMenu() {
         <div className={styles.userInfo}>
           <span className={styles.userName}>{userData.name}</span>
           <span className={styles.userRole}>{roleLabel}</span>
+          <span className={styles.userSector}>{userData.sector || "Sem setor"}</span>
         </div>
 
         <FaChevronDown 
@@ -119,6 +122,11 @@ function UserMenu() {
 
       {open && (
         <div className={styles.dropdown}>
+          <div className={styles.dropdownProfile}>
+            <strong>{userData.name}</strong>
+            <span>{roleLabel}</span>
+            <span>{userData.sector || "Sem setor"}</span>
+          </div>
           <Link to="/perfil" onClick={() => setOpen(false)}>Meu Perfil</Link>
           <Link to="/configuracoes" onClick={() => setOpen(false)}>Configurações</Link>
           <button onClick={handleLogout}>Sair</button>

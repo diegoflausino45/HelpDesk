@@ -177,6 +177,7 @@ function DetalhesChamadoModal({ isOpen, onClose, chamado, onUpdated, permissoes 
       isOpen={isOpen}
       onClose={onClose}
       title={`Chamado #${ticket.id}`}
+      size="large"
     >
       {error && <div className={styles.error}>{error}</div>}
 

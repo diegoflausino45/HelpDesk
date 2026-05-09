@@ -6,9 +6,8 @@ import { authenticate, authorize } from '../middlewares/auth.js';
 const router = express.Router();
 
 // ─── GET /api/sectors ───────────────────────────────────────────────────────
-// Retorna todos os setores. Acessível a qualquer usuário autenticado
-// (usado para popular selects de filtro, criação de usuários, etc.).
-router.get('/', authenticate, async (req, res) => {
+// Retorna todos os setores. Público para suportar cadastro e selects da aplicação.
+router.get('/', async (req, res) => {
   try {
     const sectors = await prisma.sector.findMany({
       select: { id: true, name: true },
