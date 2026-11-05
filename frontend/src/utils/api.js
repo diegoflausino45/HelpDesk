@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000/api';
+// URL da API: em produção vem de VITE_API_URL (definida no build da Vercel);
+// localmente usa a API em http://localhost:3000/api.
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 // ─── Instância base do Axios ─────────────────────────────────────────────────────
 // Configuração centralizada: base URL e content-type padrão.

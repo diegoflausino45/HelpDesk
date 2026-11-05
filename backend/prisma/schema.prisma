@@ -2,8 +2,11 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider            = "prisma-client"
+  output              = "../generated/prisma"
+  // ESM com extensão .js nos imports: roda no Node puro (ex.: Vercel), não só no tsx
+  moduleFormat        = "esm"
+  importFileExtension = "js"
 }
 
 datasource db {
