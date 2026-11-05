@@ -1,6 +1,14 @@
 node_modules/
 .vite/
 
+# Variáveis de ambiente (segredos nunca vão para o repositório)
+.env
+.env.*
+!.env.example
+
+# Arquivos enviados pelos usuários (anexos de chamados)
+uploads/
+
 # Logs
 *.log
 npm-debug.log*

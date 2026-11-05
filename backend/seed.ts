@@ -30,7 +30,9 @@ async function main() {
     });
   }
 
-  // Criar usuário admin
+  // Conta admin de DEMONSTRAÇÃO, apenas para uso local.
+  // A senha é pública (documentada no README): troque-a ou remova a conta
+  // antes de rodar o seed em qualquer ambiente acessível pela internet.
   const hashedPassword = await bcrypt.hash('admin123', 10);
   await prisma.user.upsert({
     where: { email: 'admin@helpdesk.com' },
