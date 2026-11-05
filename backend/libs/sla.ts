@@ -99,6 +99,25 @@ export function calcSlaStatus(
 }
 
 /**
+ * Devolve o chamado com o status de SLA recalculado no momento da leitura
+ * (sem gravar no banco). Assim a tela fica correta mesmo entre execuções do
+ * job agendado, que na Vercel (plano gratuito) roda só uma vez por dia.
+ * Chamados encerrados mantêm o status gravado.
+ */
+export function withLiveSla<T extends {
+  status: string;
+  priority: string;
+  createdAt: Date;
+  slaDeadline: Date | null;
+  slaStatus: string;
+  slaViolated: boolean;
+}>(ticket: T): T {
+  if (ticket.status === 'closed' || !ticket.slaDeadline) return ticket;
+  const { status, violated } = calcSlaStatus(ticket.createdAt, ticket.slaDeadline, ticket.priority);
+  return { ...ticket, slaStatus: status, slaViolated: violated };
+}
+
+/**
  * Retorna string legível com o tempo restante ou vencido.
  * Ex: "2h 15min restantes" ou "Vencido há 1h"
  */

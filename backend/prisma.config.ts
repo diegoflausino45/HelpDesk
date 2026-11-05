@@ -9,6 +9,9 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // As migrations precisam de conexão direta com o banco. Em provedores com
+    // pooler (ex.: Neon na Vercel) ela vem em DATABASE_URL_UNPOOLED; a API em
+    // si continua usando DATABASE_URL.
+    url: process.env["DATABASE_URL_UNPOOLED"] || process.env["DATABASE_URL"],
   },
 });

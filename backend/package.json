@@ -7,6 +7,7 @@
     "start": "tsx index.ts",
     "dev": "tsx --watch index.ts",
     "seed": "tsx seed.ts",
+    "vercel-build": "prisma generate && prisma migrate deploy && tsx seed.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

@@ -74,15 +74,18 @@ cp backend/.env.example backend/.env
 | `DATABASE_URL` | sim | String de conexão do PostgreSQL |
 | `JWT_SECRET` | sim | Segredo para assinar os tokens. A API **não inicia** sem ele |
 | `PORT` | não | Porta da API (padrão `3000`) |
+| `SEED_ADMIN_PASSWORD` | não (sim na Vercel) | Senha da conta admin criada pelo seed (padrão local: `admin123`) |
+| `CRON_SECRET` | só na Vercel | Protege a rota do job de SLA (`/api/cron/sla`) |
+| `DATABASE_URL_UNPOOLED` | não | Conexão direta usada pelas migrations quando `DATABASE_URL` passa por um pooler |
 
-Para gerar um `JWT_SECRET`:
+Para gerar um `JWT_SECRET` (ou `CRON_SECRET`):
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-O frontend não usa variáveis de ambiente: ele chama a API em `http://localhost:3000/api`
-(`frontend/src/utils/api.js`).
+O frontend lê só `VITE_API_URL` (veja `frontend/.env.example`). Sem ela, chama a API em
+`http://localhost:3000/api`.
 
 ### Sem Docker
 
@@ -133,17 +136,40 @@ PostgreSQL acima ou outro servidor).
 Frontend em `http://localhost:5173`, API em `http://localhost:3000/api` (saúde:
 `/api/health`).
 
+### Deploy na Vercel
+
+O deploy usa dois projetos Vercel apontando para este repositório:
+
+| Projeto | Root Directory | Preset | Variáveis |
+| --- | --- | --- | --- |
+| API | `backend` | Express | `DATABASE_URL` e `DATABASE_URL_UNPOOLED` (preenchidas pela integração do Neon), `JWT_SECRET`, `SEED_ADMIN_PASSWORD`, `CRON_SECRET` |
+| Site | `frontend` | Vite | `VITE_API_URL` = URL da API + `/api` |
+
+- O build da API (`npm run vercel-build`) gera o Prisma Client, aplica as migrations e roda o
+  seed. Sem `SEED_ADMIN_PASSWORD`, o build falha de propósito, para a conta admin nunca ir ao ar
+  com a senha de demonstração.
+- Na Vercel o Express vira uma única Vercel Function (`backend/index.ts` exporta o app e só
+  chama `listen` fora da Vercel).
+- O job de SLA roda pelo Vercel Cron (`backend/vercel.json`), que no plano gratuito executa uma
+  vez por dia. Como o status também é recalculado a cada leitura, a tela continua correta entre
+  as execuções.
+- O disco das funções não guarda arquivos, então o envio de anexos fica desativado nesse
+  ambiente.
+- `frontend/vercel.json` redireciona todas as rotas para o `index.html`, para o React Router
+  funcionar ao recarregar a página.
+
 ## Login de demonstração
 
-O seed cria uma conta **somente para uso local**:
+Rodando localmente, o seed cria esta conta:
 
 | E-mail | Senha | Papel |
 | --- | --- | --- |
 | `admin@helpdesk.com` | `admin123` | admin |
 
-Essa senha é pública (está no `seed.ts`). Não rode o seed em um ambiente acessível pela internet
-sem antes trocar a senha ou remover a conta. Novos usuários podem se cadastrar pela tela de login
-(papel `user`) ou ser criados por um admin.
+Essa senha é pública (está no `seed.ts`) e serve só para uso local. Em qualquer ambiente
+acessível pela internet, defina `SEED_ADMIN_PASSWORD` antes de rodar o seed. Na Vercel isso é
+obrigatório. Novos usuários podem se cadastrar pela tela de login (papel `user`) ou ser criados
+por um admin.
 
 ## Decisões técnicas
 
@@ -152,10 +178,11 @@ sem antes trocar a senha ou remover a conta. Novos usuários podem se cadastrar 
   (`backend/libs/sla.ts`). Se a prioridade muda, o prazo é recalculado a partir da data de
   abertura. O status fica "em risco" quando resta 20% ou menos do tempo até o prazo e "violado"
   quando ele passa.
-- **Job agendado em vez de cálculo a cada leitura.** Um `node-cron` roda a cada 15 minutos,
-  recalcula o SLA dos chamados não encerrados, grava só quando o status muda e notifica criador e
-  responsável apenas nas transições (no prazo → em risco, qualquer → violado), evitando
-  notificações repetidas.
+- **Job agendado para notificar, cálculo na leitura para exibir.** Um job (`node-cron` a cada
+  15 minutos localmente, Vercel Cron em produção) recalcula o SLA dos chamados não encerrados,
+  grava só quando o status muda e notifica criador e responsável apenas nas transições (no prazo
+  → em risco, qualquer → violado), evitando notificações repetidas. As rotas de chamados também
+  recalculam o status no momento da leitura, então a tela não depende da frequência do job.
 - **Fluxo de status como máquina de estados.** As transições permitidas são explícitas
   (aberto → em andamento/encerrado, em andamento → aberto/encerrado, encerrado → aberto). Qualquer
   outra é recusada com 400, e toda mudança gera um registro em `TicketHistory` (de/para, autor,
@@ -186,7 +213,8 @@ sem antes trocar a senha ou remover a conta. Novos usuários podem se cadastrar 
 - Os tokens JWT não têm expiração.
 - Além da rota de download autenticada, os arquivos enviados também são servidos estaticamente
   em `/uploads`; o nome aleatório dificulta, mas não impede, o acesso direto.
-- A URL da API está fixa no frontend (`http://localhost:3000/api`).
+- Na Vercel o envio de anexos fica desativado (precisaria de um armazenamento externo, como o
+  Vercel Blob).
 - As preferências da tela de Configurações ficam salvas apenas no navegador (`localStorage`).
 - Não há testes automatizados.
 

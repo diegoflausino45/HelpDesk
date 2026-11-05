@@ -9,6 +9,9 @@ node_modules/
 # Arquivos enviados pelos usuários (anexos de chamados)
 uploads/
 
+# Configuração local da Vercel CLI
+.vercel
+
 # Logs
 *.log
 npm-debug.log*

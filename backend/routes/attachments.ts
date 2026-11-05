@@ -10,9 +10,22 @@ const router = express.Router();
 
 // Diretório de uploads
 const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(UPLOAD_DIR)) {
+
+// Na Vercel o disco das funções é somente leitura e não persiste entre
+// execuções, então o envio de anexos fica desativado na demonstração.
+const UPLOADS_ENABLED = !process.env.VERCEL;
+
+if (UPLOADS_ENABLED && !fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
+
+// Recusa uploads antes do Multer tentar gravar em disco
+const requireUploads = (_req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (!UPLOADS_ENABLED) {
+    return res.status(503).json({ error: 'O envio de anexos está desativado nesta demonstração.' });
+  }
+  next();
+};
 
 // Tipos MIME permitidos
 const ALLOWED_TYPES = [
@@ -49,7 +62,7 @@ const upload = multer({
 });
 
 // POST /api/attachments/ticket/:ticketId — upload de arquivo para ticket
-router.post('/ticket/:ticketId', authenticate, upload.single('file'), async (req, res) => {
+router.post('/ticket/:ticketId', authenticate, requireUploads, upload.single('file'), async (req, res) => {
   const { ticketId } = req.params;
   const userId = (req as any).user.id;
   const userRole = (req as any).user.role;
@@ -99,7 +112,7 @@ router.post('/ticket/:ticketId', authenticate, upload.single('file'), async (req
 });
 
 // POST /api/attachments/comment/:commentId — upload de arquivo para comentário
-router.post('/comment/:commentId', authenticate, upload.single('file'), async (req, res) => {
+router.post('/comment/:commentId', authenticate, requireUploads, upload.single('file'), async (req, res) => {
   const { commentId } = req.params;
   const userId = (req as any).user.id;
   const userRole = (req as any).user.role;
