@@ -2,7 +2,7 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import { prisma } from '../libs/prisma.js';
 import { authenticate, authorize } from '../middlewares/auth.js';
-import { calcSlaDeadline, withLiveSla } from '../libs/sla.js';
+import { calcSlaDeadline, calcSlaStatus } from '../libs/sla.js';
 import { notifyTicketStakeholders, createNotification, notifyAdminsNewTicket } from '../libs/notifications.js';
 
 const router = express.Router();
@@ -45,7 +45,7 @@ router.get('/', authenticate, async (req, res) => {
       include: TICKET_INCLUDE,
       orderBy: { createdAt: 'desc' },
     });
-    res.json(tickets.map(withLiveSla));
+    res.json(tickets);
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }
@@ -73,7 +73,7 @@ router.get('/:id', authenticate, async (req, res) => {
       return res.status(403).json({ error: 'Forbidden' });
     }
 
-    res.json(withLiveSla(ticket));
+    res.json(ticket);
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }
@@ -288,7 +288,7 @@ router.put('/:id', authenticate, [
       });
     }
 
-    res.json(withLiveSla(updatedTicket));
+    res.json(updatedTicket);
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }

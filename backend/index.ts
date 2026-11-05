@@ -6,6 +6,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import cron from 'node-cron';
+import { prisma } from './libs/prisma.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import ticketRoutes from './routes/tickets.js';
@@ -13,14 +14,11 @@ import commentRoutes from './routes/comments.js';
 import sectorRoutes from './routes/sectors.js';
 import attachmentRoutes from './routes/attachments.js';
 import notificationRoutes from './routes/notifications.js';
-import { runSlaCheck } from './libs/slaJob.js';
+import { calcSlaStatus } from './libs/sla.js';
+import { createNotification } from './libs/notifications.js';
 
 // Porta configurável via variável de ambiente (padrão: 3000)
 const PORT = process.env.PORT || 3000;
-
-// Na Vercel o app roda como função serverless: não há porta para escutar
-// nem processo contínuo para o node-cron (a Vercel define VERCEL=1).
-const IS_VERCEL = Boolean(process.env.VERCEL);
 
 const app = express()
 
@@ -49,16 +47,67 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK' });
 });
 
-// ─── Verificação de SLA via HTTP (usada pelo Vercel Cron) ───────────────────
-// A Vercel chama esta rota no horário definido em vercel.json e envia
-// "Authorization: Bearer <CRON_SECRET>". Sem CRON_SECRET configurado, a rota
-// fica sempre bloqueada.
-app.get('/api/cron/sla', async (req, res) => {
-  const secret = process.env.CRON_SECRET;
-  if (!secret || req.headers.authorization !== `Bearer ${secret}`) {
-    return res.status(401).json({ error: 'Unauthorized' });
+// ─── Job agendado: verificação de SLA a cada 15 minutos ────────────────────
+// Busca todos os tickets ainda abertos e com deadline de SLA definido,
+// recalcula o status e emite notificações nas transições críticas:
+//   ok → warning  (menos de 20% do prazo restante)
+//   ok/warning → violated (prazo excedido)
+cron.schedule('*/15 * * * *', async () => {
+  try {
+    const openTickets = await prisma.ticket.findMany({
+      where: {
+        status: { not: 'closed' },
+        slaDeadline: { not: null },
+      },
+      select: {
+        id: true, priority: true, slaDeadline: true,
+        slaStatus: true, slaViolated: true,
+        createdAt: true, createdById: true, assignedToId: true,
+      },
+    });
+
+    for (const ticket of openTickets) {
+      if (!ticket.slaDeadline) continue;
+
+      // Calcula status atual com base no tempo restante vs horas úteis
+      const { status, violated } = calcSlaStatus(ticket.createdAt, ticket.slaDeadline, ticket.priority);
+
+      // Nenhuma mudança de estado — pula sem gravar
+      if (status === ticket.slaStatus && violated === ticket.slaViolated) continue;
+
+      // Persiste o novo status no banco
+      await prisma.ticket.update({
+        where: { id: ticket.id },
+        data: { slaStatus: status, slaViolated: violated },
+      });
+
+      // Notifica criador e atribuído (nunca duplica para o mesmo usuário)
+      const recipients = [ticket.createdById, ticket.assignedToId].filter(Boolean) as number[];
+      for (const uid of recipients) {
+        if (status === 'violated' && ticket.slaStatus !== 'violated') {
+          // Transição para violado — alerta crítico
+          await createNotification({
+            userId: uid,
+            type: 'sla_violated',
+            title: `SLA violado — Chamado #${ticket.id}`,
+            message: `O prazo do chamado foi excedido.`,
+            ticketId: ticket.id,
+          });
+        } else if (status === 'warning' && ticket.slaStatus === 'ok') {
+          // Transição para aviso — prazo ficando curto
+          await createNotification({
+            userId: uid,
+            type: 'sla_warning',
+            title: `SLA em risco — Chamado #${ticket.id}`,
+            message: `Menos de 20% do prazo restante.`,
+            ticketId: ticket.id,
+          });
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Erro no cron SLA:', e);
   }
-  res.json(await runSlaCheck());
 });
 
 // ─── Middleware global de tratamento de erros ───────────────────────────────
@@ -68,20 +117,6 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-if (!IS_VERCEL) {
-  // ─── Job agendado: verificação de SLA a cada 15 minutos ──────────────────
-  cron.schedule('*/15 * * * *', async () => {
-    try {
-      await runSlaCheck();
-    } catch (e) {
-      console.error('Erro no cron SLA:', e);
-    }
-  });
-
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
-
-// Exportado para a Vercel, que transforma o app em uma Vercel Function
-export default app;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
