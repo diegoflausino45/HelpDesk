@@ -1,8 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-
-// Chave secreta para assinar/verificar tokens JWT (nunca expor em produção)
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+// Chave secreta para verificar tokens JWT (obrigatória, validada na inicialização)
+import { JWT_SECRET } from '../libs/env.js';
 
 // Extende o tipo Request do Express para carregar o usuário autenticado
 export interface AuthRequest extends Request {

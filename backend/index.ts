@@ -1,4 +1,7 @@
 import "dotenv/config";
+// Valida as variáveis obrigatórias antes de qualquer outra coisa
+// (encerra o processo com mensagem clara se JWT_SECRET faltar)
+import './libs/env.js';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';

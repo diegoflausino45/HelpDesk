@@ -3,10 +3,10 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { body, validationResult } from 'express-validator';
 import { prisma } from '../libs/prisma.js';
+// Chave usada para assinar tokens JWT — a mesma lida pelo middleware auth
+import { JWT_SECRET } from '../libs/env.js';
 
 const router = express.Router();
-// Chave usada para assinar tokens JWT — deve ser a mesma do middleware auth
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // ─── POST /api/auth/register ────────────────────────────────────────────────
 // Cria um novo usuário no sistema.
